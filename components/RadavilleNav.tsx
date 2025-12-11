@@ -1,37 +1,21 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { SquareMenu, X } from 'lucide-react';
+
+
+  const navItems = [
+    { number: '01', title: 'Work', href: '/' },
+    { number: '02', title: 'About', href: '/about' },
+    { number: '03', title: 'Events', href: '/events' },
+    { number: '04', title: 'Contact', href: '/contact' }
+  ];
 
 const RadavilleNav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMenuClosing, setIsMenuClosing] = useState(false);
-  const [hasEntered, setHasEntered] = useState(false);
-  const [counter, setCounter] = useState(0);
-  const [soundEnabled, setSoundEnabled] = useState(false);
   const menuRef = useRef(null);
   const menuItemsRef = useRef([]);
-
-  // Counter animation on load
-  useEffect(() => {
-    if (!hasEntered) {
-      const target = 100;
-      const duration = 2000;
-      const increment = target / (duration / 16);
-      let current = 0;
-
-      const timer = setInterval(() => {
-        current += increment;
-        if (current >= target) {
-          setCounter(target);
-          clearInterval(timer);
-        } else {
-          setCounter(Math.floor(current));
-        }
-      }, 16);
-
-      return () => clearInterval(timer);
-    }
-  }, [hasEntered]);
 
   // Menu animations
   useEffect(() => {
@@ -64,17 +48,7 @@ const RadavilleNav = () => {
     }
   }, [isMenuOpen, isMenuClosing]);
 
-  const navItems = [
-    { number: '01', title: 'Work', href: '/' },
-    { number: '02', title: 'About', href: '/about' },
-    { number: '03', title: 'Curation', href: '/curation' },
-    { number: '04', title: 'Contact', href: '/contact' }
-  ];
 
-  const handleEnter = () => {
-    setSoundEnabled(true);
-    setHasEntered(true);
-  };
 
   const toggleMenu = () => {
     if (isMenuOpen) {
@@ -155,7 +129,7 @@ const RadavilleNav = () => {
   // }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <>
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 mix-blend-difference">
         <div className="flex items-center justify-between p-4 sm:p-6 md:p-8">
@@ -167,7 +141,7 @@ const RadavilleNav = () => {
             onClick={toggleMenu}
             className="group relative text-xs sm:text-sm tracking-widest font-light hover:opacity-70 transition-opacity"
           >
-            {isMenuOpen || isMenuClosing ? 'Close' : 'Menu'}
+            {isMenuOpen || isMenuClosing ? <X/> : <SquareMenu/>}
           </button>
         </div>
       </header>
@@ -219,44 +193,7 @@ const RadavilleNav = () => {
           </div>
         </div>
       )}
-
-      {/* Main Content */}
-      <main className="pt-24 sm:pt-28 md:pt-32 px-4 sm:px-6 md:px-8 lg:px-12">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-light tracking-wide mb-12 md:mb-16 leading-tight">
-            Thinking Things Into Existence.
-          </h2>
-          <p className="text-lg sm:text-xl md:text-2xl font-light opacity-70 mb-20 md:mb-32 leading-relaxed">
-            Turning Ideas Into Meaningful Products.
-          </p>
-
-          {/* Project Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-24 md:mb-32">
-            {['Casa Paz', 'Hagi\'s Oldtown', 'Hagi\'s Downtown'].map((project, i) => (
-              <div 
-                key={i}
-                className="group cursor-pointer aspect-[16/10] bg-zinc-900 relative overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-zinc-800 transform scale-100 group-hover:scale-105 transition-transform duration-700 ease-out"></div>
-                <div className="absolute inset-0 flex items-end p-4 sm:p-6">
-                  <h3 className="text-2xl sm:text-3xl font-light tracking-wide">{project}</h3>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </main>
-
-      {/* Year Badge */}
-      <div className="fixed bottom-6 sm:bottom-8 right-6 sm:right-8 text-xs sm:text-sm tracking-widest opacity-40 mix-blend-difference">
-        2024
-      </div>
-
-      {/* Scroll Indicator */}
-      <div className="hidden md:block fixed right-6 lg:right-8 top-1/2 -translate-y-1/2 text-xs tracking-widest opacity-40 mix-blend-difference rotate-90">
-        Scroll
-      </div>
-    </div>
+    </>
   );
 };
 
