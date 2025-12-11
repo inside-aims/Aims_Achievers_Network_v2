@@ -12,26 +12,26 @@ const RadavilleNav = () => {
   const menuItemsRef = useRef([]);
 
   // Counter animation on load
-//   useEffect(() => {
-//     if (!hasEntered) {
-//       const target = 100;
-//       const duration = 2000;
-//       const increment = target / (duration / 16);
-//       let current = 0;
+  useEffect(() => {
+    if (!hasEntered) {
+      const target = 100;
+      const duration = 2000;
+      const increment = target / (duration / 16);
+      let current = 0;
 
-//       const timer = setInterval(() => {
-//         current += increment;
-//         if (current >= target) {
-//           setCounter(target);
-//           clearInterval(timer);
-//         } else {
-//           setCounter(Math.floor(current));
-//         }
-//       }, 16);
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          setCounter(target);
+          clearInterval(timer);
+        } else {
+          setCounter(Math.floor(current));
+        }
+      }, 16);
 
-//       return () => clearInterval(timer);
-//     }
-//   }, [hasEntered]);
+      return () => clearInterval(timer);
+    }
+  }, [hasEntered]);
 
   // Menu animations
   useEffect(() => {
@@ -111,49 +111,48 @@ const RadavilleNav = () => {
     }
   };
 
-  if (!hasEntered) {
-    return (
-      <div className="fixed inset-0 bg-black text-white flex items-center justify-center overflow-hidden">
-        <div className="text-center space-y-6 md:space-y-8 px-4 max-w-4xl mx-auto">
-          <div className="space-y-3 md:space-y-4">
-            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-light tracking-wide leading-tight">
-              Thinking Things
-            </h1>
-            <div className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-light tabular-nums">
-              {counter}
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-light tracking-wide leading-tight">
-              Into Existence
-            </h2>
-          </div>
+  // if (!hasEntered) {
+  //   return (
+  //     <div className="fixed inset-0 bg-black text-white flex items-center justify-center overflow-hidden">
+  //       <div className="text-center space-y-6 md:space-y-8 px-4 max-w-4xl mx-auto">
+  //         <div className="space-y-3 md:space-y-4">
+  //           <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-light tracking-wide leading-tight">
+  //             Thinking Things
+  //           </h1>
+  //           <div className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-light tabular-nums">
+  //             {counter}
+  //           </div>
+  //           <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-light tracking-wide leading-tight">
+  //             Into Existence
+  //           </h2>
+  //         </div>
           
-          <p className="text-base sm:text-lg md:text-xl font-light tracking-wider opacity-70 mt-8 md:mt-12 px-4">
-            A multi-disciplinary design studio
-          </p>
+  //         <p className="text-base sm:text-lg md:text-xl font-light tracking-wider opacity-70 mt-8 md:mt-12 px-4">
+  //           A multi-disciplinary design studio
+  //         </p>
           
-          <div className="space-y-2 mt-12 md:mt-16">
-            <button
-              onClick={handleEnter}
-              className="group relative px-8 sm:px-10 md:px-12 py-3 md:py-4 text-base md:text-lg tracking-widest border border-white/30 hover:border-white transition-all duration-500 overflow-hidden"
-            >
-              <span className="relative z-10">Enter</span>
-              <div className="absolute inset-0 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-              <span className="absolute inset-0 flex items-center justify-center text-black opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                Enter
-              </span>
-            </button>
-            <p className="text-xs opacity-50 tracking-wider">(click anywhere for sound)</p>
-          </div>
+  //         <div className="space-y-2 mt-12 md:mt-16">
+  //           <button
+  //             onClick={handleEnter}
+  //             className="group relative px-8 sm:px-10 md:px-12 py-3 md:py-4 text-base md:text-lg tracking-widest border border-white/30 hover:border-white transition-all duration-500 overflow-hidden"
+  //           >
+  //             <span className="relative z-10">Enter</span>
+  //             <div className="absolute inset-0 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+  //             <span className="absolute inset-0 flex items-center justify-center text-black opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+  //               Enter
+  //             </span>
+  //           </button>
+  //         </div>
 
-          <div className="absolute bottom-6 md:bottom-8 left-4 right-4 md:left-0 md:right-0 text-center px-4">
-            <p className="text-xs sm:text-sm tracking-widest opacity-40 leading-relaxed">
-              Elevating Spaces, Defining Aesthetics, Cultivating Brands
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  //         <div className="absolute bottom-6 md:bottom-8 left-4 right-4 md:left-0 md:right-0 text-center px-4">
+  //           <p className="text-xs sm:text-sm tracking-widest opacity-40 leading-relaxed">
+  //             Elevating Spaces, Defining Aesthetics, Cultivating Brands
+  //           </p>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
@@ -179,7 +178,7 @@ const RadavilleNav = () => {
           ref={menuRef}
           className="fixed inset-0 bg-black z-40 flex items-center justify-center p-4 sm:p-6 md:p-8"
         >
-          <nav className="space-y-6 sm:space-y-8 md:space-y-10 lg:space-y-12 w-full max-w-4xl">
+          <nav className="absolute bottom-12 sm:bottom-4 p-2 space-y-6 sm:space-y-8 md:space-y-10 lg:space-y-2 w-full max-w-4xl">
             {navItems.map((item, index) => (
               <div
                 key={item.number}
@@ -193,7 +192,7 @@ const RadavilleNav = () => {
                   <span className="text-xs sm:text-sm md:text-base opacity-40 group-hover:opacity-100 transition-opacity duration-300 flex-shrink-0">
                     {item.number}
                   </span>
-                  <span className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-light tracking-wide group-hover:tracking-wider transition-all duration-500 leading-tight">
+                  <span className="text-5xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-light tracking-wide group-hover:tracking-wider transition-all duration-500 leading-tight">
                     {item.title}
                   </span>
                 </a>
@@ -202,8 +201,8 @@ const RadavilleNav = () => {
           </nav>
 
           {/* Menu Footer */}
-          <div className="absolute bottom-6 sm:bottom-8  sm:left-6 md:left-8 right-4 sm:right-6 md:right-8">
-            <div className="flex flex-col lg:flex-row justify-between gap-6 md:gap-8 text-xs sm:text-sm opacity-60">
+          <div className="absolute top-28 right-4 sm:right-6 md:right-8">
+            <div className="flex flex-col justify-between gap-6 md:gap-8 text-xs sm:text-sm opacity-60">
               <div className="space-y-1">
                 <p className="tracking-widest">01 Services</p>
                 <p className="font-light leading-relaxed">Interior Design · Art Direction · Branding</p>
