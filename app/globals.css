@@ -171,4 +171,8 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  .feature{
+    @apply px-4 md:px-8 py-8;
+  }
 }

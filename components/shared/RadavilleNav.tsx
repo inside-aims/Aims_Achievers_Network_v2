@@ -131,7 +131,7 @@ const RadavilleNav = () => {
   return (
     <>
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 mix-blend-difference">
+      <header className="sticky border top-0 left-0 right-0 z-50 mix-blend-difference">
         <div className="flex items-center justify-between p-4 sm:p-6 md:p-8">
           <div className="text-xs sm:text-sm tracking-widest font-light">
             AIMS ACHIEVERS NETWORK
