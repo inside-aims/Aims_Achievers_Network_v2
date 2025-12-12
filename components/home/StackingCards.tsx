@@ -4,7 +4,7 @@ import { ReactLenis } from "lenis/react";
 import { useTransform, motion, useScroll, MotionValue } from "motion/react";
 import { JSX, useRef } from "react";
 import Image from "next/image";
-import ShiningButton from "./ShinningButton";
+import ShiningButton from "../ShinningButton";
 
 // Update these with your platform's benefits and services
 const benefits = [

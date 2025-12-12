@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import ButtonArrow from "./ButtonArrow";
-import ShiningButton from "./ShinningButton";
+import ButtonArrow from "../ButtonArrow";
+import ShiningButton from "../ShinningButton";
 
 const ValuePropositionSection = () => {
   const [isVisible, setIsVisible] = useState(false);

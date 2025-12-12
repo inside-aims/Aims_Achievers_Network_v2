@@ -1,4 +1,4 @@
-import RadavilleNav from "../../components/RadavilleNav";
+import RadavilleNav from "../../components/shared/RadavilleNav";
 
 
 const Layout = ({

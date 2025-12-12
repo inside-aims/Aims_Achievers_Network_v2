@@ -1,7 +1,7 @@
-import FeatureGridBento from "@/components/FeatureGrid";
-import ScrollTextMarquee from "@/components/ScrollTextMarquee";
-import StackingCardsHero from "@/components/StackingCards";
-import ValuePropositionSection from "@/components/ValuePropositionSection";
+import FeatureGridBento from "@/components/home/FeatureGrid";
+import ScrollTextMarquee from "@/components/home/ScrollTextMarquee";
+import StackingCardsHero from "@/components/home/StackingCards";
+import ValuePropositionSection from "@/components/home/ValuePropositionSection";
 import Image from "next/image";
 
 export default function Home() {
@@ -66,14 +66,12 @@ export default function Home() {
     //   </main>
     // </div>
     <>
-    <div>
-      
-    </div>
+      <div></div>
       <main>
         <StackingCardsHero />
         <ValuePropositionSection />
         <ScrollTextMarquee />
-        <FeatureGridBento/>
+        <FeatureGridBento />
       </main>
     </>
   );
