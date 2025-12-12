@@ -163,7 +163,7 @@ const RadavilleNav = () => {
                   href={item.href}
                   className="flex items-baseline gap-4 sm:gap-6 md:gap-8 lg:gap-10"
                 >
-                  <span className="text-xs sm:text-sm md:text-base opacity-40 group-hover:opacity-100 transition-opacity duration-300 flex-shrink-0">
+                  <span className="text-xs sm:text-sm md:text-base opacity-40 group-hover:opacity-100 transition-opacity duration-300 shrink-0">
                     {item.number}
                   </span>
                   <span className="text-5xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-light tracking-wide group-hover:tracking-wider transition-all duration-500 leading-tight">

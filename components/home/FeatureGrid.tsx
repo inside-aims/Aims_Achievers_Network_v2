@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const FeatureGridBento = () => {
   const [isVisible, setIsVisible] = useState(false);
