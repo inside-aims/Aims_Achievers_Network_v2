@@ -59,9 +59,9 @@ export default function StackingCardsHero(): JSX.Element {
 
   return (
     <ReactLenis root>
-      <main className="bg-zinc-950" ref={container}>
+      <main className="bg-background" ref={container}>
         {/* Hero Section */}
-        <section className="text-white h-screen w-full bg-zinc-950 grid place-content-center relative overflow-hidden">
+        <section className="text-foreground h-screen w-full bg-background grid place-content-center relative overflow-hidden">
           {/* Animated grid background */}
           <div className="absolute bottom-0 left-0 right-0 top-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:54px_54px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
 
@@ -82,7 +82,7 @@ export default function StackingCardsHero(): JSX.Element {
         </section>
 
         {/* Stacking Cards Section */}
-        <section className="text-white w-full bg-zinc-950">
+        <section className="text-foreground w-full">
           {benefits.map((benefit, i) => {
             const targetScale = 1 - (benefits.length - i) * 0.05;
             return (
@@ -102,13 +102,13 @@ export default function StackingCardsHero(): JSX.Element {
           })}
         </section>
 
-        <section className="bg-zinc-950">
+        <section className="">
           <div className="py-20 px-4 sm:px-6 md:px-8">
             <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-light text-center tracking-tight leading-[100%] text-white/90 mb-8">
               Ready to Start?
             </h2>
             <div className="flex justify-center">
-              <ShiningButton label="View Events" />
+              <ShiningButton className="" label="View Events" />
             </div>
           </div>
         </section>

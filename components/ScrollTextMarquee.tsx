@@ -22,9 +22,9 @@ const MarqueeSection = () => {
   ];
 
   return (
-    <section className="relative bg-zinc-950 py-20 md:py-32 overflow-hidden">
+    <section className="relative py-20 md:py-32 overflow-hidden">
       {/* Background gradient overlay */}
-      <div className="absolute inset-0 bg-linear-to-b from-zinc-950 via-zinc-900 to-zinc-950 opacity-50"></div>
+      <div className="absolute inset-0 bg-linear-to-b from-background/90 via-background/60 to-background/90 opacity-50"></div>
 
       <div className="relative z-10 space-y-6 md:space-y-8">
         {/* Top Marquee */}
@@ -105,7 +105,7 @@ const MarqueeSection = () => {
       </div>
 
       {/* Bottom fade effect */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-zinc-950 to-transparent pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-background to-transparent pointer-events-none"></div>
 
       <style jsx>{`
         @keyframes marquee {

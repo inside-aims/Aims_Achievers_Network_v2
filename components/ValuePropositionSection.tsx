@@ -80,7 +80,7 @@ const ValuePropositionSection = () => {
   return (
     <section
       ref={sectionRef}
-      className="min-h-screen bg-zinc-950 text-white py-10 sm:py-24 md:py-32 px-4 sm:px-6 md:px-8 lg:px-12"
+      className="min-h-screen bg-background text-white py-10 sm:py-24 md:py-32 px-4 sm:px-6 md:px-8 lg:px-12"
     >
       <div className="max-w-7xl mx-auto">
         {/* Headline */}
@@ -107,7 +107,7 @@ const ValuePropositionSection = () => {
               }}
               className="group"
             >
-              <div className="border border-white/10 hover:border-white/30 transition-all duration-500 p-6 sm:p-8 h-full bg-zinc-900/30 hover:bg-zinc-900/50">
+              <div className="border border-card-foreground/10 hover:border-white/30 transition-all duration-500 p-6 sm:p-8 h-full bg-card/40 hover:bg-card/60">
                 <div className="text-5xl sm:text-6xl font-light opacity-20 group-hover:opacity-40 transition-opacity duration-500 mb-6">
                   {prop.number}
                 </div>
@@ -142,7 +142,7 @@ const ValuePropositionSection = () => {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
           <ShiningButton label="View Events" />
           <ButtonArrow
-            className="group relative w-56 rounded-md md:py-8 overflow-hidden "
+            className="group relative w-56 rounded-md md:py-8 overflow-hidden bg-secondary/20 hover:bg-secondary/40 border transition-all duration-500"
             text="See How It Works"
           />
         </div>

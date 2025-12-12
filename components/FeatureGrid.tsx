@@ -140,7 +140,7 @@ const FeatureGridBento = () => {
   return (
     <section
       ref={sectionRef}
-      className="min-h-screen bg-zinc-950 text-white py-20 sm:py-24 md:py-32 px-4 sm:px-6 md:px-8 lg:px-12"
+      className="min-h-screen bg-background text-foreground py-20 sm:py-24 md:py-32 px-4 sm:px-6 md:px-8 lg:px-12"
     >
       <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -159,9 +159,9 @@ const FeatureGridBento = () => {
             ref={(el) => { cardsRef.current[0] = el; }}
             className="group relative sm:col-span-2 lg:row-span-2"
           >
-            <div className="h-full border border-white/10 hover:border-white/30 bg-zinc-900/30 hover:bg-zinc-900/50 p-8 sm:p-10 transition-all duration-500 cursor-pointer flex flex-col justify-between min-h-[400px] lg:min-h-[500px]">
+            <div className="h-full border border-border/50 hover:border-border/70 bg-background/60 hover:bg-background/70 p-8 sm:p-10 transition-all duration-500 cursor-pointer flex flex-col justify-between min-h-[400px] lg:min-h-[500px]">
               <div>
-                <div className="mb-8 text-white/60 group-hover:text-white transition-colors duration-500">
+                <div className="mb-8 text-foreground/60 group-hover:text-foreground transition-colors duration-500">
                   {features[0].icon}
                 </div>
                 <h3 className="text-2xl sm:text-3xl lg:text-4xl font-light tracking-wide mb-4 leading-tight">
@@ -175,7 +175,7 @@ const FeatureGridBento = () => {
                 <div className="text-4xl sm:text-5xl font-light mb-2">{features[0].stat}</div>
                 <div className="text-sm tracking-widest opacity-60">{features[0].statLabel}</div>
               </div>
-              <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-white group-hover:w-full transition-all duration-700 ease-out"></div>
+              <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-foreground group-hover:w-full transition-all duration-700 ease-out"></div>
             </div>
           </div>
 
@@ -184,9 +184,9 @@ const FeatureGridBento = () => {
             ref={(el) => { cardsRef.current[1] = el; }}
             className="group relative sm:col-span-2"
           >
-            <div className="h-full border border-white/10 hover:border-white/30 bg-zinc-900/30 hover:bg-zinc-900/50 p-6 sm:p-8 transition-all duration-500 cursor-pointer flex flex-col justify-between min-h-[240px]">
+            <div className="h-full border border-border/50 hover:border-border/70 bg-background/60 hover:bg-background/70 p-6 sm:p-8 transition-all duration-500 cursor-pointer flex flex-col justify-between min-h-[240px]">
               <div>
-                <div className="mb-6 text-white/60 group-hover:text-white transition-colors duration-500">
+                <div className="mb-6 text-foreground/60 group-hover:text-foreground transition-colors duration-500">
                   {features[1].icon}
                 </div>
                 <h3 className="text-xl sm:text-2xl font-light tracking-wide mb-3 leading-tight">
@@ -196,11 +196,11 @@ const FeatureGridBento = () => {
                   {features[1].description}
                 </p>
               </div>
-              <div className="border-t border-white/10 pt-4 mt-6">
+              <div className="border-t border-border/30 pt-4 mt-6">
                 <div className="text-3xl font-light mb-1">{features[1].stat}</div>
                 <div className="text-xs tracking-widest opacity-60">{features[1].statLabel}</div>
               </div>
-              <div className="absolute bottom-0 left-0 w-0 h-[1px] bg-white group-hover:w-full transition-all duration-700 ease-out"></div>
+              <div className="absolute bottom-0 left-0 w-0 h-px bg-foreground group-hover:w-full transition-all duration-700 ease-out"></div>
             </div>
           </div>
 
@@ -209,9 +209,9 @@ const FeatureGridBento = () => {
             ref={(el) => { cardsRef.current[2] = el; }}
             className="group relative"
           >
-            <div className="h-full border border-white/10 hover:border-white/30 bg-zinc-900/30 hover:bg-zinc-900/50 p-6 transition-all duration-500 cursor-pointer min-h-[200px] flex flex-col justify-between">
+            <div className="h-full border border-border/50 hover:border-border/70 bg-background/60 hover:bg-background/70 p-6 transition-all duration-500 cursor-pointer min-h-[200px] flex flex-col justify-between">
               <div>
-                <div className="mb-4 text-white/60 group-hover:text-white transition-colors duration-500">
+                <div className="mb-4 text-foreground/60 group-hover:text-foreground transition-colors duration-500">
                   {features[2].icon}
                 </div>
                 <h3 className="text-lg sm:text-xl font-light tracking-wide mb-2 leading-tight">
@@ -221,7 +221,7 @@ const FeatureGridBento = () => {
                   {features[2].description}
                 </p>
               </div>
-              <div className="absolute bottom-0 left-0 w-0 h-[1px] bg-white group-hover:w-full transition-all duration-700 ease-out"></div>
+              <div className="absolute bottom-0 left-0 w-0 h-px bg-foreground group-hover:w-full transition-all duration-700 ease-out"></div>
             </div>
           </div>
 
@@ -229,9 +229,9 @@ const FeatureGridBento = () => {
             ref={(el) => { cardsRef.current[3] = el; }}
             className="group relative"
           >
-            <div className="h-full border border-white/10 hover:border-white/30 bg-zinc-900/30 hover:bg-zinc-900/50 p-6 transition-all duration-500 cursor-pointer min-h-[200px] flex flex-col justify-between">
+            <div className="h-full border border-border/50 hover:border-border/70 bg-background/60 hover:bg-background/70 p-6 transition-all duration-500 cursor-pointer min-h-[200px] flex flex-col justify-between">
               <div>
-                <div className="mb-4 text-white/60 group-hover:text-white transition-colors duration-500">
+                <div className="mb-4 text-foreground/60 group-hover:text-foreground transition-colors duration-500">
                   {features[4].icon}
                 </div>
                 <h3 className="text-lg sm:text-xl font-light tracking-wide mb-2 leading-tight">
@@ -241,7 +241,7 @@ const FeatureGridBento = () => {
                   {features[4].description}
                 </p>
               </div>
-              <div className="absolute bottom-0 left-0 w-0 h-[1px] bg-white group-hover:w-full transition-all duration-700 ease-out"></div>
+              <div className="absolute bottom-0 left-0 w-0 h-px bg-foreground group-hover:w-full transition-all duration-700 ease-out"></div>
             </div>
           </div>
 
@@ -250,9 +250,9 @@ const FeatureGridBento = () => {
             ref={(el) => { cardsRef.current[4] = el; }}
             className="group relative sm:col-span-2"
           >
-            <div className="h-full border border-white/10 hover:border-white/30 bg-zinc-900/30 hover:bg-zinc-900/50 p-6 sm:p-8 transition-all duration-500 cursor-pointer flex flex-col justify-between min-h-[240px]">
+            <div className="h-full border border-border/50 hover:border-border/70 bg-background/60 hover:bg-background/70 p-6 sm:p-8 transition-all duration-500 cursor-pointer flex flex-col justify-between min-h-60">
               <div>
-                <div className="mb-6 text-white/60 group-hover:text-white transition-colors duration-500">
+                <div className="mb-6 text-foreground/60 group-hover:text-foreground transition-colors duration-500">
                   {features[3].icon}
                 </div>
                 <h3 className="text-xl sm:text-2xl font-light tracking-wide mb-3 leading-tight">
@@ -262,11 +262,11 @@ const FeatureGridBento = () => {
                   {features[3].description}
                 </p>
               </div>
-              <div className="border-t border-white/10 pt-4 mt-6">
+              <div className="border-t border-border/30 pt-4 mt-6">
                 <div className="text-3xl font-light mb-1">{features[3].stat}</div>
                 <div className="text-xs tracking-widest opacity-60">{features[3].statLabel}</div>
               </div>
-              <div className="absolute bottom-0 left-0 w-0 h-[1px] bg-white group-hover:w-full transition-all duration-700 ease-out"></div>
+              <div className="absolute bottom-0 left-0 w-0 h-px bg-foreground group-hover:w-full transition-all duration-700 ease-out"></div>
             </div>
           </div>
 
@@ -275,9 +275,9 @@ const FeatureGridBento = () => {
             ref={(el) => { cardsRef.current[5] = el; }}
             className="group relative"
           >
-            <div className="h-full border border-white/10 hover:border-white/30 bg-zinc-900/30 hover:bg-zinc-900/50 p-6 transition-all duration-500 cursor-pointer min-h-[200px] flex flex-col justify-between">
+            <div className="h-full border border-border/50 hover:border-border/70 bg-background/60 hover:bg-background/70 p-6 transition-all duration-500 cursor-pointer min-h-[200px] flex flex-col justify-between">
               <div>
-                <div className="mb-4 text-white/60 group-hover:text-white transition-colors duration-500">
+                <div className="mb-4 text-foreground/60 group-hover:text-foreground transition-colors duration-500">
                   {features[5].icon}
                 </div>
                 <h3 className="text-lg sm:text-xl font-light tracking-wide mb-2 leading-tight">
@@ -295,9 +295,9 @@ const FeatureGridBento = () => {
             ref={(el) => { cardsRef.current[6] = el; }}
             className="group relative"
           >
-            <div className="h-full border border-white/10 hover:border-white/30 bg-zinc-900/30 hover:bg-zinc-900/50 p-6 transition-all duration-500 cursor-pointer min-h-[200px] flex flex-col justify-between">
+            <div className="h-full border border-border/50 hover:border-border/70 bg-background/60 hover:bg-background/70 p-6 transition-all duration-500 cursor-pointer min-h-[200px] flex flex-col justify-between">
               <div>
-                <div className="mb-4 text-white/60 group-hover:text-white transition-colors duration-500">
+                <div className="mb-4 text-foreground/60 group-hover:text-foreground transition-colors duration-500">
                   {features[7].icon}
                 </div>
                 <h3 className="text-lg sm:text-xl font-light tracking-wide mb-2 leading-tight">
@@ -316,9 +316,9 @@ const FeatureGridBento = () => {
             ref={(el) => { cardsRef.current[7] = el; }}
             className="group relative sm:col-span-2"
           >
-            <div className="h-full border border-white/10 hover:border-white/30 bg-zinc-900/30 hover:bg-zinc-900/50 p-6 sm:p-8 transition-all duration-500 cursor-pointer flex flex-col justify-between min-h-[240px]">
+            <div className="h-full border border-border/50 hover:border-border/70 bg-background/60 hover:bg-background/70 p-6 sm:p-8 transition-all duration-500 cursor-pointer flex flex-col justify-between min-h-[240px]">
               <div>
-                <div className="mb-6 text-white/60 group-hover:text-white transition-colors duration-500">
+                <div className="mb-6 text-foreground/60 group-hover:text-foreground transition-colors duration-500">
                   {features[6].icon}
                 </div>
                 <h3 className="text-xl sm:text-2xl font-light tracking-wide mb-3 leading-tight">

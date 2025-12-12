@@ -14,7 +14,7 @@ export default function ShiningButton({ label, className, ...props }: ShiningBut
       )}
       {...props}
     >
-      <div className="relative flex items-center justify-center gap-4 overflow-hidden rounded-lg bg-violet-800 px-6 py-4 font-bold text-white">
+      <div className="relative flex items-center justify-center gap-4 overflow-hidden rounded-lg bg-primary px-6 py-4 font-bold text-primary-foreground">
         {label}
         <ArrowRight className="transition-all group-hover:translate-x-2 group-hover:scale-125" />
 
