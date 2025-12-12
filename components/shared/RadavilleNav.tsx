@@ -150,7 +150,7 @@ const RadavilleNav = () => {
       {(isMenuOpen || isMenuClosing) && (
         <div 
           ref={menuRef}
-          className="fixed inset-0 bg-black z-40 flex items-center justify-center p-4 sm:p-6 md:p-8"
+          className="fixed inset-0 bg-background z-40 flex items-center justify-center p-4 sm:p-6 md:p-8"
         >
           <nav className="absolute bottom-12 sm:bottom-4 p-2 space-y-6 sm:space-y-8 md:space-y-10 lg:space-y-2 w-full max-w-4xl">
             {navItems.map((item, index) => (
