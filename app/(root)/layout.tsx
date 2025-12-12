@@ -1,4 +1,5 @@
-import RadavilleNav from '../../components/RadavilleNav';
+import RadavilleNav from "../../components/RadavilleNav";
+
 
 const Layout = ({
   children,
@@ -7,12 +8,10 @@ const Layout = ({
 }>) => {
   return (
     <>
-    <RadavilleNav />    
-    <main className='min-h-screen pt-14'>
-        {children}
-    </main>
+      <RadavilleNav />
+      <main className="min-h-screen">{children}</main>
     </>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;

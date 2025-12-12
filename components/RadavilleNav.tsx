@@ -5,7 +5,7 @@ import { SquareMenu, X } from 'lucide-react';
 
 
   const navItems = [
-    { number: '01', title: 'Work', href: '/' },
+    { number: '01', title: 'Home', href: '/' },
     { number: '02', title: 'About', href: '/about' },
     { number: '03', title: 'Events', href: '/events' },
     { number: '04', title: 'Contact', href: '/contact' }
@@ -134,7 +134,7 @@ const RadavilleNav = () => {
       <header className="fixed top-0 left-0 right-0 z-50 mix-blend-difference">
         <div className="flex items-center justify-between p-4 sm:p-6 md:p-8">
           <div className="text-xs sm:text-sm tracking-widest font-light">
-            RADAVILLE STUDIO
+            AIMS ACHIEVERS NETWORK
           </div>
           
           <button
@@ -173,24 +173,6 @@ const RadavilleNav = () => {
               </div>
             ))}
           </nav>
-
-          {/* Menu Footer */}
-          <div className="absolute top-28 right-4 sm:right-6 md:right-8">
-            <div className="flex flex-col justify-between gap-6 md:gap-8 text-xs sm:text-sm opacity-60">
-              <div className="space-y-1">
-                <p className="tracking-widest">01 Services</p>
-                <p className="font-light leading-relaxed">Interior Design · Art Direction · Branding</p>
-              </div>
-              <div className="space-y-1">
-                <p className="tracking-widest">02 Location</p>
-                <p className="font-light">Düsseldorf, Germany</p>
-              </div>
-              <div className="space-y-1">
-                <p className="tracking-widest">03 Social</p>
-                <p className="font-light">Instagram · Spotify</p>
-              </div>
-            </div>
-          </div>
         </div>
       )}
     </>

@@ -1,83 +1,99 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-// thanks to oliver: https://www.youtube.com/@olivierlarose1
-'use client';
-import ReactLenis from '@studio-freight/react-lenis/types';
-import { useTransform, motion, useScroll, MotionValue } from 'motion/react';
-import { useRef } from 'react';
-import Image from 'next/image';
-const projects = [
+// StackingCardsHero.tsx
+"use client";
+import { ReactLenis } from "lenis/react";
+import { useTransform, motion, useScroll, MotionValue } from "motion/react";
+import { JSX, useRef } from "react";
+import Image from "next/image";
+import ShiningButton from "./ShinningButton";
+
+// Update these with your platform's benefits and services
+const benefits = [
   {
-    title: 'Matthias Leidinger',
+    title: "Career Development",
     description:
-      'Originally hailing from Austria, Berlin-based photographer Matthias Leindinger is a young creative brimming with talent and ideas.',
-    src: 'rock.jpg',
-    link: 'https://images.unsplash.com/photo-1605106702842-01a887a31122?q=80&w=500&auto=format&fit=crop',
-    color: '#5196fd',
+      "Access personalized mentorship programs, skill-building workshops, and career guidance from industry professionals to accelerate your professional growth.",
+    src: "career.jpg",
+    link: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop&q=80",
+    color: "#5196fd",
   },
   {
-    title: 'Clément Chapillon',
+    title: "Networking Opportunities",
     description:
-      'This is a story on the border between reality and imaginary, about the contradictory feelings that the insularity of a rocky, arid, and wild territory provokes”—so French photographer Clément.',
-    src: 'tree.jpg',
-    link: 'https://images.unsplash.com/photo-1605106250963-ffda6d2a4b32?w=500&auto=format&fit=crop&q=60',
-    color: '#8f89ff',
+      "Connect with like-minded professionals, entrepreneurs, and mentors. Build meaningful relationships that open doors to new opportunities.",
+    src: "networking.jpg",
+    link: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&auto=format&fit=crop&q=80",
+    color: "#8f89ff",
   },
   {
-    title: 'Zissou',
+    title: "Resource Library",
     description:
-      'Though he views photography as a medium for storytelling, Zissou’s images don’t insist on a narrative. Both crisp and ethereal.',
-    src: 'water.jpg',
-    link: 'https://images.unsplash.com/photo-1605106901227-991bd663255c?w=500&auto=format&fit=crop',
-    color: '#13006c',
+      "Unlimited access to curated resources, courses, templates, and tools designed to help you achieve your goals faster and more efficiently.",
+    src: "resources.jpg",
+    link: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&auto=format&fit=crop&q=80",
+    color: "#13006c",
   },
   {
-    title: 'Mathias Svold and Ulrik Hasemann',
+    title: "Community Support",
     description:
-      'The coastlines of Denmark are documented in tonal colors in a pensive new series by Danish photographers Ulrik Hasemann and Mathias Svold; an ongoing project investigating how humans interact with and disrupt the Danish coast.',
-    src: 'house.jpg',
-    link: 'https://images.unsplash.com/photo-1605106715994-18d3fecffb98?w=500&auto=format&fit=crop&q=60',
-    color: '#ed649e',
+      "Join a vibrant community of achievers who support, inspire, and celebrate each other's successes. You're never alone on your journey.",
+    src: "community.jpg",
+    link: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&auto=format&fit=crop&q=80",
+    color: "#ed649e",
   },
   {
-    title: 'Mark Rammers',
+    title: "Exclusive Events",
     description:
-      'Dutch photographer Mark Rammers has shared with IGNANT the first chapter of his latest photographic project, ‘all over again’—captured while in residency at Hektor, an old farm in Los Valles, Lanzarote.',
-    src: 'cactus.jpg',
-    link: 'https://images.unsplash.com/photo-1506792006437-256b665541e2?w=500&auto=format&fit=crop',
-    color: '#fd521a',
+      "Get invited to exclusive workshops, seminars, and networking events featuring industry leaders and successful entrepreneurs.",
+    src: "events.jpg",
+    link: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop&q=80",
+    color: "#fd521a",
   },
 ];
-export default function index(): JSX.Element {
+
+export default function StackingCardsHero(): JSX.Element {
   const container = useRef(null);
   const { scrollYProgress } = useScroll({
     target: container,
-    offset: ['start start', 'end end'],
+    offset: ["start start", "end end"],
   });
+
   return (
     <ReactLenis root>
-      <main className='bg-black' ref={container}>
-        <>
-          <section className='text-white  h-[70vh]  w-full bg-slate-950  grid place-content-center '>
-            <div className='absolute bottom-0 left-0 right-0 top-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-size-[54px_54px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]'></div>
+      <main className="bg-zinc-950" ref={container}>
+        {/* Hero Section */}
+        <section className="text-white h-screen w-full bg-zinc-950 grid place-content-center relative overflow-hidden">
+          {/* Animated grid background */}
+          <div className="absolute bottom-0 left-0 right-0 top-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:54px_54px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
 
-            <h1 className='2xl:text-7xl text-5xl px-8 font-semibold text-center tracking-tight leading-[120%]'>
-              Stacking Cards Using <br /> Motion. Scroll down! 👇
+          <div className="relative z-10 px-4 sm:px-6 md:px-8">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light text-center tracking-tight leading-[120%]">
+              Vote Your Way
             </h1>
-          </section>
-        </>
+            <p className="text-lg sm:text-xl md:text-2xl font-light text-center opacity-70 mt-6 max-w-3xl mx-auto">
+              Discover the benefits and services designed to help you achieve
+              your goals
+            </p>
+            <div className="flex justify-center mt-8">
+              <div className="text-sm tracking-widest opacity-40 animate-bounce">
+                Scroll to explore features ↓
+              </div>
+            </div>
+          </div>
+        </section>
 
-        <section className='text-white   w-full bg-slate-950  '>
-          {projects.map((project, i) => {
-            const targetScale = 1 - (projects.length - i) * 0.05;
+        {/* Stacking Cards Section */}
+        <section className="text-white w-full bg-zinc-950">
+          {benefits.map((benefit, i) => {
+            const targetScale = 1 - (benefits.length - i) * 0.05;
             return (
-              <Card
-                key={`p_${i}`}
+              <BenefitCard
+                key={`benefit_${i}`}
                 i={i}
-                url={project?.link}
-                src={project?.src}
-                title={project?.title}
-                color={project?.color}
-                description={project?.description}
+                url={benefit?.link}
+                src={benefit?.src}
+                title={benefit?.title}
+                color={benefit?.color}
+                description={benefit?.description}
                 progress={scrollYProgress}
                 range={[i * 0.25, 1]}
                 targetScale={targetScale}
@@ -86,17 +102,22 @@ export default function index(): JSX.Element {
           })}
         </section>
 
-        <footer className='group bg-slate-950 '>
-          <h1 className='text-[16vw]  translate-y-20 leading-[100%] uppercase font-semibold text-center bg-linear-to-r from-gray-400 to-gray-800 bg-clip-text text-transparent transition-all ease-linear'>
-            ui-layout
-          </h1>
-          <div className='bg-black h-40 relative z-10 grid place-content-center text-2xl rounded-tr-full rounded-tl-full'></div>
-        </footer>
+        <section className="bg-zinc-950">
+          <div className="py-20 px-4 sm:px-6 md:px-8">
+            <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-light text-center tracking-tight leading-[100%] text-white/90 mb-8">
+              Ready to Start?
+            </h2>
+            <div className="flex justify-center">
+              <ShiningButton label="View Events" />
+            </div>
+          </div>
+        </section>
       </main>
     </ReactLenis>
   );
 }
-interface CardProps {
+
+interface BenefitCardProps {
   i: number;
   title: string;
   description: string;
@@ -107,11 +128,11 @@ interface CardProps {
   range: [number, number];
   targetScale: number;
 }
-export const Card: React.FC<CardProps> = ({
+
+export const BenefitCard: React.FC<BenefitCardProps> = ({
   i,
   title,
   description,
-  src,
   url,
   color,
   progress,
@@ -121,7 +142,7 @@ export const Card: React.FC<CardProps> = ({
   const container = useRef(null);
   const { scrollYProgress } = useScroll({
     target: container,
-    offset: ['start end', 'start start'],
+    offset: ["start end", "start start"],
   });
 
   const imageScale = useTransform(scrollYProgress, [0, 1], [2, 1]);
@@ -130,7 +151,7 @@ export const Card: React.FC<CardProps> = ({
   return (
     <div
       ref={container}
-      className='h-screen flex items-center justify-center sticky top-0'
+      className="h-screen flex items-center justify-center sticky top-0"
     >
       <motion.div
         style={{
@@ -138,43 +159,48 @@ export const Card: React.FC<CardProps> = ({
           scale,
           top: `calc(-5vh + ${i * 25}px)`,
         }}
-        className={`flex flex-col relative -top-[25%] h-[450px] w-[70%] rounded-md lg:p-10 sm:p-4 p-2 origin-top`}
+        className="flex flex-col relative -top-[25%] h-[400px] sm:h-[450px] md:h-[500px] w-[90%] sm:w-[85%] md:w-[80%] lg:w-[70%] rounded-lg p-4 sm:p-6 md:p-8 lg:p-10 origin-top"
       >
-        <h2 className='text-2xl text-center font-semibold'>{title}</h2>
-        <div className={`flex h-full mt-5 gap-10`}>
-          <div className={`w-[40%] relative top-[10%]`}>
-            <p className='text-sm'>{description}</p>
-            <span className='flex items-center gap-2 pt-2'>
+        <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light tracking-wide mb-4 sm:mb-6">
+          {title}
+        </h2>
+        <div className="flex flex-col lg:flex-row h-full gap-6 lg:gap-10">
+          <div className="lg:w-[40%] flex flex-col justify-between">
+            <p className="text-sm sm:text-base font-light leading-relaxed opacity-90">
+              {description}
+            </p>
+            <span className="flex items-center gap-2 mt-4 lg:mt-0">
               <a
-                href={'#'}
-                target='_blank'
-                className='underline cursor-pointer'
+                href="#"
+                className="text-sm sm:text-base font-light tracking-wide hover:tracking-wider transition-all duration-300 flex items-center gap-2 group"
               >
-                See more
+                Learn more
+                <svg
+                  width="22"
+                  height="12"
+                  viewBox="0 0 22 12"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="group-hover:translate-x-1 transition-transform duration-300"
+                >
+                  <path
+                    d="M21.5303 6.53033C21.8232 6.23744 21.8232 5.76256 21.5303 5.46967L16.7574 0.696699C16.4645 0.403806 15.9896 0.403806 15.6967 0.696699C15.4038 0.989592 15.4038 1.46447 15.6967 1.75736L19.9393 6L15.6967 10.2426C15.4038 10.5355 15.4038 11.0104 15.6967 11.3033C15.9896 11.5962 16.4645 11.5962 16.7574 11.3033L21.5303 6.53033ZM0 6.75L21 6.75V5.25L0 5.25L0 6.75Z"
+                    fill="currentColor"
+                  />
+                </svg>
               </a>
-              <svg
-                width='22'
-                height='12'
-                viewBox='0 0 22 12'
-                fill='none'
-                xmlns='http://www.w3.org/2000/svg'
-              >
-                <path
-                  d='M21.5303 6.53033C21.8232 6.23744 21.8232 5.76256 21.5303 5.46967L16.7574 0.696699C16.4645 0.403806 15.9896 0.403806 15.6967 0.696699C15.4038 0.989592 15.4038 1.46447 15.6967 1.75736L19.9393 6L15.6967 10.2426C15.4038 10.5355 15.4038 11.0104 15.6967 11.3033C15.9896 11.5962 16.4645 11.5962 16.7574 11.3033L21.5303 6.53033ZM0 6.75L21 6.75V5.25L0 5.25L0 6.75Z'
-                  fill='black'
-                />
-              </svg>
             </span>
           </div>
 
-          <div
-            className={`relative w-[60%] h-full rounded-lg overflow-hidden `}
-          >
-            <motion.div
-              className={`w-full h-full`}
-              style={{ scale: imageScale }}
-            >
-              <Image fill src={url} alt='image' className='object-cover' />
+          <div className="relative lg:w-[60%] h-48 sm:h-64 lg:h-full rounded-lg overflow-hidden">
+            <motion.div className="w-full h-full" style={{ scale: imageScale }}>
+              <Image
+                fill
+                src={url}
+                alt={title}
+                className="object-cover"
+                sizes="(max-width: 768px) 90vw, (max-width: 1200px) 50vw, 33vw"
+              />
             </motion.div>
           </div>
         </div>
