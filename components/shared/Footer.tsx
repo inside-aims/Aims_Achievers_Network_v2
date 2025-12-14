@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { InstagramIcon } from "../ui/svgs/instagramIcon";
-import { Mail, Instagram, Linkedin, Twitter } from "lucide-react";
+import { Linkedin } from "../ui/svgs/linkedin";
+import { Mail, Twitter } from "lucide-react";
 
 const AimsFooter = () => {
   const currentYear = new Date().getFullYear();
@@ -29,44 +30,44 @@ const AimsFooter = () => {
             </h3>
             <ul className="space-y-3 text-sm">
               <li>
-                <a 
+                <Link 
                   href="/events" 
                   className="text-muted-foreground hover:text-foreground transition-colors duration-200"
                 >
                   Events
-                </a>
+                </Link>
               </li>
               <li>
-                <a 
+                <Link 
                   href="/how-it-works" 
                   className="text-muted-foreground hover:text-foreground transition-colors duration-200"
                 >
                   How It Works
-                </a>
+                </Link>
               </li>
               <li>
-                <a 
+                <Link 
                   href="/partners" 
                   className="text-muted-foreground hover:text-foreground transition-colors duration-200"
                 >
                   Partners
-                </a>
+                </Link>
               </li>
               <li>
-                <a 
+                <Link 
                   href="/about" 
                   className="text-muted-foreground hover:text-foreground transition-colors duration-200"
                 >
                   About Us
-                </a>
+                </Link>
               </li>
               <li>
-                <a 
+                <Link 
                   href="/contact" 
                   className="text-muted-foreground hover:text-foreground transition-colors duration-200"
                 >
                   Contact
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -78,44 +79,44 @@ const AimsFooter = () => {
             </h3>
             <ul className="space-y-3 text-sm">
               <li>
-                <a 
+                <Link 
                   href="/become-partner" 
                   className="text-muted-foreground hover:text-foreground transition-colors duration-200"
                 >
                   Become a Partner
-                </a>
+                </Link>
               </li>
               <li>
-                <a 
+                <Link
                   href="/host-event" 
                   className="text-muted-foreground hover:text-foreground transition-colors duration-200"
                 >
                   Host an Event
-                </a>
+                </Link>
               </li>
               <li>
-                <a 
+                <Link 
                   href="/ambassadors" 
                   className="text-muted-foreground hover:text-foreground transition-colors duration-200"
                 >
                   Student Ambassadors
-                </a>
+                </Link>
               </li>
               <li>
-                <a 
+                <Link 
                   href="/gallery" 
                   className="text-muted-foreground hover:text-foreground transition-colors duration-200"
                 >
                   Media / Gallery
-                </a>
+                </Link>
               </li>
               <li>
-                <a 
+                <Link 
                   href="/faqs" 
                   className="text-muted-foreground hover:text-foreground transition-colors duration-200"
                 >
                   FAQs
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -135,28 +136,14 @@ const AimsFooter = () => {
               </a>
               
               <div className="flex gap-4 pt-2">
-                <Link href="#">
-                  <InstagramIcon className="w-5 h-5 text-muted-foreground hover:text-foreground transition-colors duration-200" />
+                <Link href="#" target="_blank" aria-label="Instagram">
+                  <InstagramIcon className="w-5 h-5" />
                 </Link>
-                <a 
-                  href="https://instagram.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-foreground transition-colors duration-200"
-                  aria-label="Instagram"
-                >
-                  <Instagram className="w-5 h-5" />
-                </a>
-                <a 
-                  href="https://linkedin.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-foreground transition-colors duration-200"
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin className="w-5 h-5" />
-                </a>
-                <a 
+
+                <Link href="#" target="_blank" aria-label="LinkedIn">
+                    <Linkedin className="w-5 h-5"/>
+                </Link>
+                <Link 
                   href="https://twitter.com" 
                   target="_blank" 
                   rel="noopener noreferrer"
@@ -164,7 +151,7 @@ const AimsFooter = () => {
                   aria-label="Twitter"
                 >
                   <Twitter className="w-5 h-5" />
-                </a>
+                </Link>
               </div>
 
               <p className="text-xs text-muted-foreground/70 pt-2 leading-relaxed">
