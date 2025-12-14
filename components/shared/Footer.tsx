@@ -1,6 +1,6 @@
 "use client";
-
-import React from "react";
+import Link from "next/link";
+import { InstagramIcon } from "../ui/svgs/instagramIcon";
 import { Mail, Instagram, Linkedin, Twitter } from "lucide-react";
 
 const AimsFooter = () => {
@@ -135,6 +135,9 @@ const AimsFooter = () => {
               </a>
               
               <div className="flex gap-4 pt-2">
+                <Link href="#">
+                  <InstagramIcon className="w-5 h-5 text-muted-foreground hover:text-foreground transition-colors duration-200" />
+                </Link>
                 <a 
                   href="https://instagram.com" 
                   target="_blank" 

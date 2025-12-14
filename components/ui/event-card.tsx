@@ -1,6 +1,8 @@
 // EventNameTag.tsx
 "use client";
 
+import Image from "next/image";
+
 interface EventNameTagProps {
   eventName: string;
   location: string;
@@ -35,8 +37,10 @@ export default function EventNameTag({
     <div className="inline-flex items-stretch bg-card border border-border rounded-md overflow-hidden h-16 font-sans ">
       {/* Left: Event Image */}
       <div className="w-16 h-16 flex-shrink-0 bg-muted">
-        <img
+        <Image
           src={imageUrl}
+          width={100}
+          height={100}
           alt={eventName}
           className="w-full h-full object-cover"
         />
