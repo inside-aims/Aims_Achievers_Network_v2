@@ -101,17 +101,6 @@ export default function StackingCardsHero(): JSX.Element {
             );
           })}
         </section>
-
-        <section className="">
-          <div className="py-20 px-4 sm:px-6 md:px-8">
-            <h2 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-light text-center tracking-tight leading-[100%] text-white/90 mb-8">
-              Ready to Start?
-            </h2>
-            <div className="flex justify-center">
-              <ShiningButton className="" label="View Events" />
-            </div>
-          </div>
-        </section>
       </main>
     </ReactLenis>
   );

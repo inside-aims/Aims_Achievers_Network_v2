@@ -22,7 +22,7 @@ const MarqueeSection = () => {
   ];
 
   return (
-    <section className="relative py-20 md:py-32 overflow-hidden">
+    <section className="relative py-5 md:py-5 overflow-hidden">
       {/* Background gradient overlay */}
       <div className="absolute inset-0 bg-linear-to-b from-background/90 via-background/60 to-background/90 opacity-50"></div>
 
@@ -75,7 +75,7 @@ const MarqueeSection = () => {
                     key={`${repeatIndex}-${index}`}
                     className="flex items-center gap-4 md:gap-6 px-4 md:px-6"
                   >
-                    <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-light tracking-tight text-white/90 whitespace-nowrap">
+                    <span className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold tracking-[-0.07em] leading-[90%] text-white/90 whitespace-nowrap">
                       {item}
                     </span>
                     <span className="text-white/20 text-xl md:text-2xl">•</span>
@@ -92,7 +92,7 @@ const MarqueeSection = () => {
                     key={`${repeatIndex}-${index}`}
                     className="flex items-center gap-4 md:gap-6 px-4 md:px-6"
                   >
-                    <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-light tracking-tight text-white/90 whitespace-nowrap">
+                    <span className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold tracking-[-0.07em] leading-[90%] text-white/90 whitespace-nowrap">
                       {item}
                     </span>
                     <span className="text-white/20 text-xl md:text-2xl">•</span>
@@ -125,16 +125,16 @@ const MarqueeSection = () => {
           to { transform: translateX(100%); }
         }
         .animate-marquee {
-          animation: marquee 40s linear infinite;
+          animation: marquee 60s linear infinite;
         }
         .animate-marquee2 {
-          animation: marquee2 40s linear infinite;
+          animation: marquee2 60s linear infinite;
         }
         .animate-marquee-reverse {
-          animation: marquee-reverse 40s linear infinite;
+          animation: marquee-reverse 60s linear infinite;
         }
         .animate-marquee-reverse2 {
-          animation: marquee-reverse2 40s linear infinite;
+          animation: marquee-reverse2 60s linear infinite;
         }
         .hover\\:pause-animation:hover {
           animation-play-state: paused;
