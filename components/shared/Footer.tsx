@@ -171,24 +171,24 @@ const AimsFooter = () => {
               © {currentYear} AimsAchieversNetwork. All rights reserved.
             </div>
             <div className="flex flex-wrap justify-center gap-6">
-              <a 
+              <Link 
                 href="/privacy" 
                 className="hover:text-foreground transition-colors duration-200"
               >
                 Privacy Policy
-              </a>
-              <a 
+              </Link>
+              <Link 
                 href="/terms" 
                 className="hover:text-foreground transition-colors duration-200"
               >
                 Terms of Service
-              </a>
-              <a 
+              </Link>
+              <Link 
                 href="/cookies" 
                 className="hover:text-foreground transition-colors duration-200"
               >
                 Cookie Policy
-              </a>
+              </Link>
             </div>
           </div>
         </div>
