@@ -1,6 +1,7 @@
 // TrustedPartnersCarousel.tsx - Minimalist Partner Badge Carousel
 "use client";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 
 const trustedPartners = [
   {
@@ -135,11 +136,13 @@ export default function TrustedPartnersCarousel() {
             >
               <div className="flex items-stretch">
                 {/* Left: Partner Logo/Image */}
-                <div className="w-20 sm:w-24 md:w-28 flex-shrink-0 bg-muted flex items-center justify-center border-r border-border overflow-hidden">
+                <div className="w-20 sm:w-24 md:w-28 shrink-0 bg-muted flex items-center justify-center border-r border-border overflow-hidden">
                   {currentPartner.logoImage ? (
-                    <img 
+                    <Image 
                       src={currentPartner.logoImage} 
                       alt={`${currentPartner.name} logo`}
+                      width={100}
+                      height={100}
                       className="w-full h-full object-cover"
                     />
                   ) : (
