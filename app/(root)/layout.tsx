@@ -1,3 +1,4 @@
+import Footer from "@/components/shared/Footer";
 import RadavilleNav from "../../components/shared/RadavilleNav";
 
 
@@ -10,6 +11,7 @@ const Layout = ({
     <div className={"min-h-screen bg-background"}>
       <RadavilleNav />
       <main>{children}</main>
+      <Footer/>
     </div>
   );
 };

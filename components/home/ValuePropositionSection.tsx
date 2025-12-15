@@ -80,9 +80,9 @@ const ValuePropositionSection = () => {
   return (
     <section
       ref={sectionRef}
-      className="min-h-screen bg-background text-white py-10 sm:py-24 md:py-32 px-4 sm:px-6 md:px-8 lg:px-12"
+      className="min-h-screen bg-background text-white sm:py-5 md:py-10 px-4 sm:px-6 md:px-8 lg:px-12"
     >
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto py-24">
         {/* Headline */}
         <div className="text-center mb-16 md:mb-24">
           <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight leading-[110%] mb-6">
@@ -139,13 +139,18 @@ const ValuePropositionSection = () => {
         </div>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
-          <ShiningButton label="View Events" />
-          <ButtonArrow
-            className="group relative w-56 rounded-md md:py-8 overflow-hidden bg-secondary/20 hover:bg-secondary/40 border transition-all duration-500"
-            text="See How It Works"
-          />
-        </div>
+        <section className="space-y-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 lg:gap-8 px-4">
+            <ShiningButton 
+              label="View Events" 
+              className="w-full sm:w-auto sm:min-w-[200px]"
+            />
+            <ButtonArrow
+              className="group relative w-full sm:w-auto sm:min-w-[200px] rounded-md py-4 md:py-6 lg:py-8 overflow-hidden bg-secondary/20 hover:bg-secondary/40 border border-border hover:border-secondary transition-all duration-500"
+              text="See How It Works"
+            />
+          </div>
+        </section>    
       </div>
     </section>
   );

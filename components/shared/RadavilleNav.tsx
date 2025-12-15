@@ -140,7 +140,7 @@ const RadavilleNav = () => {
       {(isMenuOpen || isMenuClosing) && (
         <div
           ref={menuRef}
-          className="fixed inset-0 bg-secondary text-secondary-foreground z-40 flex items-center justify-center p-4 sm:p-6 md:p-8"
+          className="fixed inset-0 bg-background text-secondary-foreground z-40 flex items-center justify-center p-4 sm:p-6 md:p-8"
           style={{ backdropFilter: 'blur(8px)' }}
         >
           {/* Container for responsive layout */}
@@ -163,7 +163,7 @@ const RadavilleNav = () => {
                     <span className="text-xs sm:text-sm md:text-base text-primary opacity-60 group-hover:opacity-100 transition-opacity duration-300 shrink-0 font-mono">
                       {item.number}
                     </span>
-                    <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-wide group-hover:tracking-wider transition-all duration-500 leading-tight font-serif text-primary">
+                    <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-wide group-hover:tracking-wider transition-all duration-500 leading-tight font-serif text-foreground hover:text-primary">
                       {item.title}
                     </span>
                   </a>
@@ -175,7 +175,7 @@ const RadavilleNav = () => {
             <div className="absolute top-44 right-4 sm:top-6 sm:right-6 md:top-8 md:right-8 lg:bottom-8 lg:right-8 lg:top-auto">
               <div className="flex flex-col gap-6 md:gap-8 text-xs sm:text-sm text-muted-foreground">
                 <div className="space-y-1">
-                  <p className="tracking-widest font-serif text-primary">01 Services</p>
+                  <p className="tracking-widest font-serif text-accent-foreground">01 Services</p>
                   <p className="font-light leading-relaxed font-serif">
                     Seamless Voting · Ticketing · Nominations
                   </p>
