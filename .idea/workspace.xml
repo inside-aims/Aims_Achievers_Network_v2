@@ -5,10 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="48008f26-d1dc-4f7e-b70b-a93096b41883" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/events/category-card.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/events/category-card.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/events/category-nominees.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/events/category-nominees.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/events/event-categories.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/events/event-categories.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/events/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/events/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/events/nominee-card.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/events/nominee-card.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,7 +66,7 @@
       <workItem from="1765454797938" duration="53000" />
       <workItem from="1765454865416" duration="2385000" />
       <workItem from="1765546630424" duration="294000" />
-      <workItem from="1766138651043" duration="1745000" />
+      <workItem from="1766138651043" duration="2140000" />
     </task>
     <servers />
   </component>

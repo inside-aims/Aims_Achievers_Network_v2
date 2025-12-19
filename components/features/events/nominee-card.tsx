@@ -18,6 +18,7 @@ const NomineeCard = (
     imageUrl,
     fullName,
     description,
+    votes,
     daysLeft,
     onVoteClick,
     onInfoClick,
@@ -52,7 +53,7 @@ const NomineeCard = (
 
         <p className="flex gap-2 text-sm text-muted-foreground line-clamp-1">
           <span><Vote className={"w-4 h-4"}/></span>
-          Votes: 200
+          Votes: {votes}
         </p>
 
         <div className={"flex items-center justify-between gap-2 md:gap-4"}>
@@ -61,13 +62,13 @@ const NomineeCard = (
               label={"Vote"}
               icon={false}
               disabled={daysLeft === 0}
-              onClick={() => onVoteClick?.({nomineeId, nomineeCode, imageUrl, fullName, description})}
+              onClick={() => onVoteClick?.({nomineeId, nomineeCode, imageUrl, fullName, description, votes})}
             />
           </div>
           <Button
             variant={"outline"}
             className={"h-10"}
-            onClick={() => onInfoClick?.({nomineeId, nomineeCode, imageUrl, fullName, description})}
+            onClick={() => onInfoClick?.({nomineeId, nomineeCode, imageUrl, fullName, description, votes})}
           >
             <User/>
           </Button>

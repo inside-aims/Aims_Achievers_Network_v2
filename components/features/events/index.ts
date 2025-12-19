@@ -6,6 +6,7 @@ export interface NomineeProps {
   fullName: string;
   description: string;
   imageUrl: string;
+  votes: number;
 }
 
 export type EventCategory = {
@@ -33,6 +34,7 @@ const createNominees = (
   nomineeId: `${prefix}-nom-${index + 1}`,
   nomineeCode: `${prefix.toUpperCase()}-${100 + index}`,
   fullName: name,
+  votes: Math.floor(Math.random() * 100),
   description: `Outstanding contribution and performance.`,
   imageUrl: `https://randomuser.me/api/portraits/${index % 2 === 0 ? "men" : "women"}/${20 + index}.jpg`,
 }));
