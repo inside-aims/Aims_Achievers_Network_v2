@@ -2,10 +2,9 @@
 
 import {NomineeProps} from "@/components/features/events/index";
 import Image from "next/image";
-import {User, Link as LinkIcon, Code} from "lucide-react";
+import {User, Code, Vote} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import ButtonLink from "@/components/shared/button-link";
-import Link  from 'next/link';
 
 type NomineeCardProps = NomineeProps & {
   daysLeft: number;
@@ -24,7 +23,6 @@ const NomineeCard = (
     onInfoClick,
   }: NomineeCardProps
 ) => {
-  const pathname = window?.location.origin;
   return (
     <div
       className="w-full group rounded-card border bg-card border-primary/10 overflow-hidden shadow-sm hover:shadow-md transition hover:scale-y-102 duration-300 ease-in-out ">
@@ -38,7 +36,7 @@ const NomineeCard = (
         />
       </div>
 
-      <div className="flex flex-col gap-4 p-4 md:p-6">
+      <div className="flex flex-col gap-2 md:gap-4 p-2 md:p-4">
         <div className="flex flex-col gap-2">
           <h3 className="font-semibold leading-tight line-clamp-1">
             {fullName}
@@ -51,29 +49,25 @@ const NomineeCard = (
           <span><Code className={"w-4 h-4"}/></span>
           Code: {nomineeCode}
         </p>
-        <Link
-          href={`${pathname}/${nomineeCode}`}
-          className="flex gap-2 text-sm text-primary hover:underline cursor-pointer line-clamp-1">
-          <LinkIcon className={"w-4 h-4"}/>
-          <span className={"text-primary"}>
-            Visit profile
-          </span>
-        </Link>
+
+        <p className="flex gap-2 text-sm text-muted-foreground line-clamp-1">
+          <span><Vote className={"w-4 h-4"}/></span>
+          Votes: 200
+        </p>
 
         <div className={"flex items-center justify-between gap-2 md:gap-4"}>
-         <div className={"flex-1"}>
-           <ButtonLink
-             label={"Vote"}
-             icon={false}
-             disabled={daysLeft === 0}
-             onClick={() => onVoteClick?.({ nomineeId, nomineeCode, imageUrl, fullName, description })}
-           />
-         </div>
+          <div className={"flex-1"}>
+            <ButtonLink
+              label={"Vote"}
+              icon={false}
+              disabled={daysLeft === 0}
+              onClick={() => onVoteClick?.({nomineeId, nomineeCode, imageUrl, fullName, description})}
+            />
+          </div>
           <Button
             variant={"outline"}
             className={"h-10"}
-            onClick={() => onInfoClick?.({ nomineeId, nomineeCode, imageUrl, fullName, description })}
-
+            onClick={() => onInfoClick?.({nomineeId, nomineeCode, imageUrl, fullName, description})}
           >
             <User/>
           </Button>

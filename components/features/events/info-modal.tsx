@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Dialog,
   DialogContent,
@@ -50,14 +52,14 @@ const InfoModal = (
 
         <div className="grid md:grid-cols-2 gap-0 overflow-y-auto">
           {/* Left Section - Nominee Info */}
-          <div className="bg-primary p-6 md:p-8 flex flex-col items-center justify-center text-center text-primary-foreground">
-            <div className="mb-4 md:mb-6">
+          <div className="bg-primary p-4 md:p-8 flex flex-col items-center justify-center text-center text-primary-foreground">
+            <div className="mb-1 md:mb-2">
               <h2 className="text-base md:text-lg font-semibold mb-1 uppercase tracking-wide">
                 {event}
               </h2>
             </div>
 
-            <div className="relative w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden mb-4 md:mb-6 border-4 border-primary-foreground/20">
+            <div className="relative w-24 h-24 md:w-48 md:h-48 rounded-full overflow-hidden mb-2 md:mb-4 border-4 border-primary-foreground/20">
               <Image
                 src={nominee.imageUrl}
                 alt={nominee.fullName}
@@ -66,23 +68,23 @@ const InfoModal = (
               />
             </div>
 
-            <h3 className="text-xl md:text-2xl font-bold mb-2">{nominee.fullName}</h3>
+            <h3 className="text-xl md:text-2xl font-bold mb-1 md:mb-2">{nominee.fullName}</h3>
             <p className="text-sm opacity-90">{category}</p>
           </div>
 
           {/* Right Section - Voting Instructions */}
-          <div className="bg-background p-6 md:p-8 flex flex-col">
-            <div className="flex items-center gap-3 mb-6 md:mb-8">
+          <div className="bg-background p-4 md:p-8 flex flex-col">
+            <div className="flex items-center gap-3 mb-2 md:mb-4">
               <Phone className="h-5 w-5 md:h-6 md:w-6 text-primary"/>
-              <span className="text-2xl md:text-3xl font-bold">{votingNumber}</span>
+              <span className="text-xl md:text-3xl font-bold">{votingNumber}</span>
             </div>
 
             <div className="flex-1">
-              <h4 className="text-xs md:text-sm font-semibold text-muted-foreground mb-4 md:mb-6 uppercase tracking-wide">
+              <h4 className="text-xs md:text-sm font-semibold text-muted-foreground mb-1 md:mb-2 uppercase tracking-wide">
                 How to Vote
               </h4>
 
-              <div className="space-y-4 md:space-y-5">
+              <div className="space-y-2 md:space-y-4">
                 {votingSteps.map((step, index) => (
                   <div key={index} className="flex gap-3 md:gap-4">
                     <span
@@ -100,22 +102,22 @@ const InfoModal = (
               </div>
             </div>
 
-            <div className="mt-6 md:mt-8 pt-4 md:pt-6 border-t">
-              <h5 className="text-xs font-semibold text-muted-foreground mb-2 md:mb-3 uppercase tracking-wide">
+            <div className="mt-2 md:mt-4 pt-2 md:pt-4 border-t">
+              <h5 className="text-xs font-semibold text-muted-foreground mb-1 md:mb-2 uppercase tracking-wide">
                 Nominee Profile
               </h5>
-              <div className="flex items-center justify-between bg-muted px-3 md:px-4 py-2 md:py-3 rounded-md">
+              <div className="flex items-center justify-between bg-muted px-3 md:px-4  rounded-md">
                 <Link
                   href={`${pathname}/${nominee.nomineeCode}`}
-                  className="text-xs md:text-sm text-primary hover:underline truncate"
+                  className="text-xs md:text-sm text-primary py-2 hover:underline truncate"
                 >
                   {pathname}/nominee/{nominee.nomineeCode}
                 </Link>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="flex-shrink-0 h-7 w-7 md:h-8 md:w-8"
-                  onClick={() => copyToClipboard(`${pathname}/nominee/${nominee.nomineeCode}`)}
+                  className="flex-shrink-0 h-5 w-5 md:h- md:w-8"
+                  onClick={() => copyToClipboard(`${pathname}/nominee/${nominee?.nomineeCode}`)}
                 >
                   <Copy className="h-3 w-3 md:h-4 md:w-4"/>
                 </Button>
@@ -124,7 +126,7 @@ const InfoModal = (
 
             <Button
               variant="secondary"
-              className="w-full mt-4 md:mt-6"
+              className="w-full mt-2 md:mt-4 "
               onClick={() => setOpen(false)}
             >
               Close
