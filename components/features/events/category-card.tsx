@@ -21,7 +21,7 @@ const CategoryCard = (
   }: CategoryCardProps ) => {
 
   return (
-    <div className="flex flex-col gap-2 md:gap-4 rounded-card bg-card p-4 md:p-6 border border-primary/10 hover:shadow-lg hover:animate-pulse">
+    <div className="flex flex-col gap-2 md:gap-4 rounded-card bg-card p-2 md:p-4 border border-primary/10 hover:shadow-lg hover:animate-pulse">
       {/* Status */}
       <div className={"flex items-center justify-between mb-2"}>
         <div className="flex h-10 w-10 items-center justify-center rounded-lg">

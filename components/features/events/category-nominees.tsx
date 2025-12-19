@@ -3,7 +3,6 @@
 import {EVENTS, NomineeProps} from "@/components/features/events/index";
 import {Button} from "@/components/ui/button";
 import {Clock, User} from "lucide-react";
-import {useRouter} from "next/navigation";
 import {getDaysLeft} from "@/lib/utils";
 import NomineeCard from "@/components/features/events/nominee-card";
 import {useState} from "react";
@@ -15,8 +14,6 @@ const CategoryNominees = ({eventId,categoryId}: {eventId: string; categoryId: st
   const [openVoting, setOpenVoting] = useState<boolean>(false);
   const [openInfo, setOpenInfo] = useState<boolean>(false);
   const [selectedNominee, setSelectedNominee] = useState<NomineeProps | null>(null);
-
-  const router = useRouter();
 
   const event = EVENTS.find(e => e.eventId === eventId);
   const category = event?.categories.find(c => c.id === categoryId);

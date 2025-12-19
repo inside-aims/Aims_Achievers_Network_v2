@@ -1,6 +1,6 @@
 'use client';
 
-import {ArrowLeft, Clock, Layers, Search,} from "lucide-react";
+import {Clock, Layers, Search,} from "lucide-react";
 import CategoryCard from "@/components/features/events/category-card";
 import {EVENTS} from "@/components/features/events";
 import {getDaysLeft} from "@/lib/utils";
@@ -8,13 +8,11 @@ import {useMemo, useState} from "react";
 import SearchBar from "@/components/shared/search-bar";
 import {Button} from "@/components/ui/button";
 import EmptyState from "@/components/shared/empty-state";
-import {useRouter} from 'next/navigation';
+import FeatureNavigationWrapper from "@/components/shared/feature-navigation-wrapper";
 
 const EventCategories = ({ eventId }: { eventId: string }) => {
   const [query, setQuery] = useState<string>("")
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
-
-  const router = useRouter();
 
   const event = EVENTS.find((event) => event.eventId === eventId);
 
@@ -39,17 +37,7 @@ const EventCategories = ({ eventId }: { eventId: string }) => {
   const daysLeft = getDaysLeft(event.endDate);
 
   return (
-    <section className="flex flex-col gap-4 md:gap-8">
-      {/* Header */}
-      <div className="space-y-2 md:space-y-4">
-        <Button
-          variant={"outline"}
-          onClick={() => router.back()}
-          className="flex items-center gap-2  w-8 h-8 rounded-full p-2 border"
-        >
-          <ArrowLeft className="h-6 w-6" />
-        </Button>
-
+    <FeatureNavigationWrapper key={"event-categories"}>
         <div className="space-y-2 md:space-y-3">
           <h1 className="text-xl font-bold md:text-4xl">
             {event.title}
@@ -86,7 +74,6 @@ const EventCategories = ({ eventId }: { eventId: string }) => {
             <SearchBar query={query} setQuery={setQuery}/>
           )}
         </div>
-      </div>
 
       {/* List selected event categories */}
       {eventCategories.length > 0 && (
@@ -106,7 +93,7 @@ const EventCategories = ({ eventId }: { eventId: string }) => {
       {eventCategories.length === 0 && (
         <EmptyState onReset={() => setQuery("")}/>
       )}
-    </section>
+    </FeatureNavigationWrapper>
   );
 };
 
