@@ -21,7 +21,7 @@ const CategoryCard = (
   }: CategoryCardProps ) => {
 
   return (
-    <div className="flex flex-col gap-4 rounded-card bg-card p-6 border border-primary/10 hover:shadow-lg hover:animate-pulse">
+    <div className="flex flex-col gap-2 md:gap-4 rounded-card bg-card p-4 md:p-6 border border-primary/10 hover:shadow-lg hover:animate-pulse">
       {/* Status */}
       <div className={"flex items-center justify-between mb-2"}>
         <div className="flex h-10 w-10 items-center justify-center rounded-lg">
@@ -41,7 +41,7 @@ const CategoryCard = (
       </div>
 
       <div className="space-y-1">
-        <h3 className="text-lg font-semibold">{name}</h3>
+        <h3 className="text-base md:text-lg font-semibold">{name}</h3>
         <p className="text-sm text-muted-foreground line-clamp-2">
           {description}
         </p>

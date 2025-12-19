@@ -39,9 +39,9 @@ const EventCategories = ({ eventId }: { eventId: string }) => {
   const daysLeft = getDaysLeft(event.endDate);
 
   return (
-    <section className="flex flex-col gap-12">
+    <section className="flex flex-col gap-4 md:gap-8">
       {/* Header */}
-      <div className="space-y-4">
+      <div className="space-y-2 md:space-y-4">
         <Button
           variant={"outline"}
           onClick={() => router.back()}
@@ -50,8 +50,8 @@ const EventCategories = ({ eventId }: { eventId: string }) => {
           <ArrowLeft className="h-6 w-6" />
         </Button>
 
-        <div className="space-y-3">
-          <h1 className="text-3xl font-bold md:text-4xl">
+        <div className="space-y-2 md:space-y-3">
+          <h1 className="text-xl font-bold md:text-4xl">
             {event.title}
           </h1>
           <p className="max-w-2xl text-muted-foreground">
@@ -60,23 +60,27 @@ const EventCategories = ({ eventId }: { eventId: string }) => {
         </div>
 
         {/* Meta */}
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-2">
           <Button
             variant={"ghost"}
-            className={"w-10 h-10 p-2 rounded-full bg-muted"}
+            className={"rounded-full bg-muted"}
             onClick={() => setShowSearchBar(!showSearchBar)}
           >
             <Search className={"text-primary"}/>
           </Button>
-          <div className="flex items-center gap-2 rounded-full border border-primary/10 bg-muted px-4 py-2 text-sm">
+          <Button
+            variant={"ghost"}
+            className="flex items-center gap-2 rounded-full border border-primary/10 bg-muted ">
             <Layers className="h-4 w-4 text-primary"/>
             {event.categories.length} Categories
-          </div>
+          </Button>
 
-          <div className="flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm border border-primary/10">
+          <Button
+          variant={"ghost"}
+          className="flex items-center gap-2 rounded-full bg-muted border border-primary/10">
             <Clock className="h-4 w-4 text-primary"/>
             {daysLeft === 0 ? "Event ended" : `${daysLeft} days left`}
-          </div>
+          </Button>
 
           {showSearchBar && (
             <SearchBar query={query} setQuery={setQuery}/>
@@ -86,7 +90,7 @@ const EventCategories = ({ eventId }: { eventId: string }) => {
 
       {/* List selected event categories */}
       {eventCategories.length > 0 && (
-        <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {eventCategories.map((category) => (
             <CategoryCard
               key={category.id}
