@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="48008f26-d1dc-4f7e-b70b-a93096b41883" name="Changes" comment="" />
+    <list default="true" id="48008f26-d1dc-4f7e-b70b-a93096b41883" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/components/features/events/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/events/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/events/nominee-card.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/events/nominee-card.tsx" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -27,7 +30,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "feature-events-page",
     "last_opened_file_path": "C:/Users/Work/Aims/Aims_Achievers_Network_v2",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -63,6 +66,7 @@
       <workItem from="1765454797938" duration="53000" />
       <workItem from="1765454865416" duration="2385000" />
       <workItem from="1765546630424" duration="294000" />
+      <workItem from="1766138651043" duration="2140000" />
     </task>
     <servers />
   </component>

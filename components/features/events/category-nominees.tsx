@@ -2,20 +2,18 @@
 
 import {EVENTS, NomineeProps} from "@/components/features/events/index";
 import {Button} from "@/components/ui/button";
-import {ArrowLeft, Clock, User} from "lucide-react";
-import {useRouter} from "next/navigation";
+import {Clock, User} from "lucide-react";
 import {getDaysLeft} from "@/lib/utils";
 import NomineeCard from "@/components/features/events/nominee-card";
 import {useState} from "react";
 import VotingModal from "@/components/features/events/voting-modal";
 import InfoModal from "@/components/features/events/info-modal";
+import FeatureNavigationWrapper from "@/components/shared/feature-navigation-wrapper";
 
 const CategoryNominees = ({eventId,categoryId}: {eventId: string; categoryId: string}) => {
   const [openVoting, setOpenVoting] = useState<boolean>(false);
   const [openInfo, setOpenInfo] = useState<boolean>(false);
   const [selectedNominee, setSelectedNominee] = useState<NomineeProps | null>(null);
-
-  const router = useRouter();
 
   const event = EVENTS.find(e => e.eventId === eventId);
   const category = event?.categories.find(c => c.id === categoryId);
@@ -41,19 +39,11 @@ const CategoryNominees = ({eventId,categoryId}: {eventId: string; categoryId: st
   }
 
   return (
-    <section className="flex flex-col gap-12">
+    <FeatureNavigationWrapper key={"category-nominees"}>
       {/* Header */}
-      <div className="space-y-4">
-        <Button
-          variant={"outline"}
-          onClick={() => router.back()}
-          className="flex items-center gap-2  w-8 h-8 rounded-full p-2 border"
-        >
-          <ArrowLeft className="h-6 w-6"/>
-        </Button>
-
-        <div className="space-y-3">
-          <h1 className="text-3xl font-bold md:text-4xl">
+      <div className="space-y-2 md:space-y-4">
+        <div className="space-y-2">
+          <h1 className="text-xl font-bold md:text-4xl">
             {category?.name}
           </h1>
           <p className="max-w-2xl text-muted-foreground">
@@ -62,23 +52,25 @@ const CategoryNominees = ({eventId,categoryId}: {eventId: string; categoryId: st
         </div>
 
         {/* Meta */}
-        <div className="flex flex-wrap gap-3">
-          <div className="flex items-center gap-1 rounded-full px-4 py-2 text-sm">
+        <div className="flex flex-wrap gap-2">
+          <div className="flex items-center gap-1 rounded-full text-sm">
             <User className="h-4 w-4 text-primary"/>
             {category?.nominees.length} Nominees
           </div>
 
-          <div className="flex items-center gap-2 rounded-full border border-primary/10 bg-muted px-4 py-2 text-sm">
+          <Button
+            variant={"ghost"}
+            className="flex items-center gap-2 rounded-full border border-primary/10 bg-muted text-sm">
             <Clock className="h-4 w-4 text-primary"/>
             {daysLeft === 0 ? "Event ended" : `${daysLeft} days left`}
-          </div>
+          </Button>
 
         </div>
       </div>
 
       {/* List selected event categories */}
       {category?.nominees.length > 0 && (
-        <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {category?.nominees.map((nominee) => (
             <NomineeCard
               key={nominee.nomineeId}
@@ -116,7 +108,7 @@ const CategoryNominees = ({eventId,categoryId}: {eventId: string; categoryId: st
           }}
         />
       )}
-    </section>
+    </FeatureNavigationWrapper>
   )
 }
 export default CategoryNominees;

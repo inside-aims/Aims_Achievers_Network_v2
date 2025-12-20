@@ -36,8 +36,8 @@ const EventCard = (
         </Badge>
       </div>
 
-      <div className="flex flex-col gap-4 p-4 md:p-6">
-        <div className={"flex flex-col gap-4"}>
+      <div className="flex flex-col gap-2 md:gap-4 p-2 md:p-4 ">
+        <div className={"flex flex-col gap-2 md:gap-4"}>
           <h3 className="font-semibold leading-tight line-clamp-1">
             {title}
           </h3>
@@ -46,7 +46,7 @@ const EventCard = (
           </p>
         </div>
 
-        <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+        <div className="flex items-center justify-between gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1 border border-primary/10 p-1 rounded-card">
             <Layers className="h-3.5 w-3.5"/>
             {categories.length} Categories

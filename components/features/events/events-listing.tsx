@@ -33,7 +33,7 @@ const EventsListing = () => {
 
 
   return (
-    <section className="flex flex-col gap-8">
+    <section className="flex flex-col gap-4 md:gap-8">
       <div className="parent-header">
         <h2 className="feature-header">Make Your Vote Count</h2>
         <p className="feature-subheader max-w-2xl">
@@ -65,7 +65,7 @@ const EventsListing = () => {
         </Select>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center  gap-2 md:gap-4">
         <div className="flex-1 h-px bg-border" />
         <span className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
           {`${status} Events`}
@@ -75,7 +75,7 @@ const EventsListing = () => {
 
       {/*List of events*/}
       {filteredEvents.length > 0 && (
-        <div className="grid gap-8 sm:grid-cols-1 lg:grid-cols-3">
+        <div className="grid gap-4 md:gap-8 sm:grid-cols-1 lg:grid-cols-3">
           {filteredEvents.map((event) => (
             <EventCard key={event.eventId} {...event} />
           ))}
