@@ -6,12 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="48008f26-d1dc-4f7e-b70b-a93096b41883" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bun.lock" beforeDir="false" afterPath="$PROJECT_DIR$/bun.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/events/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/events/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/features/nominations/nomination-process.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/nominations/nomination-process.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/nominations/nominee-info-step.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/nominations/nominee-info-step.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/nominations/review-step.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/nominations/review-step.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,7 +70,7 @@
       <workItem from="1766138651043" duration="2140000" />
       <workItem from="1766408253460" duration="192000" />
       <workItem from="1766432979338" duration="9851000" />
-      <workItem from="1766494206065" duration="9402000" />
+      <workItem from="1766494206065" duration="10033000" />
     </task>
     <servers />
   </component>

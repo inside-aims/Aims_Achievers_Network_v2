@@ -11,6 +11,8 @@ import {EventSelectionStep} from "@/components/features/nominations/event-select
 import {NominationDetailsStep} from "@/components/features/nominations/nomination-details-step";
 import {ReviewStep} from "@/components/features/nominations/review-step";
 import { toast } from "sonner"
+import {EVENTS} from "@/components/features/events";
+import {getDaysLeft} from "@/lib/utils";
 
 interface NavigationButtonsProps {
   currentStep: number;
@@ -19,24 +21,6 @@ interface NavigationButtonsProps {
   onSubmit: () => void;
   isStepValid: () => boolean;
 }
-
-//Hardcoded events options
-const events: { label: string; value: string }[] =[
-  {label: 'FBNE Innovation Awards 2025', value: 'fbne-awards-2025'},
-  {label: 'FBMS Business Awards 2025', value: 'fbms-awards-2025'},
-  {label: 'FOE Engineering Awards 2025', value: 'foe-awards-2025'},
-  {label: 'FAST Excellence Awards 2025', value: 'fast-awards-2025'},
-  {label: 'Community Service Award', value: 'other'},
-]
-
-//Hardcoded categories options
-const categories: { label: string; value: string }[] =[
-  {label: 'Fellow Student', value: 'peer'},
-  {label: 'Faculty Member', value: 'faculty'},
-  {label: 'Mentor', value: 'mentor'},
-  {label: 'Supervisor', value: 'supervisor'},
-  {label: 'Other', value: 'other'},
-]
 
 //Stepper indicator
 const steps: Step[] = [
@@ -62,9 +46,32 @@ const NominationProcess = () => {
     nomineeYear: '',
     nomineeProgram: '',
     nomineePhoto: null as File | null,
-    nominationReason: '',
+    nominationReason: '',                                   //reason
     achievements: '',
   });
+
+  const events = EVENTS
+    .filter((event) => getDaysLeft(event.endDate) > 0)
+    .map((event) => ({
+      label: event.title,
+      value: event.eventId
+    }));
+
+  // Get categories based on selected event
+  const getCategories = () => {
+    if (!formData.eventName) return [];
+
+    const selectedEvent = EVENTS.find(event => event.eventId === formData.eventName);
+
+    if (!selectedEvent) return [];
+
+    return selectedEvent.categories.map(category => ({
+      label: category.name,
+      value: category.id
+    }));
+  };
+
+  const categories = getCategories();
 
   // Handle input change
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
