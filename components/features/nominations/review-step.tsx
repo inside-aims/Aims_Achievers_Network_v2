@@ -90,18 +90,13 @@ export const ReviewStep = ({ formData }: { formData: StepFormData }) => {
             <div className="col-span-2">
               <span className="text-muted-foreground">Photo: </span>
               {formData.nomineePhoto instanceof File ? (
-                <div className="mt-2">
-                  <p className="font-medium text-foreground mb-2">
-                    {formData.nomineePhoto.name}
-                  </p>
-                  <Image
-                    src={URL.createObjectURL(formData.nomineePhoto)}
-                    alt="Nominee preview"
-                    height={50}
-                    width={50}
-                    className="w-32 h-32 object-cover rounded-lg border border-border"
-                  />
-                </div>
+                <Image
+                  src={URL.createObjectURL(formData.nomineePhoto)}
+                  alt="Nominee preview"
+                  height={50}
+                  width={50}
+                  className="w-32 h-32 object-cover rounded-lg border border-border"
+                />
               ) : (
                 <span className="font-medium text-foreground">No file selected</span>
               )}

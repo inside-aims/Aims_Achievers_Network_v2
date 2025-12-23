@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 import { ThemeProvider } from "@/providers/theme-provider";
+import {Toaster} from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "AIMS Achievers Network",
@@ -22,8 +23,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-        {children}
-          </ThemeProvider>
+           {children}
+           <Toaster position={"top-center"} richColors />
+         </ThemeProvider>
       </body>
     </html>
   );

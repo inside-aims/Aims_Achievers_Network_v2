@@ -4,13 +4,17 @@ import {StepComponentProps} from '@/components/features/nominations';
 import FormInput from "@/components/builders/form-input";
 import FormSelect from "@/components/builders/form-select";
 
+interface NomineeInfoStepProps  extends StepComponentProps {
+  onFileChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 
+}
 export const NomineeInfoStep = (
   {
     formData,
     onChange,
     onSelectChange,
-  }: StepComponentProps) => {
+    onFileChange
+  }: NomineeInfoStepProps) => {
   return (
     <div className="space-y-6">
       <div>
@@ -85,7 +89,7 @@ export const NomineeInfoStep = (
           name="nomineePhoto"
           required
           type="file"
-          onChange={onChange}
+          onChange={onFileChange || onChange}
         />
       </div>
     </div>

@@ -10,6 +10,7 @@ import {NomineeInfoStep} from "@/components/features/nominations/nominee-info-st
 import {EventSelectionStep} from "@/components/features/nominations/event-selection-step";
 import {NominationDetailsStep} from "@/components/features/nominations/nomination-details-step";
 import {ReviewStep} from "@/components/features/nominations/review-step";
+import { toast } from "sonner"
 
 interface NavigationButtonsProps {
   currentStep: number;
@@ -21,10 +22,10 @@ interface NavigationButtonsProps {
 
 //Hardcoded events options
 const events: { label: string; value: string }[] =[
-  {label: 'Academic Excellence Award', value: 'peer'},
-  {label: 'Leadership Award', value: 'faculty'},
-  {label: 'Research Excellence Award', value: 'mentor'},
-  {label: 'Entrepreneurship Award', value: 'supervisor'},
+  {label: 'FBNE Innovation Awards 2025', value: 'fbne-awards-2025'},
+  {label: 'FBMS Business Awards 2025', value: 'fbms-awards-2025'},
+  {label: 'FOE Engineering Awards 2025', value: 'foe-awards-2025'},
+  {label: 'FAST Excellence Awards 2025', value: 'fast-awards-2025'},
   {label: 'Community Service Award', value: 'other'},
 ]
 
@@ -68,7 +69,22 @@ const NominationProcess = () => {
   // Handle input change
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+
+    if ('files' in e.target && e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setFormData(prev => ({ ...prev, [name]: file }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  //Handle input type file
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name } = e.target;
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData(prev => ({ ...prev, [name]: file }));
+    }
   };
 
   //Handle select input
@@ -89,7 +105,25 @@ const NominationProcess = () => {
   // Handle form submission
   const handleSubmit = () => {
     console.log('Nomination submitted:', formData);
-    alert('Nomination submitted successfully!');
+    toast.success('Nomination submitted successfully!');
+
+    setFormData({
+      nominatorName: '',
+      nominatorEmail: '',
+      nominatorPhone: '',
+      nominatorRelationship: '',
+      eventName: '',
+      eventCategory: '',
+      nomineeName: '',
+      nomineePhone: '',
+      nomineeDepartment: '',
+      nomineeYear: '',
+      nomineeProgram: '',
+      nomineePhoto: null,
+      nominationReason: '',
+      achievements: '',
+    });
+    setCurrentStep(1);
   };
 
   // Validation helper. Enable next button only when required input is provided
@@ -116,7 +150,8 @@ const NominationProcess = () => {
       case 2:
         return <EventSelectionStep formData={formData} onChange={handleInputChange} onSelectChange={handleSelectChange} events={events} categories={categories} />;
       case 3:
-       return <NomineeInfoStep formData={formData} onChange={handleInputChange} onSelectChange={handleSelectChange}/>;
+       return <NomineeInfoStep formData={formData} onChange={handleInputChange} onSelectChange={handleSelectChange} onFileChange={handleFileChange}
+       />;
       case 4:
         return <NominationDetailsStep formData={formData} onChange={handleInputChange} />;
       case 5:
