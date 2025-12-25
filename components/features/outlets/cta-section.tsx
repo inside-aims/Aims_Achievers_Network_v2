@@ -1,6 +1,6 @@
 'use client';
 
-import {ArrowRight, Award, Check} from "lucide-react";
+import {ArrowBigRight, Award, Check} from "lucide-react";
 import {Button} from "@/components/ui/button";
 
 export const CTASection = () => (
@@ -29,7 +29,7 @@ export const CTASection = () => (
           onClick={() => ''} //fix later
         >
           Become a Partner
-          <ArrowRight className="w-5 h-5 ml-2" />
+          <ArrowBigRight className="w-5 h-5 ml-2" />
         </Button>
 
         <Button
@@ -43,7 +43,7 @@ export const CTASection = () => (
       </div>
 
       {/* Trust Elements */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-8 max-w-3xl  mt-4 md:mt-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-8 max-w-3xl mt-4 md:mt-8 items-center mx-auto">
         {[
           { text: 'No listing fees' },
           { text: 'Premium exposure' },
