@@ -1,7 +1,7 @@
 'use client';
 
 import {Badge} from "@/components/ui/badge";
-import {Clock, Layers} from "lucide-react";
+import {Clock, Layers, Zap} from "lucide-react";
 import Image from "next/image";
 import {EventCardProps} from "@/components/features/events/index";
 import {getDaysLeft} from "@/lib/utils";
@@ -30,8 +30,14 @@ const EventCard = (
           className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         <Badge
-          className={`absolute top-3 right-3 bg-green-600 ${daysLeft > 0 ? "bg-green-500 text-white" : "bg-secondary text-secondary-foreground"}`}
+          className={`absolute top-1 left-2 bg-green-600 ${daysLeft > 0 ? "bg-green-500 text-white" : "bg-secondary text-secondary-foreground"}`}
         >
+          {daysLeft > 0 ? (
+            <Zap className="h-3.5 w-3.5 text-white" />
+          ) : (
+            <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+          )}
+
           { daysLeft > 0 ? "Active" : "Past"}
         </Badge>
       </div>

@@ -293,7 +293,7 @@ export const EVENTS: EventCardProps[] = [
     eventId: "foe-awards-2025",
     title: "FOE Engineering Awards 2025",
     description: "Celebrating excellence in engineering.",
-    startDate: "2026-12-29",
+    startDate: "2025-12-29",
     endDate: "2026-01-01",
     image:
       "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&fit=crop",
@@ -303,8 +303,8 @@ export const EVENTS: EventCardProps[] = [
     eventId: "fbms-awards-2025",
     title: "FBMS Business Awards 2025",
     description: "Recognizing outstanding business students.",
-    startDate: "2026-06-15",
-    endDate: "2026-12-20",
+    startDate: "2025-06-15",
+    endDate: "2026-12-28",
     image:
       "https://images.unsplash.com/photo-1515169067865-5387ec356754?w=1200&fit=crop",
     categories: FBMS_CATEGORIES,
@@ -313,8 +313,8 @@ export const EVENTS: EventCardProps[] = [
     eventId: "fbne-awards-2025",
     title: "FBNE Innovation Awards 2025",
     description: "Honouring entrepreneurial excellence.",
-    startDate: "2026-06-15",
-    endDate: "2025-12-16",
+    startDate: "2025-06-15",
+    endDate: "2026-12-16",
     image:
       "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1200&fit=crop",
     categories: FBNE_CATEGORIES,

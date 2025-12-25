@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, ChangeEvent } from 'react';
+import {useState, ChangeEvent} from 'react';
 import { ChevronRight, ChevronLeft, Award, Users, FileText, CheckCircle, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {Step, StepFormData} from "@/components/features/nominations/index";
@@ -13,6 +13,7 @@ import {ReviewStep} from "@/components/features/nominations/review-step";
 import { toast } from "sonner"
 import {EVENTS} from "@/components/features/events";
 import {getDaysLeft} from "@/lib/utils";
+import {useSearchParams} from "next/navigation";
 
 interface NavigationButtonsProps {
   currentStep: number;
@@ -32,14 +33,22 @@ const steps: Step[] = [
 ];
 
 const NominationProcess = () => {
-  const [currentStep, setCurrentStep] = useState<number>(1);
+  const searchParams = useSearchParams();
+  const eventIdParam = searchParams.get("event");
+  const categoryIdParam = searchParams.get("category");
+
+  const getInitialStep = () => {
+    return (eventIdParam && categoryIdParam) ? 2 : 1;
+  };
+
+  const [currentStep, setCurrentStep] = useState<number>(getInitialStep());
   const [formData, setFormData] = useState<StepFormData>({
     nominatorName: '',                          //nominator
     nominatorEmail: '',
     nominatorPhone: '',
     nominatorRelationship: '',
-    eventName: '',                                     //event selection
-    eventCategory: '',
+    eventName: eventIdParam || '',                                   //event selection
+    eventCategory: categoryIdParam || '',
     nomineeName: '',                                    //nominee
     nomineePhone: '',
     nomineeDepartment: '',
@@ -49,6 +58,7 @@ const NominationProcess = () => {
     nominationReason: '',                                   //reason
     achievements: '',
   });
+
 
   const events = EVENTS
     .filter((event) => getDaysLeft(event.endDate) > 0)

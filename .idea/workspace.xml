@@ -6,11 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="48008f26-d1dc-4f7e-b70b-a93096b41883" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/globals.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/gallery/gallery-filters.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/gallery/gallery-filters.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/gallery/gallery-hero.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/gallery/gallery-hero.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/gallery/gallery-stats.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/gallery/gallery-stats.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/gallery/gallery.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/gallery/gallery.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/events/category-nominees.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/events/category-nominees.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/events/event-card.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/events/event-card.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/events/events-listing.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/events/events-listing.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/events/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/events/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/nominations/nomination-process.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/nominations/nomination-process.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,9 +47,9 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\layout" />
       <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\extras" />
       <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\shared" />
-      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\layout" />
       <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\features" />
       <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2" />
     </key>
@@ -78,7 +78,7 @@
       <workItem from="1766408253460" duration="192000" />
       <workItem from="1766432979338" duration="9851000" />
       <workItem from="1766494206065" duration="10033000" />
-      <workItem from="1766685598238" duration="4044000" />
+      <workItem from="1766685598238" duration="6340000" />
     </task>
     <servers />
   </component>

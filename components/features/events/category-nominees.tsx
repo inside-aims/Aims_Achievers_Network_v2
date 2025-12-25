@@ -9,6 +9,7 @@ import {useState} from "react";
 import VotingModal from "@/components/features/events/voting-modal";
 import InfoModal from "@/components/features/events/info-modal";
 import FeatureNavigationWrapper from "@/components/shared/feature-navigation-wrapper";
+import NominateButton from "@/components/features/events/nominate-button";
 
 const CategoryNominees = ({eventId,categoryId}: {eventId: string; categoryId: string}) => {
   const [openVoting, setOpenVoting] = useState<boolean>(false);
@@ -42,28 +43,36 @@ const CategoryNominees = ({eventId,categoryId}: {eventId: string; categoryId: st
     <FeatureNavigationWrapper key={"category-nominees"}>
       {/* Header */}
       <div className="space-y-2 md:space-y-4">
-        <div className="space-y-2">
-          <h1 className="text-xl font-bold md:text-4xl">
-            {category?.name}
-          </h1>
-          <p className="max-w-2xl text-muted-foreground">
-            {category?.description}
-          </p>
-        </div>
-
-        {/* Meta */}
-        <div className="flex flex-wrap gap-2">
-          <div className="flex items-center gap-1 rounded-full text-sm">
-            <User className="h-4 w-4 text-primary"/>
-            {category?.nominees.length} Nominees
+        <div className={"flex items-center justify-between"}>
+          <div className="space-y-2">
+            <h1 className="text-xl font-bold md:text-4xl">
+              {category?.name}
+            </h1>
+            <p className="max-w-2xl text-muted-foreground">
+              {category?.description}
+            </p>
           </div>
+          <NominateButton
+            event={event.eventId}
+            category={category.id}
+          />
 
-          <Button
-            variant={"ghost"}
-            className="flex items-center gap-2 rounded-full border border-primary/10 bg-muted text-sm">
-            <Clock className="h-4 w-4 text-primary"/>
-            {daysLeft === 0 ? "Event ended" : `${daysLeft} days left`}
-          </Button>
+        </div>
+        {/* Meta */}
+        <div className={"flex items-center justify-between"}>
+          <div className="flex flex-wrap gap-2">
+            <div className="flex items-center gap-1 rounded-full text-sm">
+              <User className="h-4 w-4 text-primary"/>
+              {category?.nominees.length} Nominees
+            </div>
+
+            <Button
+              variant={"ghost"}
+              className="flex items-center gap-2 rounded-full border border-primary/10 bg-muted text-sm">
+              <Clock className="h-4 w-4 text-primary"/>
+              {daysLeft === 0 ? "Event ended" : `${daysLeft} days left`}
+            </Button>
+          </div>
 
         </div>
       </div>
