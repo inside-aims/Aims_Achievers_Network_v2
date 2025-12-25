@@ -2,7 +2,7 @@ import { Camera } from "lucide-react";
 
 export default function GalleryHero() {
   return (
-    <section className="w-full py-12 md:py-20 px-4 bg-[linear-gradient(135deg,var(--primary)_0%,var(--accent)_100%)] text-primary-foreground">
+    <section className="w-full py-12 md:py-20 px-4 bg-[linear-gradient(135deg,var(--muted-foreground)_0%,var(--accent)_100%)] text-foreground">
       <div className="max-w-7xl mx-auto text-center space-y-6">
 
         <div

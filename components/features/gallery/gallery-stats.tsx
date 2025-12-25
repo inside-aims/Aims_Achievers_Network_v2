@@ -18,7 +18,7 @@ export default function GalleryStats({ total, events, categories, universities }
   ];
 
   return (
-    <div className="max-w-7xl mx-auto -mt-10 relative z-10">
+    <div className="feature-no mx-auto -mt-10 relative z-10">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 px-4 xl:px-0">
         {items.map((item, i) => {
           const Icon = item.icon;

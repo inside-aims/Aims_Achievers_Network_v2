@@ -7,7 +7,10 @@
     <list default="true" id="48008f26-d1dc-4f7e-b70b-a93096b41883" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/globals.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/outlets/outlets-listing.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/outlets/outlets-listing.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/gallery/gallery-filters.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/gallery/gallery-filters.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/gallery/gallery-hero.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/gallery/gallery-hero.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/gallery/gallery-stats.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/gallery/gallery-stats.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/gallery/gallery.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/gallery/gallery.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,7 +78,7 @@
       <workItem from="1766408253460" duration="192000" />
       <workItem from="1766432979338" duration="9851000" />
       <workItem from="1766494206065" duration="10033000" />
-      <workItem from="1766685598238" duration="2654000" />
+      <workItem from="1766685598238" duration="4044000" />
     </task>
     <servers />
   </component>

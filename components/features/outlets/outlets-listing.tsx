@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from 'react';
 import {Award, Heart, LucideIcon, TrendingUp, Users} from 'lucide-react';
 import {mockVendors} from "@/components/features/outlets/index";
-import {AnimatedBackground} from "@/components/features/outlets/animated-background";
+import {AnimatedBackground} from "@/components/layout/animated-background";
 import {OutletCard} from "@/components/features/outlets/outlet-card";
 import {StatCard} from "@/components/features/outlets/stats-card";
 import {CTASection} from "@/components/features/outlets/cta-section";
