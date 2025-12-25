@@ -1,5 +1,5 @@
-import Footer from "@/components/shared/Footer";
-import RadavilleNav from "../../components/shared/RadavilleNav";
+import Footer from "@/components/layout/Footer";
+import RadavilleNav from "../../components/layout/RadavilleNav";
 
 
 const Layout = ({

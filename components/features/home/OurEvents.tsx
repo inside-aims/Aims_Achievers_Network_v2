@@ -1,6 +1,6 @@
 // EventsGrid.tsx
 "use client";
-import EventNameTag from "../ui/event-card";
+import EventNameTag from "../../ui/event-card";
 
 export default function EventsGrid() {
 
