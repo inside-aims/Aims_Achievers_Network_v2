@@ -5,6 +5,7 @@ import { useTransform, motion, useScroll, MotionValue } from "motion/react";
 import { JSX, useRef } from "react";
 import Image from "next/image";
 import ShiningButton from "../../layout/ShinningButton";
+import { TypingAnimation } from "@/components/ui/typing-animation";
 
 // Update these with your platform's benefits and services
 const benefits = [
@@ -67,7 +68,7 @@ export default function StackingCardsHero(): JSX.Element {
 
           <div className="relative z-10 px-4 sm:px-6 md:px-8">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light text-center tracking-tight leading-[120%]">
-              Vote Your Way
+              <TypingAnimation> Vote Your Way.</TypingAnimation>
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl font-light text-center opacity-70 mt-6 max-w-3xl mx-auto">
               Discover the benefits and services designed to help you achieve
