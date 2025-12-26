@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import ButtonArrow from "../../layout/ButtonArrow";
 import ShiningButton from "../../layout/ShinningButton";
 import { NumberTicker } from "@/components/ui/number-ticker";
+import { Highlighter } from "@/components/ui/highlighter";
 
 const ValuePropositionSection = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -48,9 +49,21 @@ const ValuePropositionSection = () => {
   ];
 
   const stats = [
-    { value: 10000, decimalPlaces: 0, suffix: "+", label: "Votes Cast", delay: 0 },
+    {
+      value: 10000,
+      decimalPlaces: 0,
+      suffix: "+",
+      label: "Votes Cast",
+      delay: 0,
+    },
     { value: 99.9, decimalPlaces: 1, suffix: "%", label: "Uptime", delay: 0 },
-    { value: 50, decimalPlaces: 0, suffix: "+", label: "Events Powered", delay: 0 },
+    {
+      value: 50,
+      decimalPlaces: 0,
+      suffix: "+",
+      label: "Events Powered",
+      delay: 0,
+    },
   ];
 
   return (
@@ -64,7 +77,14 @@ const ValuePropositionSection = () => {
           <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight leading-[110%] mb-6">
             Transform Event Voting
             <br />
-            <span className="opacity-60">in Minutes</span>
+            <Highlighter
+              action="highlight"
+              color="#87CEFA"
+              animationDuration={300}
+              isView={true}
+            >
+              <span className="text-secondary">Minutes</span>
+            </Highlighter>
           </h2>
           <p className="text-lg sm:text-xl md:text-2xl font-light opacity-70 max-w-3xl mx-auto leading-relaxed">
             Secure, transparent, and accessible voting for modern events.
@@ -106,9 +126,7 @@ const ValuePropositionSection = () => {
                       className="tabular-nums"
                     />
                   ) : (
-                    <span className="opacity-0">
-                      0{stat.suffix}
-                    </span>
+                    <span className="opacity-0">0{stat.suffix}</span>
                   )}
                   <span className="ml-1">{stat.suffix}</span>
                 </div>
