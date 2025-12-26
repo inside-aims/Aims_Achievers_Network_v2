@@ -1,54 +1,30 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ButtonArrow from "../../layout/ButtonArrow";
 import ShiningButton from "../../layout/ShinningButton";
+import { NumberTicker } from "@/components/ui/number-ticker";
 
 const ValuePropositionSection = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef(null);
-  const valuePropsRef = useRef([]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-          }
-        });
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
       },
       { threshold: 0.2 }
     );
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
+    const section = document.getElementById("value-prop-section");
+    if (section) observer.observe(section);
 
     return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
+      if (section) observer.unobserve(section);
     };
   }, []);
-
-  useEffect(() => {
-    if (isVisible) {
-      valuePropsRef.current.forEach((prop, index) => {
-        if (prop) {
-          prop.style.opacity = "0";
-          prop.style.transform = "translateY(30px)";
-
-          setTimeout(() => {
-            prop.style.transition =
-              "opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)";
-            prop.style.opacity = "1";
-            prop.style.transform = "translateY(0)";
-          }, index * 150 + 300);
-        }
-      });
-    }
-  }, [isVisible]);
 
   const valueProps = [
     {
@@ -72,14 +48,14 @@ const ValuePropositionSection = () => {
   ];
 
   const stats = [
-    { number: "10,000+", label: "Votes Cast" },
-    { number: "99.9%", label: "Uptime" },
-    { number: "50+", label: "Events Powered" },
+    { value: 10000, decimalPlaces: 0, suffix: "+", label: "Votes Cast", delay: 0 },
+    { value: 99.9, decimalPlaces: 1, suffix: "%", label: "Uptime", delay: 0 },
+    { value: 50, decimalPlaces: 0, suffix: "+", label: "Events Powered", delay: 0 },
   ];
 
   return (
     <section
-      ref={sectionRef}
+      id="value-prop-section"
       className="min-h-screen bg-background text-white sm:py-5 md:py-10 px-4 sm:px-6 md:px-8 lg:px-12"
     >
       <div className="max-w-7xl mx-auto py-24">
@@ -97,16 +73,10 @@ const ValuePropositionSection = () => {
           </p>
         </div>
 
-        {/* Value Props Grid */}
+        {/* Value Props */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 lg:gap-16 mb-20 md:mb-32">
           {valueProps.map((prop, index) => (
-            <div
-              key={prop.number}
-              ref={(el) => {
-                valuePropsRef.current[index] = el;
-              }}
-              className="group"
-            >
+            <div key={index} className="group">
               <div className="border border-card-foreground/10 hover:border-white/30 transition-all duration-500 p-6 sm:p-8 h-full bg-card/40 hover:bg-card/60">
                 <div className="text-5xl sm:text-6xl font-light opacity-20 group-hover:opacity-40 transition-opacity duration-500 mb-6">
                   {prop.number}
@@ -127,9 +97,22 @@ const ValuePropositionSection = () => {
           <div className="grid grid-cols-3 gap-6 md:gap-12 max-w-4xl mx-auto">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-3xl sm:text-4xl md:text-5xl font-light mb-2 tabular-nums">
-                  {stat.number}
+                <div className="text-3xl sm:text-4xl md:text-5xl font-light mb-2 tabular-nums flex justify-center">
+                  {isVisible ? (
+                    <NumberTicker
+                      value={stat.value}
+                      decimalPlaces={stat.decimalPlaces}
+                      delay={stat.delay}
+                      className="tabular-nums"
+                    />
+                  ) : (
+                    <span className="opacity-0">
+                      0{stat.suffix}
+                    </span>
+                  )}
+                  <span className="ml-1">{stat.suffix}</span>
                 </div>
+
                 <div className="text-xs sm:text-sm tracking-widest opacity-60">
                   {stat.label}
                 </div>
@@ -138,11 +121,11 @@ const ValuePropositionSection = () => {
           </div>
         </div>
 
-        {/* CTA Buttons */}
+        {/* CTA */}
         <section className="space-y-8">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 lg:gap-8 px-4">
-            <ShiningButton 
-              label="View Events" 
+            <ShiningButton
+              label="View Events"
               className="w-full sm:w-auto sm:min-w-[200px]"
             />
             <ButtonArrow
@@ -150,7 +133,7 @@ const ValuePropositionSection = () => {
               text="See How It Works"
             />
           </div>
-        </section>    
+        </section>
       </div>
     </section>
   );
