@@ -1,5 +1,6 @@
 import NominationProcess from "@/components/features/nominations/nomination-process";
 import {Metadata} from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: 'Nominations',
@@ -10,7 +11,9 @@ export const metadata: Metadata = {
 const NominationsPage = () => {
   return(
     <div id={"nominations"} className={"feature"}>
-      <NominationProcess/>
+      <Suspense fallback={<div>Loading...</div>}>
+        <NominationProcess/>
+      </Suspense>
     </div>
   )
 }
