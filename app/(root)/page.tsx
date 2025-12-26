@@ -1,7 +1,7 @@
 import FeatureGridBento from "@/components/features/home/FeatureGrid";
 import OurEvents from "@/components/features/home/OurEvents";
-import ScrollTextMarquee from "@/components/features/home/ScrollTextMarquee";
 import StackingCardsHero from "@/components/features/home/StackingCards";
+import { ScrollBasedVelocityDemo } from "@/components/features/home/ScrollBasedVelocityDemo";
 import TrustedPartners from "@/components/features/home/TrustedPartners";
 import ValuePropositionSection from "@/components/features/home/ValuePropositionSection";
 
@@ -10,7 +10,7 @@ export default function Home() {
     <main>
       <StackingCardsHero />
       <ValuePropositionSection />
-      <ScrollTextMarquee />
+      <ScrollBasedVelocityDemo />
       <FeatureGridBento />
       <OurEvents/>
       <TrustedPartners/>
