@@ -6,8 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="48008f26-d1dc-4f7e-b70b-a93096b41883" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/events/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/events/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/nominations/nomination-process.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/nominations/nomination-process.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/outlets/cta-section.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/outlets/cta-section.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +30,7 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature-nomination-process&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature-award-maker&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/Work/Aims/Aims_Achievers_Network_v2&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -44,6 +43,10 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\layout" />
+      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\extras" />
+      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\shared" />
+      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\features" />
       <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2" />
     </key>
   </component>
@@ -71,6 +74,7 @@
       <workItem from="1766408253460" duration="192000" />
       <workItem from="1766432979338" duration="9851000" />
       <workItem from="1766494206065" duration="10033000" />
+      <workItem from="1766685598238" duration="6981000" />
     </task>
     <servers />
   </component>

@@ -6,10 +6,13 @@ import GalleryHero from "@/components/features/gallery/gallery-hero";
 import GalleryStats from "@/components/features/gallery/gallery-stats";
 import GalleryFilters from "@/components/features/gallery/gallery-filters";
 import CategoryBadges from "@/components/features/gallery/category-badges";
-import PhotoModal from "@/components/features/gallery/photo-modal";
 import GalleryList from "@/components/features/gallery/gallery-list";
 import {Button} from "@/components/ui/button";
 import {Camera} from "lucide-react";
+import {AnimatedBackground} from "@/components/layout/animated-background";
+import dynamic from "next/dynamic";
+
+const PhotoModal = dynamic(() => import("@/components/features/gallery/photo-modal"))
 
 const Gallery = () => {
   const [selectedEvent, setSelectedEvent] = useState("All Events");
@@ -18,15 +21,17 @@ const Gallery = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(true);
   const [openModal, setOpenModal] = useState<boolean>(false);
-
   const [selectedPhoto, setSelectedPhoto] = useState<PhotoProps | null >(null);
 
   const filteredPhotos = mockPhotos.filter((photo) => {
     const matchesEvent = selectedEvent === "All Events" || photo.eventName === selectedEvent;
+
     const matchesCategory =
       selectedCategory === "All Categories" || photo.category === selectedCategory;
+
     const matchesUniversity =
       selectedUniversity === "All Universities" || photo.university === selectedUniversity;
+
     const matchesSearch =
       photo.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       photo.category.toLowerCase().includes(searchQuery.toLowerCase());
@@ -34,7 +39,7 @@ const Gallery = () => {
     return matchesEvent && matchesCategory && matchesUniversity && matchesSearch;
   });
 
-  const openPhoto = (photo: PhotoProps, index: number) => {
+  const openPhoto = (photo: PhotoProps) => {
     setSelectedPhoto(photo);
     if(selectedPhoto !== null) {
       setOpenModal(true);
@@ -42,7 +47,8 @@ const Gallery = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      <AnimatedBackground/>
       <GalleryHero />
 
       <GalleryStats
@@ -52,7 +58,7 @@ const Gallery = () => {
         universities={universities.length - 1}
       />
 
-      <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="feature">
         <GalleryFilters
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}

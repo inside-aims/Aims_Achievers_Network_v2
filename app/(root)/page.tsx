@@ -1,9 +1,9 @@
-import FeatureGridBento from "@/components/home/FeatureGrid";
-import OurEvents from "@/components/home/OurEvents";
-import ScrollTextMarquee from "@/components/home/ScrollTextMarquee";
-import StackingCardsHero from "@/components/home/StackingCards";
-import TrustedPartners from "@/components/home/TrustedPartners";
-import ValuePropositionSection from "@/components/home/ValuePropositionSection";
+import FeatureGridBento from "@/components/features/home/FeatureGrid";
+import OurEvents from "@/components/features/home/OurEvents";
+import ScrollTextMarquee from "@/components/features/home/ScrollTextMarquee";
+import StackingCardsHero from "@/components/features/home/StackingCards";
+import TrustedPartners from "@/components/features/home/TrustedPartners";
+import ValuePropositionSection from "@/components/features/home/ValuePropositionSection";
 
 export default function Home() {
   return (

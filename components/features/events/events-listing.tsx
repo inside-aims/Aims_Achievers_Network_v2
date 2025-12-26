@@ -13,6 +13,7 @@ import EmptyState from "@/components/shared/empty-state";
 import {EVENTS, EventStatus} from "@/components/features/events/index";
 import SearchBar from "@/components/shared/search-bar";
 import {getDaysLeft} from "@/lib/utils";
+import {AnimatedBackground} from "@/components/layout/animated-background";
 
 const EventsListing = () => {
   const [query, setQuery] = useState("");
@@ -33,7 +34,7 @@ const EventsListing = () => {
 
 
   return (
-    <section className="flex flex-col gap-4 md:gap-8">
+    <section className="flex flex-col gap-4 md:gap-8 min-h-screen">
       <div className="parent-header">
         <h2 className="feature-header">Make Your Vote Count</h2>
         <p className="feature-subheader max-w-2xl">

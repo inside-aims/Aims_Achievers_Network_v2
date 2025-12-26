@@ -1,8 +1,7 @@
 "use client";
 
-import {Search, Filter} from "lucide-react";
+import {Filter} from "lucide-react";
 import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
 import {
   Select,
   SelectTrigger,
@@ -10,6 +9,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import SearchBar from "@/components/shared/search-bar";
 
 interface Props {
   searchQuery: string;
@@ -70,20 +70,14 @@ export default function GalleryFilters(
   ];
 
   return (
-    <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border mb-8">
+    <div className="bg-card p-4 md:p-6 rounded-xl shadow-sm border mb-8">
       <div className="flex flex-row justify-between gap-4 items-center">
 
-        <div className="flex items-center w-full  px-4 border">
-          <Search className="w-4 h-4"/>
-          <Input
-            type="text"
-            placeholder="Search photos..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="p-2 w-full border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+        <SearchBar
+          query={searchQuery}
+          setQuery={setSearchQuery}
+          placeholder={"Search for event picture here"}
           />
-        </div>
-
         <div className="flex items-center gap-3">
           <Button
             onClick={() => setShowFilters(!showFilters)}
