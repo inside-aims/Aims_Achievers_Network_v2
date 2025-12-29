@@ -70,7 +70,7 @@ const AboutPage = () => {
             <h1 className="feature-header">
               Aims Achievers Network
             </h1>
-            <p className="feature-subheader">
+            <p className="feature-subheader text-muted dark:text-muted-foreground">
               Making campus award nights fair, exciting, and memorable.
             </p>
           </div>
