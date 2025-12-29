@@ -55,7 +55,7 @@ const AimsFooter = () => {
               </li>
               <li>
                 <Link 
-                  href="/about" 
+                  href="/about-us"
                   className="text-muted-foreground hover:text-foreground transition-colors duration-200"
                 >
                   About Us

@@ -6,7 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="48008f26-d1dc-4f7e-b70b-a93096b41883" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/outlets/cta-section.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/outlets/cta-section.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(root)/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(root)/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/layout/Footer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/layout/Footer.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,7 +31,7 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature-award-maker&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature-about-contact-us&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/Work/Aims/Aims_Achievers_Network_v2&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -43,11 +44,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\layout" />
-      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\extras" />
-      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\shared" />
-      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\features" />
-      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2" />
+      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\features\(static)" />
+      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\app\(root)\(static)" />
+      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\app\(root)" />
+      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\app\(static)" />
+      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\app\(static" />
     </key>
   </component>
   <component name="SharedIndexes">
@@ -75,6 +76,7 @@
       <workItem from="1766432979338" duration="9851000" />
       <workItem from="1766494206065" duration="10033000" />
       <workItem from="1766685598238" duration="6981000" />
+      <workItem from="1767007429860" duration="8018000" />
     </task>
     <servers />
   </component>
