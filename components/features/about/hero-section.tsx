@@ -1,6 +1,8 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import { ArrowRight, Users, Target, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { ArrowRight, Users, Target, Sparkles } from "lucide-react";
+import SwipeButton from "@/components/ui/button-swipe";
+import ShiningButton from "@/components/layout/ShinningButton";
 
 // Morphing Text Component
 const MorphingText = ({ texts }) => {
@@ -22,7 +24,9 @@ const MorphingText = ({ texts }) => {
   return (
     <span
       className={`inline-block transition-all duration-800 ${
-        isAnimating ? 'opacity-0 blur-sm scale-95' : 'opacity-100 blur-0 scale-100'
+        isAnimating
+          ? "opacity-0 blur-sm scale-95"
+          : "opacity-100 blur-0 scale-100"
       }`}
     >
       {texts[currentIndex]}
@@ -49,9 +53,9 @@ export default function AboutHeroSection() {
   ];
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-black via-gray-900 to-black text-white mb-24">
+    <div className="bg-linear-to-b from-black via-gray-900 to-black text-white mb-24">
       {/* Hero Content */}
-      <div className="max-w-7xl mx-auto px-6 pt-32 pb-20">
+      <div className="max-w-7xl mx-auto px-6 pt-32">
         {/* Main Headline */}
         <div className="text-center space-y-8">
           <div className="space-y-4">
@@ -62,62 +66,63 @@ export default function AboutHeroSection() {
                 Mentorship & Opportunity
               </span>
             </h1>
-            
+
             <p className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto mt-6">
-              Bridging the gap between ambition and achievement by connecting students 
-              with mentors, resources, and opportunities that unlock their full potential.
+              Bridging the gap between ambition and achievement by connecting
+              students with mentors, resources, and opportunities that unlock
+              their full potential.
             </p>
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-12">
-            <button className="group px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-lg hover:bg-primary transition-all duration-300 flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center my-12">
+            {/* <button className="group px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-lg hover:bg-primary transition-all duration-300 flex items-center gap-2">
               Join as a Student
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </button>
-            
-            <button className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg font-semibold text-lg hover:bg-white/20 transition-all duration-300">
+            </button> */}
+
+            <SwipeButton label={"Join as a Student"} />
+            <ShiningButton label={" Become a Mentor"} />
+
+            {/* <button className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg font-semibold text-lg hover:bg-white/20 transition-all duration-300">
               Become a Mentor
-            </button>
-            
+            </button> */}
+
             <button className="px-8 py-4 text-gray-300 hover:text-white transition-colors duration-300 flex items-center gap-2">
               Learn More
               <ArrowRight className="w-5 h-5" />
             </button>
           </div>
+
+          {/* Stats Section */}
+          <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto pt-32">
+            {stats.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <div key={index} className="relative group mt-24">
+                  <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 text-center hover:bg-white/10 transition-all duration-300 hover:border-white/20">
+                    <div className="flex justify-center mb-4">
+                      <div className="p-3 rounded-lg">
+                        <Icon className="w-8 h-8 text-blue-400" />
+                      </div>
+                    </div>
+                    <div className="text-4xl font-bold bg-linear-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                      {stat.value}
+                    </div>
+                    <div className="text-gray-400 mt-2">{stat.label}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Stats Section */}
-        <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <div
-                key={index}
-                className="relative group"
-              >
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 text-center hover:bg-white/10 transition-all duration-300 hover:border-white/20">
-                  <div className="flex justify-center mb-4">
-                    <div className="p-3 rounded-lg">
-                      <Icon className="w-8 h-8 text-blue-400" />
-                    </div>
-                  </div>
-                  <div className="text-4xl font-bold bg-linear-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-                    {stat.value}
-                  </div>
-                  <div className="text-gray-400 mt-2">{stat.label}</div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+
 
         {/* Scroll Indicator */}
-        <div className="flex justify-center mt-20">
-          <div className="animate-bounce">
-            <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-              <div className="w-1 h-3 bg-white/50 rounded-full mt-2"></div>
-            </div>
+        <div className="flex justify-center mt-8 absolute right-10 top-5">
+          <div className="text-sm tracking-widest opacity-40 animate-bounce">
+            Scroll to know us ↓
           </div>
         </div>
       </div>
