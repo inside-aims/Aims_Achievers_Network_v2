@@ -8,7 +8,7 @@ const Layout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <div className={"bg-background h-full overflow:hidden"}>
+    <div className={"bg-background overflow:hidden"}>
       <RadavilleNav />
       <main>{children}</main>
       <Footer/>
