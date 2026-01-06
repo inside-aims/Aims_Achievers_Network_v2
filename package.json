@@ -6,7 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "supabase:init": "bunx supabase init",
+    "supabase:start": "bunx supabase start",
+    "supabase:restart": "bunx supabase stop && bunx supabase start",
+    "supabase:generate-types": "bunx supabase gen types typescript --local --schema public > types_db.ts",
+    "supabase:generate-migration": "bunx supabase db diff | bunx supabase migration new"
   },
   "dependencies": {
     "@motionone/utils": "^10.18.0",
