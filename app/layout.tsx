@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/providers/theme-provider";
 import {Toaster} from "@/components/ui/sonner";
 
+import { QueryProvider } from "@/providers/query-provider";
+
 export const metadata: Metadata = {
   title: "AIMS Achievers Network",
   description: "Seamless Voting · Ticketing · Nominations",
@@ -23,8 +25,10 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-           {children}
-           <Toaster position={"top-center"} richColors />
+            <QueryProvider>
+              {children}
+              <Toaster position={"top-center"} richColors />
+            </QueryProvider>
          </ThemeProvider>
       </body>
     </html>
