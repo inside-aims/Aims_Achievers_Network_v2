@@ -8,7 +8,6 @@ export default function Home() {
   return (
     <main>
       <StackingCardsHero />
-      {/* z-10 ensures this content paints above the sticky stacking cards (z-index 1–5) */}
       <div className="relative z-10 pt-20">
         <ValuePropositionSection />
         {/*<ScrollBasedVelocityDemo />*/}

@@ -23,6 +23,7 @@ const RadavilleNav = () => {
   const menuItemsRef = useRef<(HTMLDivElement | null)[]>([]);
   const decorativeLineRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const bottomRowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 20);
@@ -44,13 +45,13 @@ const RadavilleNav = () => {
 
     if (menuRef.current) {
       menuRef.current.style.opacity = "0";
-      menuRef.current.style.transform = "scale(0.98)";
+      menuRef.current.style.transform = "translateY(-8px)";
       requestAnimationFrame(() => {
         if (!menuRef.current) return;
         menuRef.current.style.transition =
-          "opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)";
+          "opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)";
         menuRef.current.style.opacity = "1";
-        menuRef.current.style.transform = "scale(1)";
+        menuRef.current.style.transform = "translateY(0)";
       });
     }
 
@@ -60,40 +61,51 @@ const RadavilleNav = () => {
         setTimeout(() => {
           if (!decorativeLineRef.current) return;
           decorativeLineRef.current.style.transition =
-            "width 0.8s cubic-bezier(0.4, 0, 0.2, 1)";
+            "width 0.9s cubic-bezier(0.4, 0, 0.2, 1)";
           decorativeLineRef.current.style.width = "100%";
-        }, 300)
-      );
-    }
-
-    if (sidebarRef.current) {
-      sidebarRef.current.style.opacity = "0";
-      sidebarRef.current.style.transform = "translateX(20px)";
-      timeouts.push(
-        setTimeout(() => {
-          if (!sidebarRef.current) return;
-          sidebarRef.current.style.transition =
-            "opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)";
-          sidebarRef.current.style.opacity = "1";
-          sidebarRef.current.style.transform = "translateX(0)";
-        }, 400)
+        }, 200)
       );
     }
 
     menuItemsRef.current.forEach((item, index) => {
       if (!item) return;
       item.style.opacity = "0";
-      item.style.transform = "translateY(40px)";
+      item.style.transform = "translateX(-24px)";
       timeouts.push(
         setTimeout(() => {
           if (!item) return;
           item.style.transition =
-            "opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)";
+            "opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)";
           item.style.opacity = "1";
-          item.style.transform = "translateY(0)";
-        }, index * 100 + 250)
+          item.style.transform = "translateX(0)";
+        }, index * 90 + 180)
       );
     });
+
+    if (sidebarRef.current) {
+      sidebarRef.current.style.opacity = "0";
+      sidebarRef.current.style.transform = "translateY(16px)";
+      timeouts.push(
+        setTimeout(() => {
+          if (!sidebarRef.current) return;
+          sidebarRef.current.style.transition =
+            "opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)";
+          sidebarRef.current.style.opacity = "1";
+          sidebarRef.current.style.transform = "translateY(0)";
+        }, navItems.length * 90 + 200)
+      );
+    }
+
+    if (bottomRowRef.current) {
+      bottomRowRef.current.style.opacity = "0";
+      timeouts.push(
+        setTimeout(() => {
+          if (!bottomRowRef.current) return;
+          bottomRowRef.current.style.transition = "opacity 0.5s ease";
+          bottomRowRef.current.style.opacity = "1";
+        }, navItems.length * 90 + 350)
+      );
+    }
 
     return () => timeouts.forEach(clearTimeout);
   }, [isMenuOpen, isMenuClosing]);
@@ -107,12 +119,18 @@ const RadavilleNav = () => {
     setIsMenuClosing(true);
     const timeouts: ReturnType<typeof setTimeout>[] = [];
 
-    if (sidebarRef.current) {
-      sidebarRef.current.style.transition =
-        "opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
-      sidebarRef.current.style.opacity = "0";
-      sidebarRef.current.style.transform = "translateX(20px)";
-    }
+    menuItemsRef.current.forEach((item, index) => {
+      if (!item) return;
+      timeouts.push(
+        setTimeout(() => {
+          if (!item) return;
+          item.style.transition =
+            "opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)";
+          item.style.opacity = "0";
+          item.style.transform = "translateX(-16px)";
+        }, (menuItemsRef.current.length - 1 - index) * 60)
+      );
+    });
 
     if (decorativeLineRef.current) {
       decorativeLineRef.current.style.transition =
@@ -120,34 +138,33 @@ const RadavilleNav = () => {
       decorativeLineRef.current.style.width = "0";
     }
 
-    menuItemsRef.current.forEach((item, index) => {
-      if (!item) return;
-      timeouts.push(
-        setTimeout(() => {
-          if (!item) return;
-          item.style.transition =
-            "opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)";
-          item.style.opacity = "0";
-          item.style.transform = "translateY(-30px)";
-        }, (menuItemsRef.current.length - 1 - index) * 80)
-      );
-    });
+    if (sidebarRef.current) {
+      sidebarRef.current.style.transition =
+        "opacity 0.3s ease, transform 0.3s ease";
+      sidebarRef.current.style.opacity = "0";
+      sidebarRef.current.style.transform = "translateY(8px)";
+    }
+
+    if (bottomRowRef.current) {
+      bottomRowRef.current.style.transition = "opacity 0.2s ease";
+      bottomRowRef.current.style.opacity = "0";
+    }
 
     timeouts.push(
       setTimeout(() => {
         if (!menuRef.current) return;
         menuRef.current.style.transition =
-          "opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)";
+          "opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)";
         menuRef.current.style.opacity = "0";
-        menuRef.current.style.transform = "scale(1.02)";
-      }, menuItemsRef.current.length * 80 + 100)
+        menuRef.current.style.transform = "translateY(-6px)";
+      }, menuItemsRef.current.length * 60 + 80)
     );
 
     timeouts.push(
       setTimeout(() => {
         setIsMenuOpen(false);
         setIsMenuClosing(false);
-      }, menuItemsRef.current.length * 80 + 700)
+      }, menuItemsRef.current.length * 60 + 550)
     );
   };
 
@@ -160,14 +177,14 @@ const RadavilleNav = () => {
           menuActive
             ? "text-primary-foreground"
             : isScrolled
-            ? "bg-background/70 backdrop-blur-md shadow-sm text-foreground"
+            ? "bg-background/80 backdrop-blur-md border-b border-border/40 text-foreground"
             : "bg-transparent text-foreground"
         }`}
       >
-        <div className="flex items-center justify-between p-4 sm:p-6 md:p-8">
+        <div className="flex items-center justify-between px-4 sm:px-6 md:px-8 h-14 sm:h-16 md:h-20">
           <Link
             href="/"
-            className="text-xs sm:text-sm tracking-widest font-light font-serif hover:opacity-70 transition-opacity duration-300"
+            className="text-xs sm:text-sm tracking-widest font-light font-serif hover:opacity-60 transition-opacity duration-300"
           >
             AIMS ACHIEVERS NETWORK
           </Link>
@@ -176,9 +193,9 @@ const RadavilleNav = () => {
             size="icon-lg"
             onClick={toggleMenu}
             aria-label={menuActive ? "Close menu" : "Open menu"}
-            className="rounded-sm hover:bg-transparent hover:opacity-70 transition-opacity duration-300"
+            className="rounded-sm hover:bg-transparent hover:opacity-60 transition-opacity duration-300"
           >
-            {menuActive ? <X size={22} /> : <SquareMenu size={22} />}
+            {menuActive ? <X size={20} /> : <SquareMenu size={20} />}
           </Button>
         </div>
       </header>
@@ -186,30 +203,29 @@ const RadavilleNav = () => {
       {menuActive && (
         <div
           ref={menuRef}
-          className="fixed inset-0 bg-primary z-40 p-4 sm:p-6 md:p-8"
+          className="fixed inset-0 bg-primary z-40 flex flex-col"
         >
           {/* Subtle grid texture */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] bg-size-[54px_54px] pointer-events-none" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:48px_48px] pointer-events-none" />
 
-          {/* Watermark */}
-          <div className="absolute inset-0 flex items-center justify-end pr-4 sm:pr-8 pointer-events-none overflow-hidden">
-            <span className="text-[20vw] font-serif font-light leading-none tracking-tighter select-none text-primary-foreground/[0.04]">
-              AAN
-            </span>
-          </div>
+          {/* AAN watermark */}
+          <span className="absolute right-0 bottom-0 text-[35vw] sm:text-[28vw] font-serif font-bold leading-none tracking-tighter select-none text-primary-foreground/[0.04] pointer-events-none">
+            AAN
+          </span>
 
-          {/* Decorative rule — sweeps in below header */}
-          <div className="absolute top-[3.25rem] sm:top-[4.25rem] md:top-[5.25rem] left-4 sm:left-6 md:left-8 right-4 sm:right-6 md:right-8 overflow-hidden">
+          {/* Spacer to clear the sticky header */}
+          <div className="h-14 sm:h-16 md:h-20 shrink-0 px-4 sm:px-6 md:px-8 flex items-end pb-0">
             <div
               ref={decorativeLineRef}
-              className="h-px bg-primary-foreground/20"
+              className="h-px bg-primary-foreground/15"
               style={{ width: 0 }}
             />
           </div>
 
-          <div className="relative w-full h-full max-w-6xl mx-auto">
-            {/* Navigation items */}
-            <nav className="absolute bottom-10 left-0 sm:bottom-10 lg:left-0 lg:top-1/2 lg:-translate-y-1/2 space-y-6 sm:space-y-8 lg:space-y-2">
+          {/* Main content — fills remaining space */}
+          <div className="flex-1 flex flex-col lg:flex-row px-4 sm:px-6 md:px-8 pt-10 sm:pt-12 lg:pt-0 lg:items-center lg:justify-between overflow-hidden gap-10 lg:gap-0">
+            {/* Navigation links */}
+            <nav className="space-y-2 sm:space-y-3">
               {navItems.map((item, index) => (
                 <div
                   key={item.number}
@@ -221,28 +237,27 @@ const RadavilleNav = () => {
                   <Link
                     href={item.href}
                     onClick={toggleMenu}
-                    className="flex items-baseline gap-4 sm:gap-6 md:gap-8 lg:gap-10"
+                    className="flex items-baseline gap-3 sm:gap-5 md:gap-6"
                   >
                     <span
-                      className={`text-xs sm:text-sm md:text-base shrink-0 font-mono transition-all duration-300 ${
+                      className={`text-[10px] sm:text-xs shrink-0 font-mono transition-all duration-300 ${
                         pathname === item.href
                           ? "text-secondary opacity-100"
-                          : "text-primary-foreground opacity-40 group-hover:opacity-100 group-hover:text-secondary"
+                          : "text-primary-foreground/30 group-hover:text-secondary group-hover:opacity-100"
                       }`}
                     >
                       {item.number}
                     </span>
                     <span
-                      className={`relative text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light leading-tight font-serif transition-all duration-500 text-primary-foreground ${
+                      className={`relative text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light leading-tight font-serif transition-all duration-400 text-primary-foreground ${
                         pathname === item.href
-                          ? "opacity-100 tracking-wider"
-                          : "opacity-60 tracking-wide group-hover:opacity-100 group-hover:tracking-wider"
+                          ? "opacity-100"
+                          : "opacity-50 group-hover:opacity-100"
                       }`}
                     >
                       {item.title}
-                      {/* Underline sweep */}
                       <span
-                        className={`absolute -bottom-1 left-0 h-px bg-secondary transition-all duration-500 ease-out ${
+                        className={`absolute -bottom-0.5 left-0 h-px bg-secondary transition-all duration-500 ease-out ${
                           pathname === item.href
                             ? "w-full"
                             : "w-0 group-hover:w-full"
@@ -254,36 +269,41 @@ const RadavilleNav = () => {
               ))}
             </nav>
 
-            {/* Sidebar info */}
+            {/* Sidebar info panel */}
             <div
               ref={sidebarRef}
-              className="absolute top-44 right-0 sm:top-6 sm:right-0 md:top-8 lg:bottom-8 lg:right-0 lg:top-auto"
+              className="lg:self-end"
             >
-              <div className="flex flex-col gap-6 md:gap-8 text-xs sm:text-sm text-primary-foreground/50 border-l border-primary-foreground/15 pl-4 sm:pl-6">
-                <div className="space-y-1">
-                  <p className="tracking-widest font-serif text-primary-foreground/80 text-xs">
-                    SERVICES
-                  </p>
-                  <p className="font-light leading-relaxed font-serif">
-                    Seamless Voting · Ticketing · Nominations
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="tracking-widest font-serif text-primary-foreground/80 text-xs">
-                    LOCATION
-                  </p>
-                  <p className="font-light font-serif">Koforidua, Ghana</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="tracking-widest font-serif text-primary-foreground/80 text-xs">
-                    SOCIAL
-                  </p>
-                  <p className="font-light font-serif">
-                    Instagram · X · WhatsApp · LinkedIn
-                  </p>
-                </div>
+              <div className="flex flex-col gap-4">
+                {[
+                  { label: "SERVICES", value: "Voting · Ticketing · Nominations" },
+                  { label: "LOCATION", value: "Koforidua, Ghana" },
+                  { label: "SOCIAL", value: "Instagram · X · LinkedIn" },
+                ].map((item) => (
+                  <div key={item.label}>
+                    <p className="text-[10px] tracking-[0.22em] font-mono text-primary-foreground/30 uppercase mb-0.5">
+                      {item.label}
+                    </p>
+                    <p className="text-xs font-mono text-primary-foreground/60">
+                      {item.value}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
+          </div>
+
+          {/* Bottom row */}
+          <div
+            ref={bottomRowRef}
+            className="shrink-0 px-4 sm:px-6 md:px-8 py-5 border-t border-primary-foreground/10 flex items-center justify-between"
+          >
+            <span className="text-[10px] font-mono tracking-widest text-primary-foreground/25">
+              © {new Date().getFullYear()} AIMS ACHIEVERS NETWORK
+            </span>
+            <span className="text-[10px] font-mono tracking-widest text-primary-foreground/25">
+              ONLINE VOTING PLATFORM
+            </span>
           </div>
         </div>
       )}

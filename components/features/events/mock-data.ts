@@ -278,7 +278,7 @@ export const EVENTS: EventCardProps[] = [
     startDate: "2025-06-15",
     endDate: "2026-12-28",
     image:
-      "https://images.unsplash.com/photo-1515169067865-5387ec356754?w=1200&fit=crop",
+      "https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=1200&fit=crop",
     categories: FBMS_CATEGORIES,
   },
   {

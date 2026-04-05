@@ -21,7 +21,11 @@
       "Bash(node_modules/.bin/tsc --noEmit --strict /tmp/test2.ts)",
       "Bash(node_modules/.bin/tsc --noEmit --strict /tmp/test3.ts)",
       "Bash(node_modules/.bin/tsc --noEmit --strict /tmp/test4.ts)",
-      "Bash(node_modules/.bin/tsc --noEmit)"
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(mkdir -p \"C:/Users/Work/Aims/Aims_Achievers_Network_v2/app/\\(root\\)/how-it-works\")",
+      "Bash(mkdir -p \"C:/Users/Work/Aims/Aims_Achievers_Network_v2/app/\\(root\\)/become-partner\")",
+      "Bash(bun run:*)",
+      "Bash(sed:*)"
     ]
   }
 }

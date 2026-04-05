@@ -5,17 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="48008f26-d1dc-4f7e-b70b-a93096b41883" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(root)/gallery/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(root)/gallery/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(root)/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(root)/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(root)/nominations/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(root)/nominations/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(root)/contact/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(root)/contact/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(root)/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(root)/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/about/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/about/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/globals.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bun.lock" beforeDir="false" afterPath="$PROJECT_DIR$/bun.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/next.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/events/mock-data.ts" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/events/mock-data.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/home/OurEvents.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/home/OurEvents.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/home/StackingCards.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/home/StackingCards.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/home/TrustedPartners.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/home/TrustedPartners.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/home/ValuePropositionSection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/home/ValuePropositionSection.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/layout/RadavilleNav.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/layout/RadavilleNav.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,7 +116,7 @@
       <workItem from="1770540356484" duration="142000" />
       <workItem from="1770540564127" duration="16000" />
       <workItem from="1775264323657" duration="2831000" />
-      <workItem from="1775385351216" duration="1913000" />
+      <workItem from="1775385351216" duration="6444000" />
     </task>
     <servers />
   </component>
