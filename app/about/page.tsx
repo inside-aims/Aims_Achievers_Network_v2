@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { BackgroundGL } from "@/components/features/about/background-gl";
 import { WhatSection } from "@/components/features/about/what-section";
 import { WhoSection } from "@/components/features/about/who-section";
@@ -38,12 +38,11 @@ export default function AboutPage() {
   /* ------------------------
      Navigation logic
   ------------------------ */
-  const scrollToSection = (index: number) => {
+  const scrollToSection = useCallback((index: number) => {
     if (index < 0 || index >= SECTIONS.length || isTransitioning) return;
-
     setIsTransitioning(true);
     setCurrentSection(index);
-  };
+  }, [isTransitioning]);
 
   /* ------------------------
      Desktop wheel navigation
@@ -67,7 +66,7 @@ export default function AboutPage() {
 
     el.addEventListener("wheel", handleWheel, { passive: false });
     return () => el.removeEventListener("wheel", handleWheel);
-  }, [currentSection, isTransitioning]);
+  }, [currentSection, isTransitioning, scrollToSection]);
 
   /* ------------------------
      Safety unlock for reduced motion
