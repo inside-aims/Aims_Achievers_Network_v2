@@ -1,9 +1,8 @@
-// EventNameTag.tsx
 "use client";
 
 import Image from "next/image";
 
-interface EventNameTagProps {
+interface EventCardProps {
   eventName: string;
   location: string;
   status: "ongoing" | "upcoming" | "past";
@@ -11,18 +10,9 @@ interface EventNameTagProps {
 }
 
 const statusConfig = {
-  ongoing: {
-    color: "bg-green-500",
-    label: "Ongoing",
-  },
-  upcoming: {
-    color: "bg-blue-500",
-    label: "Upcoming",
-  },
-  past: {
-    color: "bg-gray-400",
-    label: "Past",
-  },
+  ongoing: { bg: "bg-secondary", text: "text-secondary-foreground", label: "ONGOING" },
+  upcoming: { bg: "bg-primary", text: "text-primary-foreground", label: "UPCOMING" },
+  past: { bg: "bg-muted", text: "text-muted-foreground", label: "PAST" },
 };
 
 export default function EventNameTag({
@@ -30,38 +20,39 @@ export default function EventNameTag({
   location,
   status,
   imageUrl,
-}: EventNameTagProps) {
-  const statusInfo = statusConfig[status];
+}: EventCardProps) {
+  const { bg, text, label } = statusConfig[status];
 
   return (
-    <div className="inline-flex items-stretch bg-card border border-border rounded-md overflow-hidden h-16 font-sans ">
-      {/* Left: Event Image */}
-      <div className="w-16 h-16 flex-shrink-0 bg-muted">
-        <Image
-          src={imageUrl}
-          width={100}
-          height={100}
-          alt={eventName}
-          className="w-full h-full object-cover"
-        />
+    <div className="group relative overflow-hidden aspect-[4/5] cursor-pointer">
+      <Image
+        fill
+        src={imageUrl}
+        alt={eventName}
+        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+      />
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+      {/* Status badge */}
+      <div className="absolute top-4 left-4">
+        <span
+          className={`${bg} ${text} text-[10px] px-2.5 py-1 font-mono tracking-[0.2em]`}
+        >
+          {label}
+        </span>
       </div>
 
-      {/* Right: Event Details */}
-      <div className="flex flex-col justify-center px-4 py-2 min-w-0">
-        {/* Event Name */}
-        <h3 className="text-sm font-semibold text-foreground truncate leading-tight">
+      {/* Event info */}
+      <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6">
+        <h3 className="text-xl sm:text-2xl font-serif font-light text-white leading-tight mb-1.5 group-hover:tracking-wide transition-all duration-500">
           {eventName}
         </h3>
-
-        {/* Status & Location */}
-        <div className="flex items-center gap-1.5 mt-1">
-          <div className={`w-1.5 h-1.5 rounded-full ${statusInfo.color}`} />
-          <span className="text-xs text-muted-foreground font-normal">
-            {statusInfo.label} · {location}
-          </span>
-        </div>
+        <p className="text-xs text-white/50 tracking-[0.2em] font-mono">
+          {location.toUpperCase()}
+        </p>
       </div>
     </div>
   );
 }
-

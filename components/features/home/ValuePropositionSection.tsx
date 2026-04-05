@@ -1,157 +1,141 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import ButtonArrow from "../../layout/ButtonArrow";
-import ShiningButton from "../../layout/ShinningButton";
+import { useEffect, useRef, useState } from "react";
 import { NumberTicker } from "@/components/ui/number-ticker";
-import { Highlighter } from "@/components/ui/highlighter";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+
+const valueProps = [
+  {
+    number: "01",
+    title: "Unprecedented Access",
+    description:
+      "Vote from anywhere, on any device. No barriers, no complexity — just participation.",
+  },
+  {
+    number: "02",
+    title: "Military-Grade Security",
+    description:
+      "End-to-end encryption and tamper-proof systems ensure every vote counts, every time.",
+  },
+  {
+    number: "03",
+    title: "Effortless Efficiency",
+    description:
+      "Real-time results, automated tallying, zero manual counting. Focus on your event.",
+  },
+];
+
+const stats = [
+  { value: 10000, decimalPlaces: 0, suffix: "+", label: "VOTES CAST" },
+  { value: 99.9, decimalPlaces: 1, suffix: "%", label: "UPTIME" },
+  { value: 50, decimalPlaces: 0, suffix: "+", label: "EVENTS POWERED" },
+];
 
 const ValuePropositionSection = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    const el = sectionRef.current;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
+        if (entry.isIntersecting) setIsVisible(true);
       },
       { threshold: 0.2 }
     );
-
-    const section = document.getElementById("value-prop-section");
-    if (section) observer.observe(section);
-
+    if (el) observer.observe(el);
     return () => {
-      if (section) observer.unobserve(section);
+      if (el) observer.unobserve(el);
     };
   }, []);
 
-  const valueProps = [
-    {
-      number: "01",
-      title: "Unprecedented Accessibility",
-      description:
-        "Vote from anywhere, on any device. Break down geographical barriers and reach every participant, every time.",
-    },
-    {
-      number: "02",
-      title: "Military-Grade Security",
-      description:
-        "End-to-end encryption and tamper-proof systems ensure every vote is protected and every result is trustworthy.",
-    },
-    {
-      number: "03",
-      title: "Effortless Efficiency",
-      description:
-        "Real-time results, automated tallying, zero manual counting. Focus on your event, not the logistics.",
-    },
-  ];
-
-  const stats = [
-    {
-      value: 10000,
-      decimalPlaces: 0,
-      suffix: "+",
-      label: "Votes Cast",
-      delay: 0,
-    },
-    { value: 99.9, decimalPlaces: 1, suffix: "%", label: "Uptime", delay: 0 },
-    {
-      value: 50,
-      decimalPlaces: 0,
-      suffix: "+",
-      label: "Events Powered",
-      delay: 0,
-    },
-  ];
-
   return (
     <section
+      ref={sectionRef}
       id="value-prop-section"
-      className="min-h-screen bg-background text-white sm:py-5 md:py-10 px-4 sm:px-6 md:px-8 lg:px-12"
+      className="bg-primary text-primary-foreground feature-no py-20 md:py-28"
     >
-      <div className="max-w-7xl mx-auto py-24">
-        {/* Headline */}
-        <div className="text-center mb-16 md:mb-24">
-          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight leading-[110%] mb-6">
-            Transform Event Voting
-            <br />
-            <Highlighter
-              action="highlight"
-              color="#87CEFA"
-              animationDuration={300}
-              isView={true}
-            >
-              <span className="text-secondary">Minutes</span>
-            </Highlighter>
+      {/* Section label */}
+      <div className="mb-16">
+        <span className="text-xs tracking-[0.25em] font-mono text-primary-foreground/40">
+          WHY AIMS ACHIEVERS NETWORK
+        </span>
+      </div>
+
+      {/* Two-column editorial layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-[55fr_45fr] gap-16 md:gap-24 mb-16 md:mb-20">
+        {/* Left: Headline + subtext */}
+        <div className="flex flex-col justify-between gap-12">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light font-serif tracking-tight leading-[1.05]">
+            Transform the way campus events crown their champions.
           </h2>
-          <p className="text-lg sm:text-xl md:text-2xl font-light opacity-70 max-w-3xl mx-auto leading-relaxed">
-            Secure, transparent, and accessible voting for modern events.
-            <br className="hidden sm:block" />
-            No manual counting. No complexity. Just results.
+          <p className="text-base md:text-lg font-light text-primary-foreground/55 max-w-md leading-relaxed">
+            Secure, transparent digital voting built for Ghanaian campus events
+            and award shows. No paper ballots. No manual counting. Just results
+            your audience trusts.
           </p>
         </div>
 
-        {/* Value Props */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 lg:gap-16 mb-20 md:mb-32">
-          {valueProps.map((prop, index) => (
-            <div key={index} className="group">
-              <div className="border border-card-foreground/10 hover:border-white/30 transition-all duration-500 p-6 sm:p-8 h-full bg-card/40 hover:bg-card/60">
-                <div className="text-5xl sm:text-6xl font-light opacity-20 group-hover:opacity-40 transition-opacity duration-500 mb-6">
+        {/* Right: Numbered value props */}
+        <div className="flex flex-col justify-center divide-y divide-primary-foreground/10">
+          {valueProps.map((prop) => (
+            <div key={prop.number} className="py-8 first:pt-0 last:pb-0">
+              <div className="flex gap-6">
+                <span className="text-xs font-mono text-primary-foreground/25 shrink-0 pt-1">
                   {prop.number}
+                </span>
+                <div>
+                  <h3 className="text-lg md:text-xl font-serif font-light tracking-wide mb-2">
+                    {prop.title}
+                  </h3>
+                  <p className="text-sm font-light text-primary-foreground/50 leading-relaxed">
+                    {prop.description}
+                  </p>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-light tracking-wide mb-4 leading-tight">
-                  {prop.title}
-                </h3>
-                <p className="text-sm sm:text-base font-light opacity-70 leading-relaxed">
-                  {prop.description}
-                </p>
               </div>
             </div>
           ))}
         </div>
+      </div>
 
-        {/* Stats Bar */}
-        <div className="border-y border-white/10 py-12 md:py-16 mb-16 md:mb-20">
-          <div className="grid grid-cols-3 gap-6 md:gap-12 max-w-4xl mx-auto">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-3xl sm:text-4xl md:text-5xl font-light mb-2 tabular-nums flex justify-center">
-                  {isVisible ? (
-                    <NumberTicker
-                      value={stat.value}
-                      decimalPlaces={stat.decimalPlaces}
-                      delay={stat.delay}
-                      className="tabular-nums"
-                    />
-                  ) : (
-                    <span className="opacity-0">0{stat.suffix}</span>
-                  )}
-                  <span className="ml-1">{stat.suffix}</span>
-                </div>
-
-                <div className="text-xs sm:text-sm tracking-widest opacity-60">
-                  {stat.label}
-                </div>
+      {/* Stats */}
+      <div className="pt-0 mb-14">
+        <div className="grid grid-cols-3 gap-4 max-w-2xl">
+          {stats.map((stat, i) => (
+            <div key={i}>
+              <div className="text-3xl sm:text-4xl md:text-5xl font-light tabular-nums flex">
+                {isVisible ? (
+                  <NumberTicker
+                    value={stat.value}
+                    decimalPlaces={stat.decimalPlaces}
+                    className="tabular-nums"
+                  />
+                ) : (
+                  <span className="opacity-0">0</span>
+                )}
+                <span>{stat.suffix}</span>
               </div>
-            ))}
-          </div>
+              <div className="text-xs tracking-[0.2em] text-primary-foreground/35 mt-1 font-mono">
+                {stat.label}
+              </div>
+            </div>
+          ))}
         </div>
+      </div>
 
-        {/* CTA */}
-        <section className="space-y-8">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 lg:gap-8 px-4">
-            <ShiningButton
-              label="View Events"
-              className="w-full sm:w-auto sm:min-w-[200px]"
-            />
-            <ButtonArrow
-              className="group relative w-full sm:w-auto sm:min-w-[200px] rounded-md py-4 md:py-6 lg:py-8 overflow-hidden bg-secondary/20 hover:bg-secondary/40 border border-border hover:border-secondary transition-all duration-500"
-              text="See How It Works"
-            />
-          </div>
-        </section>
+      {/* CTAs */}
+      <div className="flex flex-col sm:flex-row items-start gap-4">
+        <Button variant="secondary" size="lg" asChild>
+          <Link href="/events">View Events</Link>
+        </Button>
+        <Button
+          size="lg"
+          className="bg-transparent border border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shadow-none"
+          asChild
+        >
+          <Link href="#features">See How It Works</Link>
+        </Button>
       </div>
     </section>
   );

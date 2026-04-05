@@ -1,13 +1,12 @@
-// StackingCardsHero.tsx
 "use client";
-import { ReactLenis } from "lenis/react";
 import { useTransform, motion, useScroll, MotionValue } from "motion/react";
 import { JSX, useRef } from "react";
 import Image from "next/image";
-import ShiningButton from "../../layout/ShinningButton";
 import { TypingAnimation } from "@/components/ui/typing-animation";
+import { CircleArrowDown } from "lucide-react";
+import Link from "next/link";
+import {Button} from "@/components/ui/button";
 
-// Update these with your platform's benefits and services
 const benefits = [
   {
     title: "Career Development",
@@ -52,58 +51,94 @@ const benefits = [
 ];
 
 export default function StackingCardsHero(): JSX.Element {
-  const container = useRef(null);
+  return (
+    <>
+      {/* Hero Section */}
+      <section className="text-foreground h-screen w-full bg-background grid place-content-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-size-[54px_54px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+
+        <div className="relative z-10 px-4 sm:px-6 md:px-8">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light text-center tracking-tight leading-[120%]">
+            <TypingAnimation> Vote Your Way.</TypingAnimation>
+          </h1>
+          <p className="text-lg sm:text-xl md:text-2xl font-light text-center opacity-70 mt-6 max-w-3xl mx-auto">
+            Secure, transparent online voting for campus awards, student competitions, and events across Ghana.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10">
+            <Link href={"/events"} className={"w-full md:w-fit"}>
+              <Button size={"lg"} className={"px-8 w-full"}>
+                BROWSE EVENTS
+              </Button>
+            </Link>
+            <Link
+              href="/nominations"
+              className={"w-full md:w-fit"}
+            >
+             <Button variant={"secondary"} size={"lg"} className={"w-full"}>
+               NOMINATE SOMEONE
+             </Button>
+            </Link>
+          </div>
+
+          <div className="flex flex-col items-center gap-3 mt-12 opacity-40">
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <CircleArrowDown size={32} strokeWidth={1.5} />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stacking Cards Section — tracks its own scroll, independent of the hero */}
+      <StackingSection />
+    </>
+  );
+}
+
+function StackingSection() {
+  const container = useRef<HTMLDivElement>(null);
+
+  /*
+   * offset: ["start start", "end end"]
+   *   0 → top of section hits top of viewport (first card sticky)
+   *   1 → bottom of section hits bottom of viewport (last card fully scrolled)
+   *
+   * With N cards each h-screen:
+   *   card i becomes sticky at progress = i / N
+   *   so its scale range starts at i / N
+   */
   const { scrollYProgress } = useScroll({
     target: container,
     offset: ["start start", "end end"],
   });
 
   return (
-    <ReactLenis root>
-      <main className="bg-background" ref={container}>
-        {/* Hero Section */}
-        <section className="text-foreground h-screen w-full bg-background grid place-content-center relative overflow-hidden">
-          {/* Animated grid background */}
-          <div className="absolute bottom-0 left-0 right-0 top-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-size-[54px_54px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
-
-          <div className="relative z-10 px-4 sm:px-6 md:px-8">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light text-center tracking-tight leading-[120%]">
-              <TypingAnimation> Vote Your Way.</TypingAnimation>
-            </h1>
-            <p className="text-lg sm:text-xl md:text-2xl font-light text-center opacity-70 mt-6 max-w-3xl mx-auto">
-              Discover the benefits and services designed to help you achieve
-              your goals
-            </p>
-            <div className="flex justify-center mt-8">
-              <div className="text-sm tracking-widest opacity-40 animate-bounce">
-                Scroll to explore features ↓
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Stacking Cards Section */}
-        <section className="text-foreground w-full">
-          {benefits.map((benefit, i) => {
-            const targetScale = 1 - (benefits.length - i) * 0.05;
-            return (
-              <BenefitCard
-                key={`benefit_${i}`}
-                i={i}
-                url={benefit?.link}
-                src={benefit?.src}
-                title={benefit?.title}
-                color={benefit?.color}
-                description={benefit?.description}
-                progress={scrollYProgress}
-                range={[i * 0.25, 1]}
-                targetScale={targetScale}
-              />
-            );
-          })}
-        </section>
-      </main>
-    </ReactLenis>
+    <div ref={container}>
+      {benefits.map((benefit, i) => {
+        /*
+         * Last card (i = N-1) should NOT shrink → targetScale = 1
+         * Each preceding card shrinks by 5% more than the next
+         */
+        const targetScale = 1 - (benefits.length - 1 - i) * 0.05;
+        return (
+          <BenefitCard
+            key={`benefit_${i}`}
+            i={i}
+            url={benefit.link}
+            src={benefit.src}
+            title={benefit.title}
+            color={benefit.color}
+            description={benefit.description}
+            progress={scrollYProgress}
+            range={[i / benefits.length, 1]}
+            targetScale={targetScale}
+          />
+        );
+      })}
+    </div>
   );
 }
 
@@ -139,17 +174,26 @@ export const BenefitCard: React.FC<BenefitCardProps> = ({
   const scale = useTransform(progress, range, [1, targetScale]);
 
   return (
+    /*
+     * h-screen + sticky top-0: each card occupies one viewport of scroll distance
+     * and sticks to the top as the next card scrolls in on top of it.
+     */
     <div
       ref={container}
-      className="h-screen flex items-center justify-center sticky top-0"
+      className="h-screen sticky top-0 flex items-center justify-center"
+      style={{ zIndex: i + 1 }}
     >
       <motion.div
         style={{
           backgroundColor: color,
           scale,
-          top: `calc(-5vh + ${i * 25}px)`,
+          /*
+           * Vertical stacking offset: each card is nudged down by 25px
+           * so the stack edge of previous cards peeks out from beneath.
+           */
+          top: `${i * 25}px`,
         }}
-        className="flex flex-col relative -top-[25%] h-[400px] sm:h-[450px] md:h-[500px] w-[90%] sm:w-[85%] md:w-[80%] lg:w-[70%] rounded-lg p-4 sm:p-6 md:p-8 lg:p-10 origin-top"
+        className="relative flex flex-col h-[450px] sm:h-[480px] md:h-[500px] w-[90%] sm:w-[85%] md:w-[80%] lg:w-[70%] rounded-lg p-6 sm:p-8 md:p-10 origin-top"
       >
         <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light tracking-wide mb-4 sm:mb-6">
           {title}
