@@ -178,7 +178,7 @@ const RadavilleNav = () => {
             ? "text-primary-foreground"
             : isScrolled
             ? "bg-background/80 backdrop-blur-md border-b border-border/40 text-foreground"
-            : "bg-transparent text-foreground"
+            : `bg-transparent ${pathname === "/about" ? "text-white" : "text-foreground"}`
         }`}
       >
         <div className="flex items-center justify-between px-4 sm:px-6 md:px-8 h-14 sm:h-16 md:h-20">

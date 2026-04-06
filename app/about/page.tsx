@@ -15,7 +15,6 @@ const SECTIONS = [
   ProblemSection,
   ValuesSection,
   TrustSection,
-  ContactSection,
 ];
 
 export default function AboutPage() {
@@ -119,7 +118,7 @@ export default function AboutPage() {
   return (
     <div
       ref={containerRef}
-      className="relative h-screen overflow-y-auto lg:overflow-hidden bg-black text-white cursor-grab active:cursor-grabbing"
+      className="relative min-h-screen overflow-y-auto lg:overflow-hidden  text-white cursor-grab active:cursor-grabbing"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
