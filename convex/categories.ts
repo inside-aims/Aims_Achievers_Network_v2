@@ -78,9 +78,6 @@ export const remove = mutation({
 
 // ─── Private helpers ──────────────────────────────────────────────────────────
 
-import { Id } from "./_generated/dataModel";
-import { MutationCtx, QueryCtx } from "./_generated/server";
-
 async function uniqueCategoryCode(
   ctx: QueryCtx | MutationCtx,
   eventId: Id<"events">,
