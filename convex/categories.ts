@@ -1,7 +1,7 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
-import { requireEventOwner } from "./helpers";
-import { abbreviate } from "./helpers";
+import { mutation, query, MutationCtx, QueryCtx } from "./_generated/server";
+import { Id } from "./_generated/dataModel";
+import { requireEventOwner, abbreviate } from "./helpers";
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
 
@@ -60,6 +60,7 @@ export const update = mutation({
     const patch: Record<string, unknown> = {};
     if (fields.name !== undefined) patch.name = fields.name;
     if (fields.allowsNominations !== undefined) patch.allowsNominations = fields.allowsNominations;
+    if (Object.keys(patch).length === 0) return;
     await ctx.db.patch(categoryId, patch);
   },
 });

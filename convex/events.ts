@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { MutationCtx, QueryCtx } from "./_generated/server";
-import { requireEventOwner, requireOrganizerProfile, slugify, generateEventCode } from "./helpers";
+import { requireEventOwner, requireOrganizerProfile, getOrganizerProfileOrNull, slugify, generateEventCode } from "./helpers";
 
 // ─── Public queries ───────────────────────────────────────────────────────────
 
@@ -49,10 +49,8 @@ export const getById = query({
 export const listByOrganizer = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
-
-    const profile = await requireOrganizerProfile(ctx);
+    const profile = await getOrganizerProfileOrNull(ctx);
+    if (!profile) return [];
     return await ctx.db
       .query("events")
       .withIndex("by_organizer", (q) => q.eq("organizerId", profile._id))
@@ -139,6 +137,7 @@ export const updateDetails = mutation({
     for (const [k, val] of Object.entries(fields)) {
       if (val !== undefined) patch[k] = val;
     }
+    if (Object.keys(patch).length === 0) return;
     await ctx.db.patch(eventId, patch);
   },
 });
@@ -181,6 +180,7 @@ export const updateLiveSettings = mutation({
     for (const [k, val] of Object.entries(settings)) {
       if (val !== undefined) patch[k] = val;
     }
+    if (Object.keys(patch).length === 0) return;
     await ctx.db.patch(eventId, patch);
   },
 });

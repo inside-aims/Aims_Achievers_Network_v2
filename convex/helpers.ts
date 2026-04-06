@@ -18,6 +18,19 @@ export async function requireOrganizerProfile(ctx: QueryCtx | MutationCtx) {
   return profile;
 }
 
+/** Returns the authenticated organizer profile, or null if unauthenticated / no profile. */
+export async function getOrganizerProfileOrNull(ctx: QueryCtx | MutationCtx) {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) return null;
+
+  const userId = identity.subject as Id<"users">;
+
+  return await ctx.db
+    .query("organizerProfiles")
+    .withIndex("by_userId", (q) => q.eq("userId", userId))
+    .unique();
+}
+
 /** Asserts the caller owns the given event. */
 export async function requireEventOwner(
   ctx: QueryCtx | MutationCtx,

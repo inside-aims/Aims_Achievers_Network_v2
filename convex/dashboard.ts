@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { query } from "./_generated/server";
-import { requireOrganizerProfile } from "./helpers";
+import { getOrganizerProfileOrNull } from "./helpers";
 import {
   votesByNominee,
   revenueByEvent,
@@ -17,10 +17,9 @@ import { Id } from "./_generated/dataModel";
 export const eventStats = query({
   args: { eventId: v.id("events") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return null;
+    const profile = await getOrganizerProfileOrNull(ctx);
+    if (!profile) return null;
 
-    const profile = await requireOrganizerProfile(ctx);
     const event = await ctx.db.get(args.eventId);
     if (!event || event.organizerId !== profile._id) return null;
 
@@ -121,10 +120,9 @@ export const categoryBreakdown = query({
     categoryId: v.id("categories"),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return null;
+    const profile = await getOrganizerProfileOrNull(ctx);
+    if (!profile) return null;
 
-    const profile = await requireOrganizerProfile(ctx);
     const event = await ctx.db.get(args.eventId);
     if (!event || event.organizerId !== profile._id) return null;
 
@@ -159,10 +157,9 @@ export const categoryBreakdown = query({
 export const revenueTimeline = query({
   args: { eventId: v.id("events") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return null;
+    const profile = await getOrganizerProfileOrNull(ctx);
+    if (!profile) return null;
 
-    const profile = await requireOrganizerProfile(ctx);
     const event = await ctx.db.get(args.eventId);
     if (!event || event.organizerId !== profile._id) return null;
 

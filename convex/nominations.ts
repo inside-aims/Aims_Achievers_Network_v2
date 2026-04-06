@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { requireEventOwner, requireOrganizerProfile } from "./helpers";
+import { requireEventOwner, getOrganizerProfileOrNull } from "./helpers";
 
 // ─── Public mutations ─────────────────────────────────────────────────────────
 
@@ -44,11 +44,8 @@ export const submit = mutation({
 export const listPending = query({
   args: { eventId: v.id("events") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
-
-    // Verify caller owns this event
-    const profile = await requireOrganizerProfile(ctx);
+    const profile = await getOrganizerProfileOrNull(ctx);
+    if (!profile) return [];
     const event = await ctx.db.get(args.eventId);
     if (!event || event.organizerId !== profile._id) return [];
 
@@ -70,10 +67,9 @@ export const listAll = query({
     ),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    const profile = await getOrganizerProfileOrNull(ctx);
+    if (!profile) return [];
 
-    const profile = await requireOrganizerProfile(ctx);
     const event = await ctx.db.get(args.eventId);
     if (!event || event.organizerId !== profile._id) return [];
 

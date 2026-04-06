@@ -43,9 +43,10 @@ export const leaderboardByCategory = query({
 
     return await ctx.db
       .query("nominees")
-      .withIndex("by_event_votes", (q) => q.eq("eventId", args.eventId))
+      .withIndex("by_event_category_votes", (q) =>
+        q.eq("eventId", args.eventId).eq("categoryId", args.categoryId),
+      )
       .order("desc")
-      .filter((q) => q.eq(q.field("categoryId"), args.categoryId))
       .take(100);
   },
 });
@@ -113,6 +114,7 @@ export const update = mutation({
     if (fields.displayName !== undefined) patch.displayName = fields.displayName;
     if (fields.avatarUrl !== undefined) patch.avatarUrl = fields.avatarUrl;
     if (fields.bio !== undefined) patch.bio = fields.bio;
+    if (Object.keys(patch).length === 0) return;
     await ctx.db.patch(nomineeId, patch);
   },
 });

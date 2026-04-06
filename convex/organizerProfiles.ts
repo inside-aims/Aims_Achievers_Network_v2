@@ -70,6 +70,7 @@ export const update = mutation({
     if (args.displayName !== undefined) patch.displayName = args.displayName;
     if (args.avatarUrl !== undefined) patch.avatarUrl = args.avatarUrl;
 
+    if (Object.keys(patch).length === 0) return;
     await ctx.db.patch(profile._id, patch);
   },
 });

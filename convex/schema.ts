@@ -127,7 +127,8 @@ export default defineSchema({
     .index("by_category", ["categoryId"])
     .index("by_event_category", ["eventId", "categoryId"])
     .index("by_shortcode", ["eventId", "shortcode"])
-    .index("by_event_votes", ["eventId", "totalVotes"]),  // leaderboard sort
+    .index("by_event_votes", ["eventId", "totalVotes"])  // leaderboard sort (cross-category)
+    .index("by_event_category_votes", ["eventId", "categoryId", "totalVotes"]),  // per-category leaderboard
 
 
   // ─────────────────────────────────────────────
