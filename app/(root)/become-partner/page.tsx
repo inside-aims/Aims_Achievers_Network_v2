@@ -188,13 +188,13 @@ export default function BecomePartnerPage() {
                 real communities, real impact.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Button size="default" asChild>
+                <Button size="default" className="flex-1" asChild>
                   <a href="#apply">
                     Apply to Partner
                     <ArrowRight className="ml-2 w-3.5 h-3.5" />
                   </a>
                 </Button>
-                <Button size="default" variant="outline" asChild>
+                <Button size="default" variant="outline" className="flex-1" asChild>
                   <Link href="/contact">Talk First</Link>
                 </Button>
               </div>
@@ -623,7 +623,7 @@ export default function BecomePartnerPage() {
                 </h2>
               </div>
               <div className="flex flex-col gap-3 md:items-end">
-                <Button size="lg" variant="secondary" asChild>
+                <Button size="lg" variant="secondary" className="w-full" asChild>
                   <a href="#apply">
                     Apply Now
                     <ArrowRight className="ml-2 w-4 h-4" />
@@ -631,7 +631,7 @@ export default function BecomePartnerPage() {
                 </Button>
                 <Button
                   size="lg"
-                  className="bg-transparent border border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shadow-none"
+                  className="w-full bg-transparent border border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shadow-none"
                   asChild
                 >
                   <Link href="/how-it-works">How It Works</Link>

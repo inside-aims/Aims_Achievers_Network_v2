@@ -44,13 +44,13 @@ export default function NotFound() {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full px-8">
-            <Button asChild size="lg" className="w-full sm:w-auto font-mono text-xs tracking-widest px-8">
+            <Button asChild size="lg" className="w-full sm:flex-1 font-mono text-xs tracking-widest px-8">
               <Link href="/">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 RETURN HOME
               </Link>
             </Button>
-            <Button asChild variant="secondary" size="lg" className="w-full sm:w-auto font-mono text-xs tracking-widest px-8">
+            <Button asChild variant="secondary" size="lg" className="w-full sm:flex-1 font-mono text-xs tracking-widest px-8">
               <Link href="/events">
                 BROWSE EVENTS
               </Link>

@@ -106,7 +106,7 @@ const ValuePropositionSection = () => {
 
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row items-start gap-3 pt-10">
-                <Button variant="secondary" size="lg" asChild>
+                <Button variant="secondary" size="lg" className="w-full sm:flex-1" asChild>
                   <Link href="/events">
                     View Events
                     <ArrowRight className="ml-2 w-4 h-4" />
@@ -114,7 +114,7 @@ const ValuePropositionSection = () => {
                 </Button>
                 <Button
                   size="lg"
-                  className="bg-transparent border border-primary-foreground/25 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shadow-none"
+                  className="w-full sm:flex-1 bg-transparent border border-primary-foreground/25 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shadow-none"
                   asChild
                 >
                   <Link href="/how-it-works">See How It Works</Link>

@@ -101,7 +101,7 @@ export default function StackingCardsHero(): JSX.Element {
                   transition={{ duration: 0.5, delay: 0.6, ease: [0.4, 0, 0.2, 1] }}
                   className="mt-9 flex flex-wrap gap-3"
                 >
-                  <Button size="lg" variant="secondary" asChild>
+                  <Button size="lg" variant="secondary" className="flex-1" asChild>
                     <Link href="/events">
                       Browse Events
                       <ArrowRight className="ml-2 w-4 h-4" />
@@ -109,7 +109,7 @@ export default function StackingCardsHero(): JSX.Element {
                   </Button>
                   <Button
                     size="lg"
-                    className="bg-transparent border border-primary-foreground/25 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shadow-none"
+                    className="flex-1 bg-transparent border border-primary-foreground/25 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shadow-none"
                     asChild
                   >
                     <Link href="/nominations">Nominate Someone</Link>

@@ -341,7 +341,7 @@ export default function ContactPage() {
                 </p>
               </div>
               <div className="flex flex-col gap-3 md:items-end">
-                <Button size="lg" variant="secondary" asChild>
+                <Button size="lg" variant="secondary" className="w-full" asChild>
                   <a href="mailto:hello@aimsachievers.network">
                     Email Us
                     <ArrowRight className="ml-2 w-4 h-4" />
@@ -349,7 +349,7 @@ export default function ContactPage() {
                 </Button>
                 <Button
                   size="lg"
-                  className="bg-transparent border border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shadow-none"
+                  className="w-full bg-transparent border border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shadow-none"
                   asChild
                 >
                   <a href="tel:+233240000000">Call Us</a>

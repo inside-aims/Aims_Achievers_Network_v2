@@ -186,19 +186,19 @@ const NavigationButtons = ({
   isStepValid,
   isSubmitting,
 }: NavigationButtonsProps) => (
-  <div className="flex justify-between">
-    <Button onClick={onPrev} disabled={currentStep === 1 || isSubmitting} variant="secondary" size="lg">
+  <div className="flex gap-3">
+    <Button onClick={onPrev} disabled={currentStep === 1 || isSubmitting} variant="secondary" size="lg" className="flex-1">
       <ChevronLeft className="w-5 h-5 mr-2" />
       Previous
     </Button>
 
     {currentStep < 5 ? (
-      <Button onClick={onNext} disabled={!isStepValid()} size="lg">
+      <Button onClick={onNext} disabled={!isStepValid()} size="lg" className="flex-1">
         Next
         <ChevronRight className="w-5 h-5 ml-2" />
       </Button>
     ) : (
-      <Button onClick={onSubmit} disabled={isSubmitting} size="lg" className="px-8">
+      <Button onClick={onSubmit} disabled={isSubmitting} size="lg" className="flex-1">
         {isSubmitting ? (
           <span className="flex items-center gap-2">
             <span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
