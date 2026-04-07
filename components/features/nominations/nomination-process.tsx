@@ -85,8 +85,8 @@ const NominationProcess = () => {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    if ("files" in e.target && e.target.files && e.target.files.length > 0) {
-      setFormData((prev) => ({ ...prev, [name]: e.target.files![0] }));
+    if ("files" in e.target && (e.target as HTMLInputElement).files?.length) {
+      setFormData((prev) => ({ ...prev, [name]: (e.target as HTMLInputElement).files![0] }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
