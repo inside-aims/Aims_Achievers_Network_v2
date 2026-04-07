@@ -1,9 +1,23 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState, useMemo } from "react"
 import { motion, MotionProps, useInView } from "motion/react"
 
 import { cn } from "@/lib/utils"
+
+// Pre-built motion elements — avoids creating components during render
+const motionElements = {
+  span: motion.span,
+  p:    motion.p,
+  h1:   motion.h1,
+  h2:   motion.h2,
+  h3:   motion.h3,
+  h4:   motion.h4,
+  div:  motion.div,
+  li:   motion.li,
+} as const;
+
+type AllowedAs = keyof typeof motionElements;
 
 interface TypingAnimationProps extends MotionProps {
   children?: string
@@ -15,7 +29,7 @@ interface TypingAnimationProps extends MotionProps {
   delay?: number
   pauseDelay?: number
   loop?: boolean
-  as?: React.ElementType
+  as?: AllowedAs
   startOnView?: boolean
   showCursor?: boolean
   blinkCursor?: boolean
@@ -39,9 +53,7 @@ export function TypingAnimation({
   cursorStyle = "line",
   ...props
 }: TypingAnimationProps) {
-  const MotionComponent = motion.create(Component, {
-    forwardMotionProps: true,
-  })
+  const MotionComponent = motionElements[Component];
 
   const [displayedText, setDisplayedText] = useState<string>("")
   const [currentWordIndex, setCurrentWordIndex] = useState(0)

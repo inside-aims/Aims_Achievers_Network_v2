@@ -1,6 +1,7 @@
+"use client";
 import Footer from "@/components/layout/Footer";
 import RadavilleNav from "../../components/layout/RadavilleNav";
-
+import { ReactLenis } from "lenis/react";
 
 const Layout = ({
   children,
@@ -8,11 +9,13 @@ const Layout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <div className={"min-h-screen bg-background"}>
-      <RadavilleNav />
-      <main>{children}</main>
-      <Footer/>
-    </div>
+    <ReactLenis root>
+      <div className={"bg-background"}>
+        <RadavilleNav />
+        <main>{children}</main>
+        <Footer />
+      </div>
+    </ReactLenis>
   );
 };
 

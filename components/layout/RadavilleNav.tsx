@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { SquareMenu, X } from "lucide-react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const navItems = [
   { number: "01", title: "Home", href: "/" },
@@ -14,140 +17,215 @@ const RadavilleNav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMenuClosing, setIsMenuClosing] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const menuRef = useRef(null);
-  const menuItemsRef = useRef([]);
+  const pathname = usePathname();
 
-  // Handle scroll for navbar background
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuItemsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const decorativeLineRef = useRef<HTMLDivElement>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const bottomRowRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Prevent body scroll when menu is open
   useEffect(() => {
-    if (isMenuOpen || isMenuClosing) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-
-    // Cleanup on unmount
+    document.body.style.overflow = isMenuOpen || isMenuClosing ? "hidden" : "";
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "";
     };
   }, [isMenuOpen, isMenuClosing]);
 
-  // Menu animations
   useEffect(() => {
-    if (isMenuOpen && !isMenuClosing) {
-      // Animate menu background - entrance
-      if (menuRef.current) {
-        menuRef.current.style.opacity = "0";
-        menuRef.current.style.transform = "scale(0.95)";
+    if (!isMenuOpen || isMenuClosing) return;
 
-        requestAnimationFrame(() => {
-          menuRef.current.style.transition =
-            "opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)";
-          menuRef.current.style.opacity = "1";
-          menuRef.current.style.transform = "scale(1)";
-        });
-      }
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
 
-      // Stagger menu items - entrance
-      menuItemsRef.current.forEach((item, index) => {
-        if (item) {
-          item.style.opacity = "0";
-          item.style.transform = "translateY(40px)";
-
-          setTimeout(() => {
-            item.style.transition =
-              "opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)";
-            item.style.opacity = "1";
-            item.style.transform = "translateY(0)";
-          }, index * 100 + 250);
-        }
+    if (menuRef.current) {
+      menuRef.current.style.opacity = "0";
+      menuRef.current.style.transform = "translateY(-8px)";
+      requestAnimationFrame(() => {
+        if (!menuRef.current) return;
+        menuRef.current.style.transition =
+          "opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)";
+        menuRef.current.style.opacity = "1";
+        menuRef.current.style.transform = "translateY(0)";
       });
     }
+
+    if (decorativeLineRef.current) {
+      decorativeLineRef.current.style.width = "0";
+      timeouts.push(
+        setTimeout(() => {
+          if (!decorativeLineRef.current) return;
+          decorativeLineRef.current.style.transition =
+            "width 0.9s cubic-bezier(0.4, 0, 0.2, 1)";
+          decorativeLineRef.current.style.width = "100%";
+        }, 200)
+      );
+    }
+
+    menuItemsRef.current.forEach((item, index) => {
+      if (!item) return;
+      item.style.opacity = "0";
+      item.style.transform = "translateX(-24px)";
+      timeouts.push(
+        setTimeout(() => {
+          if (!item) return;
+          item.style.transition =
+            "opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)";
+          item.style.opacity = "1";
+          item.style.transform = "translateX(0)";
+        }, index * 90 + 180)
+      );
+    });
+
+    if (sidebarRef.current) {
+      sidebarRef.current.style.opacity = "0";
+      sidebarRef.current.style.transform = "translateY(16px)";
+      timeouts.push(
+        setTimeout(() => {
+          if (!sidebarRef.current) return;
+          sidebarRef.current.style.transition =
+            "opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)";
+          sidebarRef.current.style.opacity = "1";
+          sidebarRef.current.style.transform = "translateY(0)";
+        }, navItems.length * 90 + 200)
+      );
+    }
+
+    if (bottomRowRef.current) {
+      bottomRowRef.current.style.opacity = "0";
+      timeouts.push(
+        setTimeout(() => {
+          if (!bottomRowRef.current) return;
+          bottomRowRef.current.style.transition = "opacity 0.5s ease";
+          bottomRowRef.current.style.opacity = "1";
+        }, navItems.length * 90 + 350)
+      );
+    }
+
+    return () => timeouts.forEach(clearTimeout);
   }, [isMenuOpen, isMenuClosing]);
 
   const toggleMenu = () => {
-    if (isMenuOpen) {
-      // Close animation
-      setIsMenuClosing(true);
+    if (!isMenuOpen) {
+      setIsMenuOpen(true);
+      return;
+    }
 
-      // Animate items out in reverse
-      menuItemsRef.current.forEach((item, index) => {
-        if (item) {
-          setTimeout(() => {
-            item.style.transition =
-              "opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)";
-            item.style.opacity = "0";
-            item.style.transform = "translateY(-30px)";
-          }, (menuItemsRef.current.length - 1 - index) * 80);
-        }
-      });
+    setIsMenuClosing(true);
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
 
-      // Animate background out
+    menuItemsRef.current.forEach((item, index) => {
+      if (!item) return;
+      timeouts.push(
+        setTimeout(() => {
+          if (!item) return;
+          item.style.transition =
+            "opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)";
+          item.style.opacity = "0";
+          item.style.transform = "translateX(-16px)";
+        }, (menuItemsRef.current.length - 1 - index) * 60)
+      );
+    });
+
+    if (decorativeLineRef.current) {
+      decorativeLineRef.current.style.transition =
+        "width 0.4s cubic-bezier(0.4, 0, 0.2, 1)";
+      decorativeLineRef.current.style.width = "0";
+    }
+
+    if (sidebarRef.current) {
+      sidebarRef.current.style.transition =
+        "opacity 0.3s ease, transform 0.3s ease";
+      sidebarRef.current.style.opacity = "0";
+      sidebarRef.current.style.transform = "translateY(8px)";
+    }
+
+    if (bottomRowRef.current) {
+      bottomRowRef.current.style.transition = "opacity 0.2s ease";
+      bottomRowRef.current.style.opacity = "0";
+    }
+
+    timeouts.push(
       setTimeout(() => {
-        if (menuRef.current) {
-          menuRef.current.style.transition =
-            "opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)";
-          menuRef.current.style.opacity = "0";
-          menuRef.current.style.transform = "scale(1.05)";
-        }
-      }, menuItemsRef.current.length * 80 + 100);
+        if (!menuRef.current) return;
+        menuRef.current.style.transition =
+          "opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)";
+        menuRef.current.style.opacity = "0";
+        menuRef.current.style.transform = "translateY(-6px)";
+      }, menuItemsRef.current.length * 60 + 80)
+    );
 
-      // Remove menu from DOM after animation
+    timeouts.push(
       setTimeout(() => {
         setIsMenuOpen(false);
         setIsMenuClosing(false);
-      }, menuItemsRef.current.length * 80 + 700);
-    } else {
-      setIsMenuOpen(true);
-    }
+      }, menuItemsRef.current.length * 60 + 550)
+    );
   };
+
+  const menuActive = isMenuOpen || isMenuClosing;
 
   return (
     <>
-      {/* Header - Transparent when closed, glassmorphism on scroll */}
-      <header 
-        className={`sticky top-0 left-0 right-0 z-50 text-foreground transition-all duration-500 ${
-          isScrolled 
-            ? 'bg-background/70 backdrop-blur-md shadow-sm' 
-            : 'bg-transparent'
+      <header
+        className={`sticky top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          menuActive
+            ? "text-primary-foreground"
+            : isScrolled
+            ? "bg-background/80 backdrop-blur-md border-b border-border/40 text-foreground"
+            : `bg-transparent ${pathname === "/about" ? "text-white" : "text-foreground"}`
         }`}
       >
-        <div className="flex items-center justify-between p-4 sm:p-6 md:p-8">
-          <div className="text-xs sm:text-sm tracking-widest font-light font-serif">
-            AIMS ACHIEVERS NETWORK
-          </div>
-
-          <button
-            onClick={toggleMenu}
-            className="group relative text-xs sm:text-sm tracking-widest font-light hover:opacity-70 transition-opacity duration-300"
-            aria-label={isMenuOpen || isMenuClosing ? "Close menu" : "Open menu"}
+        <div className="flex items-center justify-between px-4 sm:px-6 md:px-8 h-14 sm:h-16 md:h-20">
+          <Link
+            href="/"
+            className="text-xs sm:text-sm tracking-widest font-light font-serif hover:opacity-60 transition-opacity duration-300"
           >
-            {isMenuOpen || isMenuClosing ? <X size={20} /> : <SquareMenu size={20} />}
-          </button>
+            AIMS ACHIEVERS NETWORK
+          </Link>
+          <Button
+            variant="ghost"
+            size="icon-lg"
+            onClick={toggleMenu}
+            aria-label={menuActive ? "Close menu" : "Open menu"}
+            className="rounded-sm hover:bg-transparent hover:opacity-60 transition-opacity duration-300"
+          >
+            {menuActive ? <X size={20} /> : <SquareMenu size={20} />}
+          </Button>
         </div>
       </header>
 
-      {/* Full-screen Menu Overlay - 30% Secondary Color (Yellow/Orange) */}
-      {(isMenuOpen || isMenuClosing) && (
+      {menuActive && (
         <div
           ref={menuRef}
-          className="fixed inset-0 bg-background text-secondary-foreground z-40 flex items-center justify-center p-4 sm:p-6 md:p-8"
-          style={{ backdropFilter: 'blur(8px)' }}
+          className="fixed inset-0 bg-primary z-40 flex flex-col"
         >
-          {/* Container for responsive layout */}
-          <div className="relative w-full h-full max-w-6xl mx-auto">
-            
-            {/* Bigger Navigation Items - Using Primary Color (10% accent) */}
-            <nav className="absolute bottom-10 left-4 sm:bottom-10 sm:left-6 md:bottom-10 md:left-8 lg:left-8 lg:top-1/2 lg:-translate-y-1/2 space-y-6 sm:space-y-8 md:space-y-10 lg:space-y-2">
+          {/* Subtle grid texture */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:48px_48px] pointer-events-none" />
+
+          {/* AAN watermark */}
+          <span className="absolute right-0 bottom-0 text-[35vw] sm:text-[28vw] font-serif font-bold leading-none tracking-tighter select-none text-primary-foreground/[0.04] pointer-events-none">
+            AAN
+          </span>
+
+          {/* Spacer to clear the sticky header */}
+          <div className="h-14 sm:h-16 md:h-20 shrink-0 px-4 sm:px-6 md:px-8 flex items-end pb-0">
+            <div
+              ref={decorativeLineRef}
+              className="h-px bg-primary-foreground/15"
+              style={{ width: 0 }}
+            />
+          </div>
+
+          {/* Main content — fills remaining space */}
+          <div className="flex-1 flex flex-col lg:flex-row px-4 sm:px-6 md:px-8 pt-10 sm:pt-12 lg:pt-0 lg:items-center lg:justify-between overflow-hidden gap-10 lg:gap-0">
+            {/* Navigation links */}
+            <nav className="space-y-2 sm:space-y-3">
               {navItems.map((item, index) => (
                 <div
                   key={item.number}
@@ -156,42 +234,76 @@ const RadavilleNav = () => {
                   }}
                   className="group cursor-pointer"
                 >
-                  <a
+                  <Link
                     href={item.href}
-                    className="flex items-baseline gap-4 sm:gap-6 md:gap-8 lg:gap-10"
+                    onClick={toggleMenu}
+                    className="flex items-baseline gap-3 sm:gap-5 md:gap-6"
                   >
-                    <span className="text-xs sm:text-sm md:text-base text-primary opacity-60 group-hover:opacity-100 transition-opacity duration-300 shrink-0 font-mono">
+                    <span
+                      className={`text-[10px] sm:text-xs shrink-0 font-mono transition-all duration-300 ${
+                        pathname === item.href
+                          ? "text-secondary opacity-100"
+                          : "text-primary-foreground/30 group-hover:text-secondary group-hover:opacity-100"
+                      }`}
+                    >
                       {item.number}
                     </span>
-                    <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-wide group-hover:tracking-wider transition-all duration-500 leading-tight font-serif text-foreground hover:text-primary">
+                    <span
+                      className={`relative text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light leading-tight font-serif transition-all duration-400 text-primary-foreground ${
+                        pathname === item.href
+                          ? "opacity-100"
+                          : "opacity-50 group-hover:opacity-100"
+                      }`}
+                    >
                       {item.title}
+                      <span
+                        className={`absolute -bottom-0.5 left-0 h-px bg-secondary transition-all duration-500 ease-out ${
+                          pathname === item.href
+                            ? "w-full"
+                            : "w-0 group-hover:w-full"
+                        }`}
+                      />
                     </span>
-                  </a>
+                  </Link>
                 </div>
               ))}
             </nav>
 
-            {/* Smaller Navigation Links - 10% Accent Details */}
-            <div className="absolute top-44 right-4 sm:top-6 sm:right-6 md:top-8 md:right-8 lg:bottom-8 lg:right-8 lg:top-auto">
-              <div className="flex flex-col gap-6 md:gap-8 text-xs sm:text-sm text-muted-foreground">
-                <div className="space-y-1">
-                  <p className="tracking-widest font-serif text-accent-foreground">01 Services</p>
-                  <p className="font-light leading-relaxed font-serif">
-                    Seamless Voting · Ticketing · Nominations
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="tracking-widest font-serif text-primary">02 Location</p>
-                  <p className="font-light font-serif">Koforidua, Ghana</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="tracking-widest font-serif text-primary">03 Social</p>
-                  <p className="font-light font-serif">
-                    Instagram · X · WhatsApp · LinkedIn
-                  </p>
-                </div>
+            {/* Sidebar info panel */}
+            <div
+              ref={sidebarRef}
+              className="lg:self-end"
+            >
+              <div className="flex flex-col gap-4">
+                {[
+                  { label: "SERVICES", value: "Voting · Ticketing · Nominations" },
+                  { label: "LOCATION", value: "Koforidua, Ghana" },
+                  { label: "SOCIAL", value: "Instagram · X · LinkedIn" },
+                ].map((item) => (
+                  <div key={item.label}>
+                    <p className="text-[10px] tracking-[0.22em] font-mono text-primary-foreground/30 uppercase mb-0.5">
+                      {item.label}
+                    </p>
+                    <p className="text-xs font-mono text-primary-foreground/60">
+                      {item.value}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
+          </div>
+
+          {/* Bottom row */}
+          <div
+            ref={bottomRowRef}
+            className="shrink-0 px-4 sm:px-6 md:px-8 py-5 border-t border-primary-foreground/10 flex items-center justify-between"
+          >
+            <span className="text-[10px] font-mono tracking-widest text-primary-foreground/25">
+              © {new Date().getFullYear()} AIMS ACHIEVERS NETWORK
+            </span>
+            <span className="text-[10px] font-mono tracking-widest text-primary-foreground/25">
+              ONLINE VOTING PLATFORM
+            </span>
           </div>
         </div>
       )}

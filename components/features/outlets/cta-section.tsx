@@ -25,7 +25,7 @@ export const CTASection = () => (
       <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
         <Button
           size="lg"
-          className={"w-full md:w-fit"}
+          className="w-full sm:flex-1"
           onClick={() => ''} //fix later
         >
           Become a Partner
@@ -35,7 +35,7 @@ export const CTASection = () => (
         <Button
           size="lg"
           variant="ghost"
-          className={"w-full md:w-fit border border "}
+          className="w-full sm:flex-1 border"
           onClick={() => ''} //fix later
         >
           Learn More

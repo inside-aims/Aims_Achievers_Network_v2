@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 const GalleryPage = () => {
   return(
-    <div id={"gallery"} className={"!feature"}>
+    <div id={"gallery"}>
       <Gallery/>
     </div>
   )

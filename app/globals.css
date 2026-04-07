@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -181,12 +183,16 @@
     @apply bg-background text-foreground;
   }
 
-  .feature{
-    @apply px-4 md:px-8 lg:px-32 py-8; /* Any padding change same for .feature-no */
+  /* Single source of truth for page horizontal + vertical padding.
+     Change here and every page / landing section updates. */
+  .feature {
+    @apply px-4 md:px-8 lg:px-16 py-16 md:py-20;
   }
 
-  .feature-no{
-    @apply px-4 md:px-8 lg:px-32; /* Any padding change same for .feature  */
+  /* Horizontal padding only — used by full-width landing sections
+     that manage their own vertical rhythm */
+  .feature-no {
+    @apply px-4 md:px-8 lg:px-16;
   }
 
   .parent-header {
@@ -198,10 +204,16 @@
   }
 
   .feature-subheader {
-    @apply text-base md:text-lg text-muted-foreground ;
+    @apply text-base md:text-lg text-muted-foreground;
   }
 
   .rounded-card {
-    @apply shadow-sm rounded-lg
+    @apply shadow-sm rounded-lg;
+  }
+
+  /* Skeleton shimmer */
+  .skeleton {
+    @apply bg-muted animate-pulse rounded;
   }
 }
+
