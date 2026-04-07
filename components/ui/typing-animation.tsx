@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState, useMemo } from "react"
+import React, { useEffect, useRef, useState, useMemo } from "react"
 import { motion, MotionProps, useInView } from "motion/react"
 
 import { cn } from "@/lib/utils"
@@ -168,8 +168,8 @@ export function TypingAnimation({
 
   return (
     <MotionComponent
-      ref={elementRef}
-      className={cn("leading-[5rem] tracking-[-0.02em]", className)}
+      ref={elementRef as React.RefObject<never>}
+      className={cn("leading-20 tracking-[-0.02em]", className)}
       {...props}
     >
       {displayedText}
