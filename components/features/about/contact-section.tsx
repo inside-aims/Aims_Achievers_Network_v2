@@ -180,12 +180,3 @@ export function ContactSection() {
     </div>
   );
 }
-
-// Demo wrapper
-export default function Demo() {
-  return (
-    <div className="w-full min-h-screen bg-black text-white">
-      <ContactSection />
-    </div>
-  );
-}
