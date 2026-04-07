@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 const NominationsPage = () => {
   return(
     <div id={"nominations"} className={"feature"}>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<div className="flex h-[50vh] items-center justify-center">Loading nomination process...</div>}>
         <NominationProcess/>
       </Suspense>
     </div>

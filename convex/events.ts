@@ -31,9 +31,104 @@ export const listPublic = query({
   handler: async (ctx) => {
     return await ctx.db
       .query("events")
-      .withIndex("by_status", (q) => q.eq("status", "live"))
-      .filter((q) => q.eq(q.field("publicPageVisible"), true))
+      .withIndex("by_status_public", (q) =>
+        q.eq("status", "live").eq("publicPageVisible", true),
+      )
       .take(50);
+  },
+});
+
+/**
+ * Public listing shaped for the UI — live + closed events with their
+ * categories embedded. Used by the events listing page.
+ */
+export const listPublicWithCategories = query({
+  args: {},
+  handler: async (ctx) => {
+    const liveEvents = await ctx.db
+      .query("events")
+      .withIndex("by_status_public", (q) =>
+        q.eq("status", "live").eq("publicPageVisible", true),
+      )
+      .order("desc")
+      .take(50);
+
+    const closedEvents = await ctx.db
+      .query("events")
+      .withIndex("by_status_public", (q) =>
+        q.eq("status", "closed").eq("publicPageVisible", true),
+      )
+      .order("desc")
+      .take(50);
+
+    const tsToDate = (ts?: number) =>
+      ts ? new Date(ts).toISOString().split("T")[0] : "";
+
+    const result = [];
+    for (const event of [...liveEvents, ...closedEvents]) {
+      const categories = await ctx.db
+        .query("categories")
+        .withIndex("by_event", (q) => q.eq("eventId", event._id))
+        .order("asc")
+        .take(100);
+
+      result.push({
+        eventId: event.slug,
+        title: event.title,
+        description: event.description ?? "",
+        image: event.bannerUrl ?? "",
+        startDate: tsToDate(event.votingStartsAt),
+        endDate: tsToDate(event.votingEndsAt),
+        categories: categories.map((cat) => ({
+          id: cat.categoryCode,
+          name: cat.name,
+          description: cat.description ?? "",
+          votePrice: event.pricePerVotePesewas / 100,
+        })),
+      });
+    }
+
+    return result;
+  },
+});
+
+/**
+ * Fetch a single event by slug with all its categories.
+ * Used by the /events/[eventId] page.
+ */
+export const getBySlugWithCategories = query({
+  args: { slug: v.string() },
+  handler: async (ctx, args) => {
+    const event = await ctx.db
+      .query("events")
+      .withIndex("by_slug", (q) => q.eq("slug", args.slug))
+      .unique();
+
+    if (!event) return null;
+
+    const categories = await ctx.db
+      .query("categories")
+      .withIndex("by_event", (q) => q.eq("eventId", event._id))
+      .order("asc")
+      .take(100);
+
+    const tsToDate = (ts?: number) =>
+      ts ? new Date(ts).toISOString().split("T")[0] : "";
+
+    return {
+      eventId: event.slug,
+      title: event.title,
+      description: event.description ?? "",
+      image: event.bannerUrl ?? "",
+      startDate: tsToDate(event.votingStartsAt),
+      endDate: tsToDate(event.votingEndsAt),
+      categories: categories.map((cat) => ({
+        id: cat.categoryCode,
+        name: cat.name,
+        description: cat.description ?? "",
+        votePrice: event.pricePerVotePesewas / 100,
+      })),
+    };
   },
 });
 

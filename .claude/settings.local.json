@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.walnuthillarts.org)",
+      "Bash(bun add:*)",
+      "Bash(bun lint:*)",
+      "Bash(bun --env-file=.env.local run scripts/seed.ts)",
+      "Bash(curl -s -X POST https://zukslqwdarctkveeczks.supabase.co/rest/v1/rpc/version -H 'apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1a3NscXdkYXJjdGt2ZWVjemtzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTMwMzg2OCwiZXhwIjoyMDkwODc5ODY4fQ.-3DO34b3oHIXbNfjMKo3toNDbsCpoUGNyASXPCj5cfY' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1a3NscXdkYXJjdGt2ZWVjemtzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTMwMzg2OCwiZXhwIjoyMDkwODc5ODY4fQ.-3DO34b3oHIXbNfjMKo3toNDbsCpoUGNyASXPCj5cfY')",
+      "Bash(supabase --version)",
+      "Bash(supabase projects:*)",
+      "Bash(supabase db:*)",
+      "Bash(supabase status:*)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(list\\(d.keys\\(\\)\\)\\)\")",
+      "Bash(supabase init:*)",
+      "Bash(supabase link:*)",
+      "Bash(cp:*)",
+      "Bash(mkdir -p supabase/migrations)",
+      "Bash(cp supabase/schema.sql supabase/migrations/20260404000000_init.sql)",
+      "mcp__ide__getDiagnostics",
+      "Bash(node:*)",
+      "Bash(node_modules/.bin/tsc --noEmit --strict /tmp/test2.ts)",
+      "Bash(node_modules/.bin/tsc --noEmit --strict /tmp/test3.ts)",
+      "Bash(node_modules/.bin/tsc --noEmit --strict /tmp/test4.ts)",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(mkdir -p \"C:/Users/Work/Aims/Aims_Achievers_Network_v2/app/\\(root\\)/how-it-works\")",
+      "Bash(mkdir -p \"C:/Users/Work/Aims/Aims_Achievers_Network_v2/app/\\(root\\)/become-partner\")",
+      "Bash(bun run:*)",
+      "Bash(sed:*)"
+    ]
+  }
+}

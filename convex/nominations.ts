@@ -1,41 +1,144 @@
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { RateLimiter, DAY } from "@convex-dev/rate-limiter";
+import { components } from "./_generated/api";
 import { requireEventOwner, getOrganizerProfileOrNull } from "./helpers";
+
+const rateLimiter = new RateLimiter(components.rateLimiter, {
+  // Max 5 nominations from the same email per event per 24-hour window
+  nominationSubmit: { kind: "fixed window", rate: 5, period: DAY },
+});
 
 // ─── Public mutations ─────────────────────────────────────────────────────────
 
 /**
- * Anyone can submit a nomination — no account required.
- * The category must have allowsNominations = true and the event must have
- * nominationsOpen = true.
+ * Returns a short-lived upload URL for the nominee photo.
+ * Call this before submit(), upload the file, then pass the storageId.
+ */
+export const generatePhotoUploadUrl = mutation({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.storage.generateUploadUrl();
+  },
+});
+
+/**
+ * Submit a public nomination. No account required.
+ * Guards: nominationsOpen, allowsNominations, rate limit, phone dedup.
+ * If event.nominationAutoApprove is true, creates the nominee immediately.
  */
 export const submit = mutation({
   args: {
-    eventId: v.id("events"),
-    categoryId: v.id("categories"),
+    // Event & category (URL-friendly identifiers, not DB IDs)
+    eventSlug: v.string(),
+    categoryCode: v.string(),
+
+    // Nominee info
     nomineeName: v.string(),
-    nomineeIdentifier: v.optional(v.string()),
-    avatarUrl: v.optional(v.string()),
+    nomineePhone: v.optional(v.string()),
+    nomineeDepartment: v.optional(v.string()),
+    nomineeYear: v.optional(v.string()),
+    nomineeProgram: v.optional(v.string()),
+    photoStorageId: v.optional(v.id("_storage")),
+
+    // Nominator info
+    nominatorName: v.string(),
+    nominatorEmail: v.string(),
+    nominatorPhone: v.optional(v.string()),
+    nominatorRelationship: v.string(),
+
+    // Nomination details
+    nominationReason: v.string(),
+    achievements: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const event = await ctx.db.get(args.eventId);
-    if (!event) throw new Error("Event not found");
-    if (!event.nominationsOpen) throw new Error("Nominations are closed for this event");
+    // 1. Resolve event by slug
+    const event = await ctx.db
+      .query("events")
+      .withIndex("by_slug", (q) => q.eq("slug", args.eventSlug))
+      .unique();
+    if (!event) throw new ConvexError("Event not found");
+    if (!event.nominationsOpen) throw new ConvexError("Nominations are not open for this event");
 
-    const category = await ctx.db.get(args.categoryId);
-    if (!category) throw new Error("Category not found");
-    if (category.eventId !== args.eventId) throw new Error("Category does not belong to this event");
-    if (!category.allowsNominations) throw new Error("This category does not accept nominations");
+    // 2. Resolve category by code within the event
+    const category = await ctx.db
+      .query("categories")
+      .withIndex("by_event_code", (q) =>
+        q.eq("eventId", event._id).eq("categoryCode", args.categoryCode),
+      )
+      .unique();
+    if (!category) throw new ConvexError("Category not found");
+    if (!category.allowsNominations)
+      throw new ConvexError("This category is not open for nominations");
 
-    return await ctx.db.insert("nominationSubmissions", {
-      eventId: args.eventId,
-      categoryId: args.categoryId,
+    // 3. Rate limit: 5 nominations per email per event per day
+    const emailKey = `${args.nominatorEmail.toLowerCase().trim()}:${event._id}`;
+    await rateLimiter.limit(ctx, "nominationSubmit", { key: emailKey, throws: true });
+
+    // 4. Phone dedup: same nominee phone cannot be submitted twice in the same category
+    const nomineeIdentifier = args.nomineePhone?.trim() || undefined;
+    if (nomineeIdentifier) {
+      const duplicate = await ctx.db
+        .query("nominationSubmissions")
+        .withIndex("by_category_identifier", (q) =>
+          q.eq("categoryId", category._id).eq("nomineeIdentifier", nomineeIdentifier),
+        )
+        .first();
+      if (duplicate)
+        throw new ConvexError("This person has already been nominated in this category");
+    }
+
+    // 5. Resolve photo URL from storage
+    let avatarUrl: string | undefined;
+    if (args.photoStorageId) {
+      avatarUrl = (await ctx.storage.getUrl(args.photoStorageId)) ?? undefined;
+    }
+
+    // 6. Insert nomination submission
+    const submissionId = await ctx.db.insert("nominationSubmissions", {
+      eventId: event._id,
+      categoryId: category._id,
       nomineeName: args.nomineeName.trim(),
-      nomineeIdentifier: args.nomineeIdentifier?.trim(),
-      avatarUrl: args.avatarUrl,
+      nomineeIdentifier,
+      nomineeDepartment: args.nomineeDepartment,
+      nomineeYear: args.nomineeYear,
+      nomineeProgram: args.nomineeProgram,
+      photoStorageId: args.photoStorageId,
+      avatarUrl,
+      nominatorName: args.nominatorName.trim(),
+      nominatorEmail: args.nominatorEmail.toLowerCase().trim(),
+      nominatorPhone: args.nominatorPhone?.trim(),
+      nominatorRelationship: args.nominatorRelationship,
+      nominationReason: args.nominationReason,
+      achievements: args.achievements || undefined,
       status: "pending",
       createdAt: Date.now(),
     });
+
+    // 7. Auto-approve: skip review queue and create nominee immediately
+    if (event.nominationAutoApprove) {
+      const seq = category.nomineeSequence + 1;
+      await ctx.db.patch(category._id, { nomineeSequence: seq });
+      const shortcode = `${event.eventCode}-${category.categoryCode}-${String(seq).padStart(3, "0")}`;
+      const nomineeId = await ctx.db.insert("nominees", {
+        eventId: event._id,
+        categoryId: category._id,
+        displayName: args.nomineeName.trim(),
+        shortcode,
+        avatarUrl,
+        bio: args.nominationReason.substring(0, 200),
+        status: "active",
+        totalVotes: 0,
+        createdAt: Date.now(),
+      });
+      await ctx.db.patch(submissionId, {
+        status: "approved",
+        resolvedNomineeId: nomineeId,
+        approvedAt: Date.now(),
+      });
+    }
+
+    return submissionId;
   },
 });
 
@@ -94,14 +197,12 @@ export const listAll = query({
 // ─── Organizer mutations ──────────────────────────────────────────────────────
 
 /**
- * Approving a nomination creates a nominee record and links it back to
- * the submission. The category sequence is incremented atomically to
- * generate the shortcode.
+ * Approve a nomination — creates the nominee record and links it to the submission.
+ * The organizer can override name, avatar, or bio before approving.
  */
 export const approve = mutation({
   args: {
     submissionId: v.id("nominationSubmissions"),
-    // Organizer can override the name or avatar before approving
     displayName: v.optional(v.string()),
     avatarUrl: v.optional(v.string()),
     bio: v.optional(v.string()),
@@ -116,10 +217,8 @@ export const approve = mutation({
     const category = await ctx.db.get(submission.categoryId);
     if (!category) throw new Error("Category not found");
 
-    // Atomically increment the sequence counter on the category
     const seq = category.nomineeSequence + 1;
     await ctx.db.patch(submission.categoryId, { nomineeSequence: seq });
-
     const shortcode = `${event.eventCode}-${category.categoryCode}-${String(seq).padStart(3, "0")}`;
 
     const nomineeId = await ctx.db.insert("nominees", {
@@ -128,7 +227,7 @@ export const approve = mutation({
       displayName: args.displayName ?? submission.nomineeName,
       shortcode,
       avatarUrl: args.avatarUrl ?? submission.avatarUrl,
-      bio: args.bio,
+      bio: args.bio ?? submission.nominationReason?.substring(0, 200),
       status: "active",
       totalVotes: 0,
       createdAt: Date.now(),

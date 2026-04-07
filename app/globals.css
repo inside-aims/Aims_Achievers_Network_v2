@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -65,10 +67,10 @@
   --card-foreground: oklch(0.9198 0.0098 252.8151);
   --popover: oklch(0.2177 0.0356 251.2935);
   --popover-foreground: oklch(0.9198 0.0098 252.8151);
-  --primary: oklch(0.8868 0.1822 95.3305);
-  --primary-foreground: oklch(0.2177 0.0356 251.2935);
-  --secondary: oklch(0.3233 0.1025 253.8852);
-  --secondary-foreground: oklch(1.0000 0 0);
+  --primary: oklch(0.3233 0.1025 253.8852);
+  --primary-foreground: oklch(1.0000 0 0);
+  --secondary: oklch(0.8868 0.1822 95.3305);
+  --secondary-foreground: oklch(0.2177 0.0356 251.2935);
   --muted: oklch(0.3478 0.0365 245.9241);
   --muted-foreground: oklch(0.8169 0.0569 248.5261);
   --accent: oklch(0.2787 0.0367 249.2646);
@@ -181,12 +183,16 @@
     @apply bg-background text-foreground;
   }
 
-  .feature{
-    @apply px-4 md:px-8 lg:px-32 py-8; /* Any padding change same for .feature-no */
+  /* Single source of truth for page horizontal + vertical padding.
+     Change here and every page / landing section updates. */
+  .feature {
+    @apply px-4 md:px-8 lg:px-16 py-16 md:py-20;
   }
 
-  .feature-no{
-    @apply px-4 md:px-8 lg:px-32; /* Any padding change same for .feature  */
+  /* Horizontal padding only — used by full-width landing sections
+     that manage their own vertical rhythm */
+  .feature-no {
+    @apply px-4 md:px-8 lg:px-16;
   }
 
   .parent-header {
@@ -198,10 +204,16 @@
   }
 
   .feature-subheader {
-    @apply text-base md:text-lg text-muted-foreground ;
+    @apply text-base md:text-lg text-muted-foreground;
   }
 
   .rounded-card {
-    @apply shadow-sm rounded-lg
+    @apply shadow-sm rounded-lg;
+  }
+
+  /* Skeleton shimmer */
+  .skeleton {
+    @apply bg-muted animate-pulse rounded;
   }
 }
+

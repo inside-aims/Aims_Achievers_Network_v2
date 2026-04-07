@@ -79,13 +79,15 @@ export default defineSchema({
     // ── Nominations ────────────────────────────
     nominationsOpen: v.boolean(),
     nominationRequiresAuth: v.boolean(),
+    nominationAutoApprove: v.optional(v.boolean()), // if true, skip review queue
 
     createdAt: v.number(),
   })
     .index("by_organizer", ["organizerId"])
     .index("by_slug", ["slug"])
     .index("by_eventCode", ["eventCode"])
-    .index("by_status", ["status"]),
+    .index("by_status", ["status"])
+    .index("by_status_public", ["status", "publicPageVisible"]),
 
 
   // ─────────────────────────────────────────────
@@ -95,6 +97,7 @@ export default defineSchema({
   categories: defineTable({
     eventId: v.id("events"),
     name: v.string(),
+    description: v.optional(v.string()),
     categoryCode: v.string(),          // auto-generated abbreviation e.g. "BMS"
     allowsNominations: v.boolean(),    // whether public can submit nominations
     nomineeSequence: v.number(),       // atomic counter for shortcode generation
@@ -128,7 +131,8 @@ export default defineSchema({
     .index("by_event_category", ["eventId", "categoryId"])
     .index("by_shortcode", ["eventId", "shortcode"])
     .index("by_event_votes", ["eventId", "totalVotes"])  // leaderboard sort (cross-category)
-    .index("by_event_category_votes", ["eventId", "categoryId", "totalVotes"]),  // per-category leaderboard
+    .index("by_event_category_votes", ["eventId", "categoryId", "totalVotes"])  // per-category leaderboard
+    .index("by_category_status_votes", ["categoryId", "status", "totalVotes"]),
 
 
   // ─────────────────────────────────────────────
@@ -138,9 +142,27 @@ export default defineSchema({
   nominationSubmissions: defineTable({
     eventId: v.id("events"),
     categoryId: v.id("categories"),
+
+    // ── Nominee info ───────────────────────────
     nomineeName: v.string(),
-    nomineeIdentifier: v.optional(v.string()),  // student ID, email, etc.
-    avatarUrl: v.optional(v.string()),
+    nomineeIdentifier: v.optional(v.string()),  // phone — used for dedup
+    nomineeDepartment: v.optional(v.string()),
+    nomineeYear: v.optional(v.string()),
+    nomineeProgram: v.optional(v.string()),
+    photoStorageId: v.optional(v.id("_storage")),
+    avatarUrl: v.optional(v.string()),           // resolved URL from photoStorageId
+
+    // ── Nominator info ─────────────────────────
+    nominatorName: v.string(),
+    nominatorEmail: v.string(),
+    nominatorPhone: v.optional(v.string()),
+    nominatorRelationship: v.string(),
+
+    // ── Nomination details ─────────────────────
+    nominationReason: v.string(),
+    achievements: v.optional(v.string()),
+
+    // ── Status ─────────────────────────────────
     status: v.union(
       v.literal("pending"),
       v.literal("approved"),
@@ -152,7 +174,8 @@ export default defineSchema({
     createdAt: v.number(),
   })
     .index("by_event", ["eventId"])
-    .index("by_event_status", ["eventId", "status"]),
+    .index("by_event_status", ["eventId", "status"])
+    .index("by_category_identifier", ["categoryId", "nomineeIdentifier"]),  // phone dedup
 
 
   // ─────────────────────────────────────────────
@@ -244,13 +267,48 @@ export default defineSchema({
   // ─────────────────────────────────────────────
   outlets: defineTable({
     name: v.string(),
+    tagline: v.optional(v.string()),
     description: v.optional(v.string()),
+    location: v.optional(v.string()),
     avatarUrl: v.optional(v.string()),
     website: v.optional(v.string()),
     contactEmail: v.optional(v.string()),
-    category: v.optional(v.string()),      // e.g. "Trophies", "Event Décor"
+    phone: v.optional(v.string()),
+    whatsapp: v.optional(v.string()),
+    category: v.optional(v.string()),          // e.g. "Trophies", "Event Décor"
+    specialties: v.optional(v.array(v.string())),
+    portfolioImages: v.optional(v.array(v.string())),
+    rating: v.optional(v.number()),
+    reviews: v.optional(v.number()),
+    completedOrders: v.optional(v.number()),
+    responseTime: v.optional(v.string()),
+    yearsExperience: v.optional(v.number()),
+    clientSatisfaction: v.optional(v.number()),
+    featured: v.optional(v.boolean()),
+    verified: v.optional(v.boolean()),
     isPlatformGlobal: v.boolean(),
     createdAt: v.number(),
   })
-    .index("by_global", ["isPlatformGlobal"]),
+    .index("by_global", ["isPlatformGlobal"])
+    .index("by_featured", ["featured"]),
+
+
+  // ─────────────────────────────────────────────
+  // GALLERY
+  // Event photo/media records.
+  // ─────────────────────────────────────────────
+  gallery: defineTable({
+    urls: v.array(v.string()),
+    category: v.string(),         // e.g. "Red Carpet", "Award Winner"
+    eventName: v.string(),
+    university: v.optional(v.string()),
+    description: v.string(),
+    photographer: v.optional(v.string()),
+    uploadDate: v.string(),       // ISO date string "2025-06-15"
+    isFeatured: v.boolean(),
+    createdAt: v.number(),
+  })
+    .index("by_eventName", ["eventName"])
+    .index("by_category", ["category"])
+    .index("by_featured", ["isFeatured"]),
 });

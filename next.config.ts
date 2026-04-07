@@ -20,7 +20,19 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'randomuser.me',
         pathname: '/**',
-      }
+      },
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.convex.cloud',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

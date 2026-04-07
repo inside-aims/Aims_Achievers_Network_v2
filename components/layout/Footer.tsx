@@ -45,20 +45,36 @@ const AimsFooter = () => {
                   How It Works
                 </Link>
               </li>
-              <li>
-                <Link 
-                  href="/partners" 
-                  className="text-muted-foreground hover:text-foreground transition-colors duration-200"
-                >
-                  Partners
-                </Link>
-              </li>
+              {/*<li>*/}
+              {/*  <Link */}
+              {/*    href="/partners" */}
+              {/*    className="text-muted-foreground hover:text-foreground transition-colors duration-200"*/}
+              {/*  >*/}
+              {/*    Partners*/}
+              {/*  </Link>*/}
+              {/*</li>*/}
               <li>
                 <Link 
                   href="/about" 
                   className="text-muted-foreground hover:text-foreground transition-colors duration-200"
                 >
                   About Us
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/nominations" 
+                  className="text-muted-foreground hover:text-foreground transition-colors duration-200"
+                >
+                  Nominations
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/outlets" 
+                  className="text-muted-foreground hover:text-foreground transition-colors duration-200"
+                >
+                  Outlets
                 </Link>
               </li>
               <li>
@@ -88,20 +104,20 @@ const AimsFooter = () => {
               </li>
               <li>
                 <Link
-                  href="/host-event" 
+                  href="/events"
                   className="text-muted-foreground hover:text-foreground transition-colors duration-200"
                 >
                   Host an Event
                 </Link>
               </li>
-              <li>
-                <Link 
-                  href="/ambassadors" 
-                  className="text-muted-foreground hover:text-foreground transition-colors duration-200"
-                >
-                  Student Ambassadors
-                </Link>
-              </li>
+              {/*<li>*/}
+              {/*  <Link */}
+              {/*    href="/ambassadors" */}
+              {/*    className="text-muted-foreground hover:text-foreground transition-colors duration-200"*/}
+              {/*  >*/}
+              {/*    Student Ambassadors*/}
+              {/*  </Link>*/}
+              {/*</li>*/}
               <li>
                 <Link 
                   href="/gallery" 
@@ -110,14 +126,14 @@ const AimsFooter = () => {
                   Media / Gallery
                 </Link>
               </li>
-              <li>
-                <Link 
-                  href="/faqs" 
-                  className="text-muted-foreground hover:text-foreground transition-colors duration-200"
-                >
-                  FAQs
-                </Link>
-              </li>
+              {/*<li>*/}
+              {/*  <Link */}
+              {/*    href="/faqs" */}
+              {/*    className="text-muted-foreground hover:text-foreground transition-colors duration-200"*/}
+              {/*  >*/}
+              {/*    FAQs*/}
+              {/*  </Link>*/}
+              {/*</li>*/}
             </ul>
           </div>
 
