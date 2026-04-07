@@ -1,6 +1,7 @@
 import { defineApp } from "convex/server";
 import aggregate from "@convex-dev/aggregate/convex.config.js";
 import shardedCounter from "@convex-dev/sharded-counter/convex.config.js";
+import rateLimiter from "@convex-dev/rate-limiter/convex.config.js";
 
 const app = defineApp();
 
@@ -18,5 +19,8 @@ app.use(aggregate, { name: "votesByTime" });
 
 // High-throughput per-nominee vote counts for live card display
 app.use(shardedCounter, { name: "nomineeVoteCounts" });
+
+// Application-layer rate limiting (nominations spam prevention, etc.)
+app.use(rateLimiter);
 
 export default app;

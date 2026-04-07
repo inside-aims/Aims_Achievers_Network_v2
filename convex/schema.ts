@@ -79,6 +79,7 @@ export default defineSchema({
     // ── Nominations ────────────────────────────
     nominationsOpen: v.boolean(),
     nominationRequiresAuth: v.boolean(),
+    nominationAutoApprove: v.optional(v.boolean()), // if true, skip review queue
 
     createdAt: v.number(),
   })
@@ -141,9 +142,27 @@ export default defineSchema({
   nominationSubmissions: defineTable({
     eventId: v.id("events"),
     categoryId: v.id("categories"),
+
+    // ── Nominee info ───────────────────────────
     nomineeName: v.string(),
-    nomineeIdentifier: v.optional(v.string()),  // student ID, email, etc.
-    avatarUrl: v.optional(v.string()),
+    nomineeIdentifier: v.optional(v.string()),  // phone — used for dedup
+    nomineeDepartment: v.optional(v.string()),
+    nomineeYear: v.optional(v.string()),
+    nomineeProgram: v.optional(v.string()),
+    photoStorageId: v.optional(v.id("_storage")),
+    avatarUrl: v.optional(v.string()),           // resolved URL from photoStorageId
+
+    // ── Nominator info ─────────────────────────
+    nominatorName: v.string(),
+    nominatorEmail: v.string(),
+    nominatorPhone: v.optional(v.string()),
+    nominatorRelationship: v.string(),
+
+    // ── Nomination details ─────────────────────
+    nominationReason: v.string(),
+    achievements: v.optional(v.string()),
+
+    // ── Status ─────────────────────────────────
     status: v.union(
       v.literal("pending"),
       v.literal("approved"),
@@ -155,7 +174,8 @@ export default defineSchema({
     createdAt: v.number(),
   })
     .index("by_event", ["eventId"])
-    .index("by_event_status", ["eventId", "status"]),
+    .index("by_event_status", ["eventId", "status"])
+    .index("by_category_identifier", ["categoryId", "nomineeIdentifier"]),  // phone dedup
 
 
   // ─────────────────────────────────────────────

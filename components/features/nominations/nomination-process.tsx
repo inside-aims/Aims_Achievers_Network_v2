@@ -14,7 +14,10 @@ import { toast } from "sonner";
 import { getDaysLeft } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import { useEvents } from "@/hooks/use-events";
-import { submitNomination } from "@/lib/types/nominations";
+import { useMutation } from "convex/react";
+import { ConvexError } from "convex/values";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
 
 interface NavigationButtonsProps {
   currentStep: number;
@@ -56,6 +59,8 @@ const NominationProcess = () => {
   const categoryIdParam = searchParams.get("category");
 
   const { events, loading: eventsLoading } = useEvents();
+  const generatePhotoUploadUrl = useMutation(api.nominations.generatePhotoUploadUrl);
+  const submitNomination = useMutation(api.nominations.submit);
 
   const getInitialStep = () => (eventIdParam && categoryIdParam ? 2 : 1);
 
@@ -101,15 +106,50 @@ const NominationProcess = () => {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    const result = await submitNomination(formData);
-    setIsSubmitting(false);
+    try {
+      // Step 1: Upload nominee photo to Convex storage (if provided)
+      let photoStorageId: Id<"_storage"> | undefined;
+      if (formData.nomineePhoto) {
+        const uploadUrl = await generatePhotoUploadUrl();
+        const uploadRes = await fetch(uploadUrl, {
+          method: "POST",
+          headers: { "Content-Type": formData.nomineePhoto.type || "image/jpeg" },
+          body: formData.nomineePhoto,
+        });
+        if (!uploadRes.ok) throw new Error("Photo upload failed. Please try again.");
+        const { storageId } = await uploadRes.json();
+        photoStorageId = storageId;
+      }
 
-    if (result.success) {
-      toast.success("Nomination submitted! The nominee has been added to the voting list.");
+      // Step 2: Submit nomination via Convex
+      await submitNomination({
+        eventSlug: formData.eventName,
+        categoryCode: formData.eventCategory,
+        nomineeName: formData.nomineeName,
+        nomineePhone: formData.nomineePhone || undefined,
+        nomineeDepartment: formData.nomineeDepartment || undefined,
+        nomineeYear: formData.nomineeYear || undefined,
+        nomineeProgram: formData.nomineeProgram || undefined,
+        photoStorageId,
+        nominatorName: formData.nominatorName,
+        nominatorEmail: formData.nominatorEmail,
+        nominatorPhone: formData.nominatorPhone || undefined,
+        nominatorRelationship: formData.nominatorRelationship,
+        nominationReason: formData.nominationReason,
+        achievements: formData.achievements || undefined,
+      });
+
+      toast.success("Nomination submitted! It will appear in the voting list once reviewed by the organizers.");
       setFormData({ ...emptyForm });
       setCurrentStep(1);
-    } else {
-      toast.error(result.error ?? "Submission failed. Please try again.");
+    } catch (err) {
+      const message =
+        err instanceof ConvexError
+          ? String(err.data)
+          : "Submission failed. Please try again.";
+      toast.error(message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
