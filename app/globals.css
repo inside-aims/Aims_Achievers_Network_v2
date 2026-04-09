@@ -1,8 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-
-
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -189,7 +187,7 @@
     @apply px-4 md:px-8 lg:px-16 py-16 md:py-20;
   }
 
-  /* Horizontal padding only — used by full-width landing sections
+  /* Horizontal padding only - used by full-width landing sections
      that manage their own vertical rhythm */
   .feature-no {
     @apply px-4 md:px-8 lg:px-16;
@@ -211,9 +209,32 @@
     @apply shadow-sm rounded-lg;
   }
 
-  /* Skeleton shimmer */
   .skeleton {
     @apply bg-muted animate-pulse rounded;
   }
+
+  .clickable {
+    cursor: pointer;
+    transition: background-color 150ms ease;
+  }
+  .clickable:hover {
+    background-color: var(--hover-surface);
+  }
+
+  .dash-page {
+    @apply flex-1 overflow-auto p-6;
+  }
+
+  [data-sidebar="menu-button"] {
+    padding-block: 0.625rem;
+    font-size: 0.875rem;
+  }
+}
+
+:root {
+  --hover-surface: oklch(0.91 0.014 248);
+}
+.dark {
+  --hover-surface: oklch(0.33 0.038 248);
 }
 
