@@ -294,6 +294,31 @@ export default defineSchema({
 
 
   // ─────────────────────────────────────────────
+  // USSD SESSIONS
+  // Persists state between USSD interactions.
+  // Sessions expire after 15 minutes; a cron prunes old rows.
+  // The "level 6 resume" pattern: when a user redials after receiving
+  // an OTP, we detect their pending level-6 session by msisdn and
+  // restore context so they don't have to restart from scratch.
+  // ─────────────────────────────────────────────
+  ussdSessions: defineTable({
+    sessionId: v.string(),          // USSD gateway's session identifier
+    msisdn: v.string(),             // caller's phone number (e.g. 233551234567)
+    level: v.number(),              // current state in the flow
+    nomineeId: v.optional(v.id("nominees")),
+    nomineeName: v.optional(v.string()),
+    categoryName: v.optional(v.string()),
+    eventId: v.optional(v.id("events")),
+    categoryId: v.optional(v.id("categories")),
+    providerReference: v.optional(v.string()),  // set after createPaymentIntent
+    expiresAt: v.number(),          // ms timestamp — TTL for cron cleanup
+  })
+    .index("by_sessionId", ["sessionId"])
+    .index("by_msisdn_level", ["msisdn", "level"])  // OTP resume lookup
+    .index("by_expiry", ["expiresAt"]),              // cron cleanup
+
+
+  // ─────────────────────────────────────────────
   // GALLERY
   // Event photo/media records.
   // ─────────────────────────────────────────────

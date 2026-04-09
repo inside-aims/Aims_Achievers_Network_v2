@@ -58,6 +58,55 @@ export const getById = query({
   },
 });
 
+/**
+ * Look up a nominee by shortcode for USSD voting.
+ * Shortcodes are formatted as {eventCode}-{categoryCode}-{seq} (e.g. XA-BMS-001).
+ * We parse the event code prefix to find the event, then fetch the nominee.
+ * Returns null if the shortcode is not found or the event/nominee is not active.
+ */
+export const getByShortcode = query({
+  args: { shortcode: v.string() },
+  handler: async (ctx, args) => {
+    const upper = args.shortcode.trim().toUpperCase();
+    const dashIndex = upper.indexOf("-");
+    if (dashIndex === -1) return null;
+
+    const eventCode = upper.slice(0, dashIndex);
+
+    const event = await ctx.db
+      .query("events")
+      .withIndex("by_eventCode", (q) => q.eq("eventCode", eventCode))
+      .unique();
+
+    if (!event) return null;
+
+    const nominee = await ctx.db
+      .query("nominees")
+      .withIndex("by_shortcode", (q) =>
+        q.eq("eventId", event._id).eq("shortcode", upper),
+      )
+      .unique();
+
+    if (!nominee || nominee.status !== "active") return null;
+
+    const category = await ctx.db.get(nominee.categoryId);
+
+    return {
+      nomineeId: nominee._id,
+      displayName: nominee.displayName,
+      shortcode: nominee.shortcode,
+      categoryId: nominee.categoryId,
+      categoryName: category?.name ?? "",
+      eventId: event._id,
+      eventTitle: event.title,
+      votingOpen: event.votingOpen,
+      votingMode: event.votingMode,
+      pricePerVotePesewas: event.pricePerVotePesewas,
+      bulkTiers: event.bulkTiers ?? [],
+    };
+  },
+});
+
 // ─── Mutations ────────────────────────────────────────────────────────────────
 
 export const create = mutation({
