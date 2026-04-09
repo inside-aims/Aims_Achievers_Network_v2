@@ -25,7 +25,20 @@
       "Bash(mkdir -p \"C:/Users/Work/Aims/Aims_Achievers_Network_v2/app/\\(root\\)/how-it-works\")",
       "Bash(mkdir -p \"C:/Users/Work/Aims/Aims_Achievers_Network_v2/app/\\(root\\)/become-partner\")",
       "Bash(bun run:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(xargs grep:*)",
+      "Bash(npx convex:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx tsx:*)",
+      "Bash(xargs ls:*)",
+      "Bash(ls C:/Users/Work/Aims/Aims_Achievers_Network_v2/*.ts)",
+      "Bash(mkdir -p \"C:/Users/Work/Aims/Aims_Achievers_Network_v2/app/\\(dashboard\\)/admin/[uuid]\")",
+      "Bash(mkdir -p \"C:/Users/Work/Aims/Aims_Achievers_Network_v2/app/\\(dashboard\\)/user/[uuid]\")",
+      "Bash(bunx shadcn@latest add sidebar --yes)",
+      "Bash(npx shadcn@latest add sidebar --yes)",
+      "Bash(bun x:*)",
+      "Bash(printf 'N\\\\nN\\\\nN\\\\nN\\\\nN\\\\n')",
+      "Bash(yes N)"
     ]
   }
 }
