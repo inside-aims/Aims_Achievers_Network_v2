@@ -3,7 +3,23 @@ import { v } from "convex/values";
 import { authTables } from "@convex-dev/auth/server";
 
 export default defineSchema({
+  // Extend the built-in users table with a uuid for external reference
   ...authTables,
+  users: defineTable({
+    // ── Fields required by @convex-dev/auth ────────────────────────────
+    name: v.optional(v.string()),
+    image: v.optional(v.string()),
+    email: v.optional(v.string()),
+    emailVerificationTime: v.optional(v.number()),
+    phone: v.optional(v.string()),
+    phoneVerificationTime: v.optional(v.number()),
+    isAnonymous: v.optional(v.boolean()),
+    // ── Custom field ───────────────────────────────────────────────────
+    uuid: v.optional(v.string()),   // stable external identifier (set on account creation)
+  })
+    .index("email", ["email"])
+    .index("phone", ["phone"])
+    .index("uuid", ["uuid"]),
 
   // ─────────────────────────────────────────────
   // ORGANIZER PROFILES
@@ -13,14 +29,29 @@ export default defineSchema({
   organizerProfiles: defineTable({
     userId: v.id("users"),            // references authTables users
     displayName: v.string(),
+    // Optional for backward-compat with pre-migration documents.
+    // All new documents must include these — see convex/users.ts.
+    email: v.optional(v.string()),
+    phone: v.optional(v.string()),
     avatarUrl: v.optional(v.string()),
     role: v.union(
       v.literal("organizer"),
       v.literal("admin"),             // platform-level admin
     ),
+    status: v.optional(v.union(
+      v.literal("active"),
+      v.literal("inactive"),
+      v.literal("suspended"),
+    )),
+    isPasswordDefault: v.optional(v.boolean()), // true = must change before dashboard access
+    createdBy: v.optional(v.id("organizerProfiles")), // which admin created this account
     createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
   })
-    .index("by_userId", ["userId"]),
+    .index("by_userId", ["userId"])
+    .index("by_email", ["email"])
+    .index("by_role", ["role"])
+    .index("by_status", ["status"]),
 
 
   // ─────────────────────────────────────────────

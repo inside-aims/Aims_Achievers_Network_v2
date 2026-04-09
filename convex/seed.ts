@@ -1,5 +1,62 @@
 import { internalMutation } from "./_generated/server";
 
+/**
+ * One-time migration: backfill new required fields on existing organizerProfiles
+ * documents that were created before the schema was updated.
+ *
+ * Run via: npx convex run seed:migrateProfiles
+ * Or: Convex dashboard → Functions → seed:migrateProfiles → Run
+ */
+export const migrateProfiles = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const profiles = await ctx.db.query("organizerProfiles").take(500);
+    let patched = 0;
+
+    for (const profile of profiles) {
+      const update: Record<string, unknown> = {};
+      const now = Date.now();
+
+      if ((profile as any).email === undefined) {
+        // Best-effort: look up the auth user's email
+        const user = await ctx.db.get(profile.userId);
+        update.email = (user as any)?.email ?? `${profile.userId}@migrated.internal`;
+      }
+      if ((profile as any).status === undefined) update.status = "active";
+      if ((profile as any).isPasswordDefault === undefined) update.isPasswordDefault = false;
+      if ((profile as any).updatedAt === undefined) update.updatedAt = now;
+
+      if (Object.keys(update).length > 0) {
+        await ctx.db.patch(profile._id, update as any);
+        patched++;
+      }
+    }
+
+    return { status: "ok", patched };
+  },
+});
+
+/**
+ * One-time migration: stamp uuid on all users records that don't have one yet.
+ * Run via: npx convex run seed:migrateUUIDs
+ */
+export const migrateUUIDs = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const users = await ctx.db.query("users").take(500);
+    let patched = 0;
+
+    for (const user of users) {
+      if (!(user as any).uuid) {
+        await ctx.db.patch(user._id, { uuid: crypto.randomUUID() } as any);
+        patched++;
+      }
+    }
+
+    return { status: "ok", patched };
+  },
+});
+
 // ─── Raw seed data (mirrors scripts/seed.ts) ─────────────────────────────────
 
 const EVENTS_DATA = [
@@ -213,17 +270,22 @@ export const run = internalMutation({
       });
     }
 
-    // ── Seed organizer (system account) ───────────────────────────────────
+    // ── Seed organizer (demo system account — not for login) ──────────────
     const userId = await ctx.db.insert("users", {
       name: "AIMS Achievers Network",
-      email: "admin@aims.internal",
+      email: "demo@aims.internal",
     });
 
+    const now = Date.now();
     const organizerId = await ctx.db.insert("organizerProfiles", {
       userId,
       displayName: "AIMS Achievers Network",
+      email: "demo@aims.internal",
       role: "organizer",
-      createdAt: Date.now(),
+      status: "active",
+      isPasswordDefault: false,
+      createdAt: now,
+      updatedAt: now,
     });
 
     // ── Events ────────────────────────────────────────────────────────────

@@ -1,47 +1,14 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { Id } from "./_generated/dataModel";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
-/**
- * Called on first sign-in. Creates the profile if it doesn't exist yet.
- * Safe to call on every sign-in — it's idempotent.
- */
-export const getOrCreate = mutation({
-  args: {
-    displayName: v.string(),
-    avatarUrl: v.optional(v.string()),
-  },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
-
-    const userId = identity.subject as Id<"users">;
-
-    const existing = await ctx.db
-      .query("organizerProfiles")
-      .withIndex("by_userId", (q) => q.eq("userId", userId))
-      .unique();
-
-    if (existing) return existing._id;
-
-    return await ctx.db.insert("organizerProfiles", {
-      userId,
-      displayName: args.displayName,
-      avatarUrl: args.avatarUrl,
-      role: "organizer",
-      createdAt: Date.now(),
-    });
-  },
-});
-
-/** Get the current user's organizer profile. Returns null if not set up yet. */
+/** Get the current user's organizer profile. Returns null if not signed in. */
 export const getCurrent = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return null;
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
 
-    const userId = identity.subject as Id<"users">;
     return await ctx.db
       .query("organizerProfiles")
       .withIndex("by_userId", (q) => q.eq("userId", userId))
@@ -49,28 +16,32 @@ export const getCurrent = query({
   },
 });
 
+/** Update display name, phone, or avatar for the current user. */
 export const update = mutation({
   args: {
     displayName: v.optional(v.string()),
+    phone: v.optional(v.string()),
     avatarUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
 
-    const userId = identity.subject as Id<"users">;
     const profile = await ctx.db
       .query("organizerProfiles")
       .withIndex("by_userId", (q) => q.eq("userId", userId))
       .unique();
 
     if (!profile) throw new Error("Profile not found");
+    if (profile.status === "suspended" || profile.status === "inactive") {
+      throw new Error("Account is inactive or suspended");
+    }
 
-    const patch: Record<string, unknown> = {};
+    const patch: Record<string, unknown> = { updatedAt: Date.now() };
     if (args.displayName !== undefined) patch.displayName = args.displayName;
+    if (args.phone !== undefined) patch.phone = args.phone;
     if (args.avatarUrl !== undefined) patch.avatarUrl = args.avatarUrl;
 
-    if (Object.keys(patch).length === 0) return;
     await ctx.db.patch(profile._id, patch);
   },
 });
