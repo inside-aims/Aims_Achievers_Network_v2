@@ -112,6 +112,13 @@ export const getByCodeWithNominees = query({
       eventId: event.slug,
       eventTitle: event.title,
       eventEndDate: tsToDate(event.votingEndsAt),
+      // Voting config — consumed by the payment modal
+      eventDocId: event._id as string,
+      categoryDocId: category._id as string,
+      votingMode: event.votingMode,
+      pricePerVotePesewas: event.pricePerVotePesewas,
+      bulkTiers: event.bulkTiers ?? [],
+      votingOpen: event.votingOpen,
       nominees: nominees.map((n) => ({
         nomineeId: n._id as string,
         nomineeCode: n.shortcode,
