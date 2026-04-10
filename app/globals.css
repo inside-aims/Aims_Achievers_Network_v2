@@ -238,3 +238,16 @@
   --hover-surface: oklch(0.33 0.038 248);
 }
 
+@keyframes live-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 oklch(0.70 0.18 142 / 0.55);
+  }
+  60% {
+    box-shadow: 0 0 0 5px oklch(0.70 0.18 142 / 0);
+  }
+}
+
+.badge-live {
+  animation: live-glow 2s ease-out infinite;
+}
+
