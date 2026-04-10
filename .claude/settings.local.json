@@ -38,7 +38,8 @@
       "Bash(npx shadcn@latest add sidebar --yes)",
       "Bash(bun x:*)",
       "Bash(printf 'N\\\\nN\\\\nN\\\\nN\\\\nN\\\\n')",
-      "Bash(yes N)"
+      "Bash(yes N)",
+      "Bash(grep:*)"
     ]
   }
 }
