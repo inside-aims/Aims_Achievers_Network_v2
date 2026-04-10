@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { UserOverview } from "@/components/features/dashboard/user/user-overview";
+import { UserOverview } from "@/components/features/dashboard/user/overview/user-overview";
 
 export const metadata: Metadata = { title: "Dashboard | AIMS Achievers Network" };
 
