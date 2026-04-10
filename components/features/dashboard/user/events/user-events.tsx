@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { EventRow } from "../../shared/event-row";
 import { PageHeader } from "../../shared/page-header";
-import { USER_EVENTS } from "../data/overview";
+import { USER_EVENTS } from "../overview/overview";
 
 interface Props {
   base: string;

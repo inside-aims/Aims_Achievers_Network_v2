@@ -1,9 +1,12 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Tag, Users } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { StatusBadge } from "../../shared/status-badge";
-import { PageHeader } from "../../shared/page-header";
-import { MOCK_EVENT_DETAILS } from "../data/events";
+import { EventHeader } from "./event-header";
+import { CategoriesList } from "./categories-list";
+import { EventSidebar } from "./event-sidebar";
+import { MOCK_EVENT_DETAILS, computeStats } from "./events";
+import type { EventControls } from "./events";
 
 interface Props {
   base: string;
@@ -11,9 +14,15 @@ interface Props {
 }
 
 export function EventDetail({ base, eventId }: Props) {
-  const event = MOCK_EVENT_DETAILS[eventId];
+  const raw = MOCK_EVENT_DETAILS[eventId];
 
-  if (!event) {
+  const [controls, setControls] = useState<EventControls>(
+    raw
+      ? { ...raw.controls }
+      : { showVotes: false, votingOpen: false, publicPage: false }
+  );
+
+  if (!raw) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-2 text-center">
         <p className="font-semibold text-lg">Event not found</p>
@@ -24,60 +33,33 @@ export function EventDetail({ base, eventId }: Props) {
     );
   }
 
-  return (
-    <div className="space-y-6">
-      {/* Back + header */}
-      <div className="space-y-1">
-        <Link
-          href={`${base}/events`}
-          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="size-3.5" />
-          Back to events
-        </Link>
-        <div className="flex items-start justify-between gap-4 pt-1">
-          <PageHeader title={event.title} description={`${event.location} · ${event.date}`} />
-          <StatusBadge status={event.status} />
-        </div>
-      </div>
+  function handleToggle(key: keyof EventControls, value: boolean) {
+    const next = { ...controls, [key]: value };
+    setControls(next);
+    console.log("[EventDetail] controls updated:", next);
+  }
 
-      {/* Categories */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Categories</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          {event.categories.length === 0 ? (
-            <div className="py-12 text-center text-sm text-muted-foreground">
-              No categories added yet.
-            </div>
-          ) : (
-            <div className="divide-y">
-              {event.categories.map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={`${base}/events/${eventId}/categories/${cat.id}`}
-                  className="flex items-center justify-between px-6 py-4 clickable"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="flex size-8 items-center justify-center rounded-md bg-muted shrink-0">
-                      <Tag className="size-4 text-muted-foreground" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">{cat.name}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{cat.description}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1.5 shrink-0 ml-4 text-muted-foreground text-xs">
-                    <Users className="size-3.5" />
-                    <span>{cat.nomineeCount} nominees</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+  const event = { ...raw, controls };
+  const stats = computeStats(event);
+
+  console.log("[EventDetail] event:", event);
+  console.log("[EventDetail] computed stats:", stats);
+
+  return (
+    <div className="space-y-4 md:space-y-5">
+      <EventHeader event={event} stats={stats} base={base} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 md:gap-5 items-start">
+        <CategoriesList categories={event.categories} />
+
+        <EventSidebar
+          stats={stats}
+          closesDate={event.closesDate}
+          createdAt={event.createdAt}
+          controls={controls}
+          onToggle={handleToggle}
+        />
+      </div>
     </div>
   );
 }
