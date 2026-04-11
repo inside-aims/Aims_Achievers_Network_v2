@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
 import {
   LayoutDashboard,
@@ -30,8 +29,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
 const ADMIN_NAV = [
   { label: "Dashboard",  icon: LayoutDashboard, href: ""            },
@@ -45,9 +46,8 @@ const USER_NAV = [
   { label: "Dashboard",  icon: LayoutDashboard, href: ""           },
   { label: "Events",     icon: CalendarDays,    href: "/events"    },
   { label: "New Event",  icon: Plus,            href: "/new-event" },
-  { label: "Highlights",  icon: Images,          href: "/highlights" },
+  { label: "Highlights", icon: Images,          href: "/highlights" },
   { label: "Analytics",  icon: BarChart3,       href: "/analytics" },
-  { label: "Settings",   icon: Settings2,       href: "/settings"  },
 ];
 
 export function AppSidebar() {
@@ -137,9 +137,31 @@ export function AppSidebar() {
                   <ChevronUp className="ml-auto size-4 shrink-0" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
-              <DropdownMenuContent side="top" align="start" className="w-[--radix-popper-anchor-width]">
+              <DropdownMenuContent side="top" align="start" className="w-(--radix-popper-anchor-width) p-1.5">
+                {/* Mini profile card at top */}
+                <div className="flex items-center gap-2.5 px-2 py-2 mb-1">
+                  <div className="flex aspect-square size-9 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-xs shrink-0">
+                    {initials}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold truncate">{profile?.displayName ?? "—"}</p>
+                    <p className="text-[11px] text-muted-foreground capitalize truncate">{profile?.role ?? ""}</p>
+                  </div>
+                </div>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem asChild className="cursor-pointer gap-2 mt-1">
+                  <Link href={`${base}/settings`}>
+                    <Settings2 className="size-4" />
+                    Settings
+                  </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator />
+
                 <DropdownMenuItem
-                  className="text-destructive focus:text-destructive cursor-pointer"
+                  className="text-destructive focus:text-destructive cursor-pointer gap-2"
                   onClick={() => signOut()}
                 >
                   <LogOut className="size-4" />

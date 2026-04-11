@@ -1,17 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Bell } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { NotificationsBell } from "./notifications-panel";
 
 const PAGE_LABELS: Record<string, string> = {
   "":            "Dashboard",
@@ -50,22 +42,7 @@ export function NavHeader() {
 
       <div className="flex-1" />
 
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="size-8" aria-label="Notifications">
-            <Bell className="size-4" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="right" className="w-80">
-          <SheetHeader>
-            <SheetTitle>Notifications</SheetTitle>
-          </SheetHeader>
-          <div className="flex flex-col items-center justify-center h-48 text-center gap-2">
-            <Bell className="size-8 text-muted-foreground/40" />
-            <p className="text-sm text-muted-foreground">You have no notifications.</p>
-          </div>
-        </SheetContent>
-      </Sheet>
+      <NotificationsBell />
     </header>
   );
 }
