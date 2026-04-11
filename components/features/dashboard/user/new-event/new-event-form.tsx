@@ -101,9 +101,13 @@ export function NewEventForm({ base, initialValues, eventId }: Props) {
 
           {/* Actions — outside fieldset so Cancel always works */}
           <div className="flex items-center justify-end gap-3 pt-1">
-            <Button variant="outline" type="button" asChild disabled={isSubmitting}>
-              <Link href={`${base}/events`}>Cancel</Link>
-            </Button>
+            {(isEdit && eventId) && (
+                <Button variant="outline" type="button" asChild disabled={isSubmitting}>
+                  <Link href={`${base}/events/${eventId}`}>
+                    Cancel
+                  </Link>
+                </Button>
+            )}
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting && <Loader2 className="size-4 mr-2 animate-spin" />}
               {isEdit ? "Update Event" : "Create Event"}
