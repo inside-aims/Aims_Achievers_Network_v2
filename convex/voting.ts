@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query, internalMutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { Doc } from "./_generated/dataModel";
 
 /**
@@ -97,69 +97,6 @@ export const getIntentStatus = query({
       categoryName: category?.name ?? "",
       categoryCode: category?.categoryCode ?? "",
     };
-  },
-});
-
-/**
- * Records a confirmed vote after Paystack webhook verification.
- * Called exclusively from the webhook API route — never from the frontend.
- *
- * Idempotent: if the intent is already "confirmed" (duplicate webhook delivery),
- * the mutation returns early without creating a second vote row.
- */
-export const recordVote = internalMutation({
-  args: { providerReference: v.string() },
-  handler: async (ctx, args) => {
-    const intent = await ctx.db
-      .query("paymentIntents")
-      .withIndex("by_providerReference", (q) =>
-        q.eq("providerReference", args.providerReference),
-      )
-      .unique();
-
-    if (!intent) throw new Error(`No intent found for reference: ${args.providerReference}`);
-
-    // Idempotency guard — webhook can deliver the same event more than once
-    if (intent.status === "confirmed") return;
-
-    const event = await ctx.db.get(intent.eventId);
-    if (!event) throw new Error("Event not found");
-
-    const platformCutPercent = event.platformCutPercent;
-    const platformFeePesewas = Math.round(intent.amountPesewas * (platformCutPercent / 100));
-    const organizerAmountPesewas = intent.amountPesewas - platformFeePesewas;
-
-    // Guard: don't double-insert if a vote row already exists for this intent
-    const existingVote = await ctx.db
-      .query("votes")
-      .withIndex("by_paymentIntent", (q) => q.eq("paymentIntentId", intent._id))
-      .unique();
-
-    if (!existingVote) {
-      await ctx.db.insert("votes", {
-        eventId: intent.eventId,
-        nomineeId: intent.nomineeId,
-        categoryId: intent.categoryId,
-        paymentIntentId: intent._id,
-        quantity: intent.votesAwarded,
-        grossAmountPesewas: intent.amountPesewas,
-        platformFeePesewas,
-        organizerAmountPesewas,
-        platformCutPercentSnapshot: platformCutPercent,
-        createdAt: Date.now(),
-      });
-
-      // Increment the denormalized totalVotes counter on the nominee
-      const nominee = await ctx.db.get(intent.nomineeId);
-      if (nominee) {
-        await ctx.db.patch(intent.nomineeId, {
-          totalVotes: nominee.totalVotes + intent.votesAwarded,
-        });
-      }
-    }
-
-    // Mark intent as confirmed regardless (handles the vote-exists-but-status-pending edge case)
-    await ctx.db.patch(intent._id, { status: "confirmed" });
   },
 });
 

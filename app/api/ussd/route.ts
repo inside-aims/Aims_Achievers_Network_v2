@@ -40,6 +40,18 @@ function respond(userID: string, sessionID: string, msisdn: string, message: str
   return NextResponse.json({ userID, sessionID, msisdn, message, continueSession });
 }
 
+function formatGHS(pesewas: number): string {
+  const ghs = pesewas / 100;
+  return Number.isInteger(ghs) ? `GHS ${ghs}` : `GHS ${ghs.toFixed(2)}`;
+}
+
+function buildTierMenu(tiers: { amountPesewas: number; votes: number }[]): string {
+  return [...tiers]
+    .sort((a, b) => a.amountPesewas - b.amountPesewas)
+    .map((t, i) => `${i + 1}. ${formatGHS(t.amountPesewas)} = ${t.votes} vote${t.votes !== 1 ? "s" : ""}`)
+    .join("\n");
+}
+
 // ─── Handler ──────────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
@@ -150,17 +162,39 @@ export async function POST(req: NextRequest) {
         );
       }
       await convex.mutation(api.ussd.patchSession, { sessionId: sessionID, level: 4 });
+
+      // Show tier menu for bulk events, amount prompt for standard
+      const eventForMode = await convex.query(api.events.getById, { eventId: session.eventId as Id<"events"> });
+      if (eventForMode?.votingMode === "bulk" && eventForMode.bulkTiers?.length) {
+        const menu = buildTierMenu(eventForMode.bulkTiers);
+        return reply(`Select vote package:\n${menu}`, true);
+      }
       return reply("Enter the amount in GHS you want to vote with (e.g. 1 for GHS 1):", true);
     }
 
-    // ── Level 4: Amount + initiate payment ────────────────────────────────
+    // ── Level 4: Amount / tier selection + initiate payment ──────────────
     if (level === 4) {
-      const amountGHS = parseFloat(userData);
-      if (isNaN(amountGHS) || amountGHS <= 0) {
-        return reply("Invalid amount. Enter a number greater than 0 (e.g. 1):", true);
+      // Resolve amountPesewas based on event voting mode
+      const eventForPayment = await convex.query(api.events.getById, { eventId: session.eventId as Id<"events"> });
+
+      let amountPesewas: number;
+
+      if (eventForPayment?.votingMode === "bulk" && eventForPayment.bulkTiers?.length) {
+        const sortedTiers = [...eventForPayment.bulkTiers].sort((a, b) => a.amountPesewas - b.amountPesewas);
+        const selection = parseInt(userData.trim(), 10);
+        if (isNaN(selection) || selection < 1 || selection > sortedTiers.length) {
+          const menu = buildTierMenu(sortedTiers);
+          return reply(`Invalid option. Select vote package:\n${menu}`, true);
+        }
+        amountPesewas = sortedTiers[selection - 1].amountPesewas;
+      } else {
+        const amountGHS = parseFloat(userData);
+        if (isNaN(amountGHS) || amountGHS <= 0) {
+          return reply("Invalid amount. Enter a number greater than 0 (e.g. 1):", true);
+        }
+        amountPesewas = Math.round(amountGHS * 100);
       }
 
-      const amountPesewas = Math.round(amountGHS * 100);
       const provider = mapNetworkToProvider(network);
 
       if (!provider) {

@@ -23,11 +23,18 @@ export async function POST(req: NextRequest) {
 
   const { reference, amountPesewas, email, phone, metadata } = body;
 
-  if (!reference || !amountPesewas || !email) {
+  if (!reference || !email) {
     return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
   }
+  if (typeof amountPesewas !== "number" || !Number.isInteger(amountPesewas) || amountPesewas <= 0) {
+    return NextResponse.json({ message: "amountPesewas must be a positive integer" }, { status: 400 });
+  }
 
-  const callbackUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/vote/callback`;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (!siteUrl) {
+    return NextResponse.json({ message: "Server misconfiguration" }, { status: 500 });
+  }
+  const callbackUrl = `${siteUrl}/vote/callback`;
 
   const paystackRes = await fetch("https://api.paystack.co/transaction/initialize", {
     method: "POST",

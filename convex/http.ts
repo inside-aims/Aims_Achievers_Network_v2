@@ -47,7 +47,7 @@ http.route({
       return new Response("OK", { status: 200 });
     }
 
-    const { reference, status } = payload.data;
+    const { reference, amount, status } = payload.data;
     console.log("payload ", payload)
     if (status !== "success") {
       return new Response("OK", { status: 200 });
@@ -59,7 +59,10 @@ http.route({
 
     // ── 4. Record the vote (idempotent internal mutation) ─────────────────
     try {
-      await ctx.runMutation(internal.voting.recordVote, { providerReference: reference });
+      await ctx.runMutation(internal.internal.votes.recordVote, {
+        providerReference: reference,
+        grossAmountPesewas: amount,
+      });
     } catch (err) {
       // Return 500 so Paystack retries — recordVote is idempotent so retries are safe
       console.error("recordVote error:", err);
