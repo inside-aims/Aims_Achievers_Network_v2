@@ -48,4 +48,12 @@ crons.interval(
   {},
 );
 
+// Prune stale USSD sessions every 15 minutes
+crons.interval(
+  "prune expired ussd sessions",
+  { minutes: 15 },
+  internal.ussd.pruneExpiredSessions,
+  {},
+);
+
 export default crons;

@@ -48,7 +48,7 @@ http.route({
     }
 
     const { reference, amount, status } = payload.data;
-
+    console.log("payload ", payload)
     if (status !== "success") {
       return new Response("OK", { status: 200 });
     }
@@ -61,15 +61,14 @@ http.route({
     try {
       await ctx.runMutation(internal.internal.votes.recordVote, {
         providerReference: reference,
-        grossAmountPesewas: amount, // Paystack sends amount in pesewas (GHS subunit)
+        grossAmountPesewas: amount,
       });
     } catch (err) {
-      // Log but return 200 — Paystack will retry on non-2xx, causing duplicates.
-      // Our recordVote is idempotent so retries are safe, but log for visibility.
+      // Return 500 so Paystack retries — recordVote is idempotent so retries are safe
       console.error("recordVote error:", err);
+      return new Response("Vote recording failed", { status: 500 });
     }
 
-    // Always return 200 so Paystack doesn't retry
     return new Response("OK", { status: 200 });
   }),
 });

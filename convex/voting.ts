@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { Doc } from "./_generated/dataModel";
 
 /**
@@ -60,6 +60,42 @@ export const createPaymentIntent = mutation({
       providerReference,
       votesAwarded,
       amountPesewas: args.amountPesewas,
+    };
+  },
+});
+
+/**
+ * Fetches the status of a payment intent by its provider reference.
+ * Used by the /vote/callback page to reactively poll for confirmation.
+ * Safe to expose publicly — references have 64-bit entropy.
+ */
+export const getIntentStatus = query({
+  args: { providerReference: v.string() },
+  handler: async (ctx, args) => {
+    const intent = await ctx.db
+      .query("paymentIntents")
+      .withIndex("by_providerReference", (q) =>
+        q.eq("providerReference", args.providerReference),
+      )
+      .unique();
+
+    if (!intent) return null;
+
+    const [nominee, event, category] = await Promise.all([
+      ctx.db.get(intent.nomineeId),
+      ctx.db.get(intent.eventId),
+      ctx.db.get(intent.categoryId),
+    ]);
+
+    return {
+      status: intent.status,
+      votesAwarded: intent.votesAwarded,
+      amountPesewas: intent.amountPesewas,
+      nomineeName: nominee?.displayName ?? "the nominee",
+      eventTitle: event?.title ?? "",
+      eventSlug: event?.slug ?? "",
+      categoryName: category?.name ?? "",
+      categoryCode: category?.categoryCode ?? "",
     };
   },
 });
