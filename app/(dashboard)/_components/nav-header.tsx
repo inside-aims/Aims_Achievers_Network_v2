@@ -19,6 +19,7 @@ const PAGE_LABELS: Record<string, string> = {
   "new-event":   "New Event",
   "edit":        "Edit Event",
   "organizers":  "Organizers",
+  "highlights":  "Highlights",
   "analytics":   "Analytics",
   "settings":    "Settings",
   "categories":  "Categories",

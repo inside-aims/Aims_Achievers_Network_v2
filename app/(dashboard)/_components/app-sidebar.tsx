@@ -11,6 +11,7 @@ import {
   LogOut,
   ChevronUp,
   Plus,
+  Images,
 } from "lucide-react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useQuery } from "convex/react";
@@ -43,10 +44,10 @@ const ADMIN_NAV = [
 const USER_NAV = [
   { label: "Dashboard",  icon: LayoutDashboard, href: ""           },
   { label: "Events",     icon: CalendarDays,    href: "/events"    },
-  { label: "New Event",  icon: Plus,            href: "/new-event"  },
+  { label: "New Event",  icon: Plus,            href: "/new-event" },
+  { label: "Highlights",  icon: Images,          href: "/highlights" },
   { label: "Analytics",  icon: BarChart3,       href: "/analytics" },
-  { label: "Settings",   icon: Settings2,       href: "/settings"   },
-
+  { label: "Settings",   icon: Settings2,       href: "/settings"  },
 ];
 
 export function AppSidebar() {
