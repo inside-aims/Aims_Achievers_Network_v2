@@ -16,26 +16,24 @@ import {
 const PAGE_LABELS: Record<string, string> = {
   "":            "Dashboard",
   "events":      "Events",
+  "new-event":   "New Event",
+  "edit":        "Edit Event",
   "organizers":  "Organizers",
   "analytics":   "Analytics",
   "settings":    "Settings",
-  "new":         "New Event",
   "categories":  "Categories",
   "nominees":    "Nominees",
 };
 
 function getPageTitle(pathname: string): string {
   const segments = pathname.split("/").filter(Boolean);
-  // [role, uuid, sub?, id?, deeper?, id2?]
-  const sub = segments[2];
-  if (!sub) return "Dashboard";
-  if (sub in PAGE_LABELS) return PAGE_LABELS[sub];
-  // sub is a dynamic id — look one level deeper
-  const deeper = segments[3];
-  if (deeper && deeper in PAGE_LABELS) return PAGE_LABELS[deeper];
-  // even deeper (e.g. categories/[categoryId])
-  const deepest = segments[4];
-  if (deepest && deepest in PAGE_LABELS) return PAGE_LABELS[deepest];
+  // segments = [role, uuid, ...rest]
+  // Traverse from the deepest segment toward index 2 so that specific
+  // labels (e.g. "edit") win over generic parents (e.g. "events").
+  for (let i = segments.length - 1; i >= 2; i--) {
+    const seg = segments[i];
+    if (seg in PAGE_LABELS) return PAGE_LABELS[seg];
+  }
   return "Dashboard";
 }
 

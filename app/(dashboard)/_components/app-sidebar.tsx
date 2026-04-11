@@ -43,7 +43,7 @@ const ADMIN_NAV = [
 const USER_NAV = [
   { label: "Dashboard",  icon: LayoutDashboard, href: ""           },
   { label: "Events",     icon: CalendarDays,    href: "/events"    },
-  { label: "New Event",  icon: Plus,            href: "/events/new"},
+  { label: "New Event",  icon: Plus,            href: "/new-event"  },
   { label: "Analytics",  icon: BarChart3,       href: "/analytics" },
   { label: "Settings",   icon: Settings2,       href: "/settings"   },
 

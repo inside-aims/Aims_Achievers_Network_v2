@@ -18,7 +18,7 @@ interface EventInfoCardProps {
 function EventInfoCard({ stats, closesDate, createdAt }: EventInfoCardProps) {
   const rows: DetailConfig[] = [
     { label: "Price",      value: stats.priceLabel                                       },
-    { label: "Closes",     value: closesDate                                             },
+    { label: "Closes",     value: formatDateMedium(closesDate)                           },
     { label: "Categories", value: `${stats.totalCategories} total`                      },
     { label: "Nominees",   value: `${stats.totalNominees} total`                        },
     {

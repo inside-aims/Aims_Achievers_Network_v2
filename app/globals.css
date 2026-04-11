@@ -229,6 +229,27 @@
     padding-block: 0.625rem;
     font-size: 0.875rem;
   }
+
+  /* ─── Form / creation page utilities ────────────────── */
+  .form-section {
+    @apply bg-card border border-border rounded-lg p-5 md:p-6 space-y-4;
+  }
+
+  .form-section-title {
+    @apply text-base font-bold;
+  }
+
+  .form-section-desc {
+    @apply text-xs text-muted-foreground;
+  }
+
+  .form-grid-2 {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+  }
+
+  .form-grid-3 {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-4;
+  }
 }
 
 :root {
@@ -249,5 +270,14 @@
 
 .badge-live {
   animation: live-glow 2s ease-out infinite;
+}
+
+/* ─── Visible field borders (unlayered — beats @layer utilities) ─── */
+/* border-input maps to --input which is near-invisible in light mode. */
+/* Placing this outside any @layer ensures it overrides utility classes. */
+[data-slot="input"],
+[data-slot="textarea"],
+[data-slot="select-trigger"] {
+  border-color: var(--border) !important;
 }
 

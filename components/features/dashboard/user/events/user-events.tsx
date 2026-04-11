@@ -1,13 +1,14 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { EventRow } from "../../shared/event-row";
 import { PageHeader } from "../../shared/page-header";
-import { USER_EVENTS } from "../overview/overview";
+import {getMyEvents} from "../overview/overview";
 
 interface Props {
   base: string;
 }
 
 export function UserEvents({ base }: Props) {
+    const USER_EVENTS = getMyEvents();
   return (
     <div className="space-y-6">
       <PageHeader

@@ -20,6 +20,8 @@ export interface EventControls {
 export interface RichEventDetail {
   id: string;
   title: string;
+  institution: string;
+  description: string;
   location: string;
   date: string;
   status: string;
@@ -72,12 +74,14 @@ export const MOCK_EVENT_DETAILS: Record<string, RichEventDetail> = {
   "evt-1": {
     id: "evt-1",
     title: "FAST Excellence Awards 2025",
+    institution: "Koforidua Technical University",
+    description: "Annual awards recognising outstanding achievements in science, technology and innovation among students and faculty.",
     location: "Koforidua, Ghana",
-    date: "June 15, 2025",
+    date: "2025-06-15",
     status: "live",
     currency: "GHS",
     pricePerVote: 1,
-    closesDate: "Jun 15",
+    closesDate: "2025-06-08",
     votesThisHour: 340,
     createdAt: "2025-01-10T08:30:00Z",
     controls: { showVotes: true, votingOpen: true, publicPage: true },
@@ -130,12 +134,14 @@ export const MOCK_EVENT_DETAILS: Record<string, RichEventDetail> = {
   "evt-2": {
     id: "evt-2",
     title: "FOE Engineering Awards 2025",
-    location: "Koforidua, Ghana",
-    date: "April 20, 2025",
+    institution: "Kwame Nkrumah University of Science and Technology",
+    description: "Celebrating excellence in engineering education, project work and student leadership within the Faculty of Engineering.",
+    location: "Kumasi, Ghana",
+    date: "2025-04-20",
     status: "closed",
     currency: "GHS",
     pricePerVote: 1,
-    closesDate: "Apr 20",
+    closesDate: "2025-04-13",
     votesThisHour: 0,
     createdAt: "2024-12-05T11:00:00Z",
     controls: { showVotes: true, votingOpen: false, publicPage: true },
@@ -165,12 +171,14 @@ export const MOCK_EVENT_DETAILS: Record<string, RichEventDetail> = {
   "evt-3": {
     id: "evt-3",
     title: "FBMS Business Awards 2025",
-    location: "Koforidua, Ghana",
-    date: "July 10, 2025",
+    institution: "University of Ghana, Legon",
+    description: "Honouring the brightest minds in entrepreneurship, marketing and business leadership across the faculty.",
+    location: "Accra, Ghana",
+    date: "2025-07-10",
     status: "live",
     currency: "GHS",
     pricePerVote: 1,
-    closesDate: "Jul 10",
+    closesDate: "2025-07-03",
     votesThisHour: 120,
     createdAt: "2025-02-20T14:15:00Z",
     controls: { showVotes: false, votingOpen: true, publicPage: true },
@@ -200,12 +208,14 @@ export const MOCK_EVENT_DETAILS: Record<string, RichEventDetail> = {
   "evt-4": {
     id: "evt-4",
     title: "FBNE Innovation Awards 2025",
-    location: "Koforidua, Ghana",
-    date: "August 5, 2025",
+    institution: "University of Cape Coast",
+    description: "Recognising groundbreaking ideas and innovation from students across the Faculty of Business and Natural Environment.",
+    location: "Cape Coast, Ghana",
+    date: "2025-08-05",
     status: "draft",
     currency: "GHS",
     pricePerVote: 1,
-    closesDate: "Aug 5",
+    closesDate: "2025-07-29",
     votesThisHour: 0,
     createdAt: "2025-03-18T09:45:00Z",
     controls: { showVotes: false, votingOpen: false, publicPage: false },
