@@ -56,7 +56,8 @@ function buildTierMenu(tiers: { amountPesewas: number; votes: number }[]): strin
 
 export async function POST(req: NextRequest) {
   const body: UssdRequest = await req.json();
-  const { sessionID, userID, msisdn, network, userData, newSession } = body;
+  const { sessionID, userID, network, userData, newSession } = body;
+  const msisdn = normalizeMsisdn(body.msisdn);
 
   const reply = (message: string, cont: boolean) =>
     respond(userID, sessionID, msisdn, message, cont);
@@ -228,7 +229,6 @@ export async function POST(req: NextRequest) {
       });
 
       // Initiate Paystack mobile money charge
-      const normalized = normalizeMsisdn(msisdn);
       const paystackRes = await fetch("https://api.paystack.co/charge", {
         method: "POST",
         headers: {
@@ -237,15 +237,15 @@ export async function POST(req: NextRequest) {
         },
         body: JSON.stringify({
           amount: amountPesewas,
-          email: `${normalized}@voter.aimsnetwork.com`,
+          email: `${msisdn}@voter.aimsnetwork.com`,
           currency: "GHS",
           reference: providerReference,
-          mobile_money: { phone: normalized, provider },
+          mobile_money: { phone: msisdn, provider },
           metadata: {
             custom_fields: [
               { display_name: "Nominee Name", variable_name: "nominee_name", value: session.nomineeName },
               { display_name: "Category Name", variable_name: "category_name", value: session.categoryName },
-              { display_name: "Phone Number", variable_name: "phone_number", value: normalized },
+              { display_name: "Phone Number", variable_name: "phone_number", value: msisdn },
             ],
           },
         }),

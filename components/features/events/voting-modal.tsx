@@ -80,7 +80,12 @@ const VotingModal = ({ open, setOpen, nominee, votingConfig }: VotingModalProps)
 
   function isFormValid(): boolean {
     if (isBulk) return selectedTierIndex !== null && !phoneError && !!phone;
-    return resolvedAmountPesewas >= pricePerVotePesewas && !phoneError && !!phone;
+    return (
+      resolvedAmountPesewas >= pricePerVotePesewas &&
+      resolvedAmountPesewas % pricePerVotePesewas === 0 &&
+      !phoneError &&
+      !!phone
+    );
   }
 
   // ── Submit ───────────────────────────────────────────────────────────────────
@@ -232,8 +237,8 @@ const VotingModal = ({ open, setOpen, nominee, votingConfig }: VotingModalProps)
                 <Input
                   id="amount"
                   type="number"
-                  min="1"
-                  step="1"
+                  min={(pricePerVotePesewas / 100).toString()}
+                  step={(pricePerVotePesewas / 100).toString()}
                   placeholder="Enter amount in GHS"
                   value={amountGHS}
                   onChange={(e) => setAmountGHS(e.target.value)}

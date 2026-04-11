@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "Invalid request body" }, { status: 400 });
   }
 
-  const { reference, amountPesewas, email, phone, metadata } = body;
+  const { reference, amountPesewas, email, phone, metadata = {} } = body;
 
   if (!reference || !email) {
     return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
       callback_url: callbackUrl,
       metadata: {
         phone_number: phone,
-        custom_fields: Object.entries(metadata).map(([key, value]) => ({
+        custom_fields: Object.entries(metadata ?? {}).map(([key, value]) => ({
           display_name: key.replace(/_/g, " "),
           variable_name: key,
           value,
