@@ -175,12 +175,14 @@ const VotingModal = ({ open, setOpen, nominee, votingConfig }: VotingModalProps)
             icon={<CreditCard className="h-4 w-4" />}
             label="Pay Online"
             onClick={() => setActiveTab("online")}
+            disabled={status === "loading"}
           />
           <TabButton
             active={activeTab === "ussd"}
             icon={<Phone className="h-4 w-4" />}
             label="USSD"
             onClick={() => setActiveTab("ussd")}
+            disabled={status === "loading"}
           />
         </div>
 
@@ -363,7 +365,7 @@ const VotingModal = ({ open, setOpen, nominee, votingConfig }: VotingModalProps)
               </p>
             </div>
 
-            <Button variant="default" className="w-full" onClick={() => setOpen(false)}>
+            <Button variant="default" className="w-full" onClick={() => handleClose(false)}>
               Got it!
             </Button>
           </div>
@@ -378,21 +380,25 @@ function TabButton({
   icon,
   label,
   onClick,
+  disabled,
 }: {
   active: boolean;
   icon: React.ReactNode;
   label: string;
   onClick: () => void;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
       className={cn(
         "flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
         active
           ? "bg-background text-foreground shadow-sm"
           : "text-muted-foreground hover:text-foreground",
+        disabled && "pointer-events-none opacity-50",
       )}
     >
       {icon}
