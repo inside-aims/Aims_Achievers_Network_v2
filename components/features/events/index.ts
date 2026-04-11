@@ -9,6 +9,15 @@ export interface NomineeProps {
   votes: number;
 }
 
+export interface VotingConfig {
+  eventDocId: string;
+  categoryDocId: string;
+  votingMode: "standard" | "bulk";
+  pricePerVotePesewas: number;
+  bulkTiers: { amountPesewas: number; votes: number }[];
+  votingOpen: boolean;
+}
+
 export type EventCategory = {
   id: string;
   name: string;

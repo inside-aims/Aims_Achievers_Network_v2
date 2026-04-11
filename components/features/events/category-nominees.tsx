@@ -18,7 +18,7 @@ const CategoryNominees = ({ eventId, categoryId }: { eventId: string; categoryId
   const [openInfo, setOpenInfo] = useState<boolean>(false);
   const [selectedNominee, setSelectedNominee] = useState<NomineeProps | null>(null);
 
-  const { category, nominees, loading, error } = useCategoryNominees(eventId, categoryId);
+  const { category, votingConfig, nominees, loading, error } = useCategoryNominees(eventId, categoryId);
 
   const handleVoteClick = (nominee: NomineeProps) => {
     setSelectedNominee(nominee);
@@ -112,6 +112,7 @@ const CategoryNominees = ({ eventId, categoryId }: { eventId: string; categoryId
         <VotingModal
           open={openVoting}
           nominee={selectedNominee}
+          votingConfig={votingConfig}
           setOpen={() => { setOpenVoting(false); setSelectedNominee(null); }}
         />
       )}
