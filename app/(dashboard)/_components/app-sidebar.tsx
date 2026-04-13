@@ -16,6 +16,7 @@ import {
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { DUMMY_PROFILE } from "@/components/features/dashboard/user/settings/settings.data";
 import {
   Sidebar,
   SidebarContent,
@@ -63,9 +64,9 @@ export function AppSidebar() {
   const { signOut } = useAuthActions();
   const profile = useQuery(api.users.getMyProfile);
 
-  const initials = profile?.displayName
-    ? profile.displayName.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
-    : "?";
+  const displayName = profile?.displayName ?? DUMMY_PROFILE.name;
+  const displayRole = profile?.role        ?? DUMMY_PROFILE.role;
+  const initials    = displayName.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
 
   return (
     <Sidebar collapsible="icon">
@@ -123,18 +124,14 @@ export function AppSidebar() {
                 <SidebarMenuButton
                   size="lg"
                   className="data-[state=open]:bg-sidebar-accent"
-                  tooltip={profile?.displayName ?? "Account"}
+                  tooltip={displayName}
                 >
                   <div className="flex aspect-square size-8 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground font-semibold text-xs shrink-0">
                     {initials}
                   </div>
                   <div className="flex flex-col gap-0.5 leading-none min-w-0">
-                    <span className="font-medium text-sm truncate">
-                      {profile?.displayName ?? "Loading…"}
-                    </span>
-                    <span className="text-[11px] text-sidebar-foreground/60 capitalize">
-                      {profile?.role ?? ""}
-                    </span>
+                    <span className="font-medium text-sm truncate">{displayName}</span>
+                    <span className="text-[11px] text-sidebar-foreground/60 capitalize">{displayRole}</span>
                   </div>
                   <ChevronUp className="ml-auto size-4 shrink-0" />
                 </SidebarMenuButton>
@@ -146,8 +143,8 @@ export function AppSidebar() {
                     {initials}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold truncate">{profile?.displayName ?? "—"}</p>
-                    <p className="text-[11px] text-muted-foreground capitalize truncate">{profile?.role ?? ""}</p>
+                    <p className="text-sm font-semibold truncate">{displayName}</p>
+                    <p className="text-[11px] text-muted-foreground capitalize truncate">{displayRole}</p>
                   </div>
                 </div>
 
