@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { EventControls } from "./events";
 
+
 interface ControlConfig {
   key: keyof EventControls;
   id: string;
@@ -27,6 +28,18 @@ const CONTROL_CONFIG: ControlConfig[] = [
     id: "ctrl-public-page",
     label: "Public page",
     description: "Visible on the public site",
+  },
+  {
+    key: "nominationsOpen",
+    id: "ctrl-nominations-open",
+    label: "Nominations open",
+    description: "Accept public nominee submissions",
+  },
+  {
+    key: "autoPublishNominations",
+    id: "ctrl-auto-publish-nominations",
+    label: "Auto-publish nominations",
+    description: "Nominees go straight to public without review",
   },
 ];
 
