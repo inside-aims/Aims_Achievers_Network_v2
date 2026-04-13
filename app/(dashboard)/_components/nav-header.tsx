@@ -16,6 +16,7 @@ const PAGE_LABELS: Record<string, string> = {
   "settings":    "Settings",
   "categories":  "Categories",
   "nominees":    "Nominees",
+  "nominations": "Nominations",
 };
 
 function getPageTitle(pathname: string): string {
