@@ -12,9 +12,11 @@ export interface CategoryDetail {
 }
 
 export interface EventControls {
-  showVotes: boolean;
-  votingOpen: boolean;
-  publicPage: boolean;
+  showVotes:              boolean;
+  votingOpen:             boolean;
+  publicPage:             boolean;
+  nominationsOpen:        boolean;
+  autoPublishNominations: boolean;
 }
 
 export interface RichEventDetail {
@@ -84,7 +86,7 @@ export const MOCK_EVENT_DETAILS: Record<string, RichEventDetail> = {
     closesDate: "2025-06-08",
     votesThisHour: 340,
     createdAt: "2025-01-10T08:30:00Z",
-    controls: { showVotes: true, votingOpen: true, publicPage: true },
+    controls: { showVotes: true, votingOpen: true, publicPage: true, nominationsOpen: true, autoPublishNominations: false },
     categories: [
       {
         id: "cat-1",
@@ -144,7 +146,7 @@ export const MOCK_EVENT_DETAILS: Record<string, RichEventDetail> = {
     closesDate: "2025-04-13",
     votesThisHour: 0,
     createdAt: "2024-12-05T11:00:00Z",
-    controls: { showVotes: true, votingOpen: false, publicPage: true },
+    controls: { showVotes: true, votingOpen: false, publicPage: true, nominationsOpen: false, autoPublishNominations: false },
     categories: [
       {
         id: "cat-5",
@@ -181,7 +183,7 @@ export const MOCK_EVENT_DETAILS: Record<string, RichEventDetail> = {
     closesDate: "2025-07-03",
     votesThisHour: 120,
     createdAt: "2025-02-20T14:15:00Z",
-    controls: { showVotes: false, votingOpen: true, publicPage: true },
+    controls: { showVotes: false, votingOpen: true, publicPage: true, nominationsOpen: true, autoPublishNominations: false },
     categories: [
       {
         id: "cat-7",
@@ -218,7 +220,7 @@ export const MOCK_EVENT_DETAILS: Record<string, RichEventDetail> = {
     closesDate: "2025-07-29",
     votesThisHour: 0,
     createdAt: "2025-03-18T09:45:00Z",
-    controls: { showVotes: false, votingOpen: false, publicPage: false },
+    controls: { showVotes: false, votingOpen: false, publicPage: false, nominationsOpen: false, autoPublishNominations: false },
     categories: [],
   },
 };

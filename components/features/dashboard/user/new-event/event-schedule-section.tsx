@@ -88,6 +88,7 @@ export function EventScheduleSection({ control }: Props) {
           )}
         />
       </div>
+
     </div>
   )
 }

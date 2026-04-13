@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense } from "react"
 import type { ReactNode } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { TABS, type Tab } from "./settings.data"
 import { ProfileTab } from "./profile-tab"
@@ -9,6 +10,8 @@ import { NotificationsTab } from "./notifications-tab"
 import { BillingTab } from "./billing-tab"
 import { DefaultsTab } from "./defaults-tab"
 import { SecurityTab } from "./security-tab"
+
+const VALID_TABS = TABS.map((t) => t.id) as Tab[]
 
 const TAB_CONTENT: Record<Tab, ReactNode> = {
   profile:       <ProfileTab />,
@@ -18,8 +21,15 @@ const TAB_CONTENT: Record<Tab, ReactNode> = {
   security:      <SecurityTab />,
 }
 
-export function UserSettings() {
-  const [active, setActive] = useState<Tab>("profile")
+function UserSettingsInner() {
+  const router     = useRouter()
+  const params     = useSearchParams()
+  const raw        = params.get("tab") as Tab | null
+  const active     = raw && VALID_TABS.includes(raw) ? raw : "profile"
+
+  function switchTab(tab: Tab) {
+    router.push(`?tab=${tab}`, { scroll: false })
+  }
 
   return (
     <div className="space-y-6">
@@ -35,7 +45,7 @@ export function UserSettings() {
           <button
             key={id}
             type="button"
-            onClick={() => setActive(id)}
+            onClick={() => switchTab(id)}
             className={cn(
               "flex items-center gap-2 px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors relative shrink-0",
               active === id ? "text-foreground" : "text-muted-foreground hover:text-foreground",
@@ -52,5 +62,13 @@ export function UserSettings() {
 
       <div>{TAB_CONTENT[active]}</div>
     </div>
+  )
+}
+
+export function UserSettings() {
+  return (
+    <Suspense fallback={<div className="h-10" />}>
+      <UserSettingsInner />
+    </Suspense>
   )
 }

@@ -37,9 +37,11 @@ export const newEventSchema = z
     pricePerVote: z.coerce.number().min(0.01, "Price must be greater than 0"),
 
     // Event controls
-    showVotes:           z.enum(["yes", "no"]),
-    publicPage:          z.enum(["yes", "no"]),
-    votingOpenByDefault: z.enum(["yes", "no"]),
+    showVotes:              z.enum(["yes", "no"]),
+    publicPage:             z.enum(["yes", "no"]),
+    votingOpenByDefault:    z.enum(["yes", "no"]),
+    nominationsEnabled:     z.enum(["yes", "no"]),
+    autoPublishNominations: z.enum(["yes", "no"]),
 
     // Categories
     categories: z
@@ -75,8 +77,10 @@ export const NEW_EVENT_DEFAULTS: NewEventFormValues = {
   votingCloses:        "",
   currency:            "",
   pricePerVote:        1,
-  showVotes:           "yes",
-  publicPage:          "yes",
-  votingOpenByDefault: "no",
-  categories:          [],
+  showVotes:              "yes",
+  publicPage:             "yes",
+  votingOpenByDefault:    "no",
+  nominationsEnabled:     "yes",
+  autoPublishNominations: "no",
+  categories:             [],
 }

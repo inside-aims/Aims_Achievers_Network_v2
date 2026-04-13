@@ -19,7 +19,7 @@ export function EventDetail({ base, eventId }: Props) {
   const [controls, setControls] = useState<EventControls>(
     raw
       ? { ...raw.controls }
-      : { showVotes: false, votingOpen: false, publicPage: false }
+      : { showVotes: false, votingOpen: false, publicPage: false, nominationsOpen: false, autoPublishNominations: false }
   );
 
   if (!raw) {
