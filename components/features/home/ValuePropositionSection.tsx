@@ -9,21 +9,21 @@ import { ArrowRight } from "lucide-react";
 const valueProps = [
   {
     number: "01",
-    title: "Unprecedented Access",
+    title: "Unrestricted Access",
     description:
-      "Vote from anywhere, on any device. No barriers, no complexity - just participation that reaches every corner of campus.",
+      "Participate seamlessly from anywhere, on any device. A frictionless experience designed to ensure every voice can be heard without limitation.",
   },
   {
     number: "02",
-    title: "Military-Grade Security",
+    title: "Advanced Security",
     description:
-      "256-bit encryption and tamper-proof systems ensure every vote counts, every time. Zero disputes since launch.",
+      "Built on robust encryption and verifiable systems that safeguard every vote. A trusted foundation where integrity is never compromised.",
   },
   {
     number: "03",
     title: "Effortless Efficiency",
     description:
-      "Real-time results, automated tallying, zero manual counting. Focus on the event - not the ballot box.",
+      "Automated processes and real-time insights eliminate complexity. Focus on meaningful recognition while every detail is handled with precision.",
   },
 ];
 
@@ -72,12 +72,12 @@ const ValuePropositionSection = () => {
           {/* Left: headline + stats + ctas */}
           <div className="flex flex-col justify-between gap-12">
             <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light font-serif tracking-tight leading-[1.0]">
-              Transform the way
+              Redefining how excellence
               <br />
-              campus events
+              is recognized
               <br />
-              crown their{" "}
-              <span className="text-secondary italic">champions.</span>
+              and{" "}
+              <span className="text-secondary italic">celebrated.</span>
             </h2>
 
             {/* Stats */}

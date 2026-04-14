@@ -10,7 +10,7 @@ const cards = [
   {
     title: "Secure Voting",
     description:
-      "Military-grade 256-bit encryption means every ballot is tamper-proof and permanently verified. Cast your vote with absolute confidence.",
+      "Advanced encryption protocols ensure every vote is protected, verifiable, and tamper-resistant. Participate with complete confidence in a system built on trust and integrity.",
     link: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&auto=format&fit=crop&q=80",
     color: "#1a2b5e",
     tag: "SECURITY",
@@ -18,31 +18,31 @@ const cards = [
   {
     title: "Live Results",
     description:
-      "Watch tallies update in real time as votes pour in. No waiting, no announcements - just a live leaderboard that moves with every vote.",
+      "Experience results as they unfold in real time. A dynamic leaderboard reflects every vote—instantly, transparently, and without delay.",
     link: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80",
     color: "#2d1b6e",
     tag: "REAL-TIME",
   },
   {
-    title: "Easy Nominations",
+    title: "Seamless Nominations",
     description:
-      "Submit nominations in minutes - fill in a profile, upload a photo, and let your nominee's story do the work. Simple, structured, powerful.",
+      "Effortlessly submit nominations through a guided, structured process. Present individuals with clarity, allowing their story and impact to stand out.",
     link: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&auto=format&fit=crop&q=80",
     color: "#0d3b5e",
     tag: "NOMINATIONS",
   },
   {
-    title: "Campus Events",
+    title: "Curated Events",
     description:
-      "From Best Dressed to Academic Excellence - every award category is built to celebrate the talent that lives right on your campus.",
+      "Thoughtfully designed award categories that celebrate excellence, creativity, and influence across diverse communities. Every event is crafted to recognize what truly matters.",
     link: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop&q=80",
     color: "#3d1040",
     tag: "EVENTS",
   },
   {
-    title: "Partner With Us",
+    title: "Partnership Opportunities",
     description:
-      "Brands that believe in student excellence belong here. Sponsor events, gain campus visibility, and become part of something students remember.",
+      "Collaborate with a platform that values excellence and meaningful recognition. Elevate your brand presence while supporting initiatives that leave a lasting impression.",
     link: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop&q=80",
     color: "#5c1d00",
     tag: "PARTNERSHIPS",
@@ -76,13 +76,11 @@ export default function StackingCardsHero(): JSX.Element {
                   transition={{ duration: 0.8, delay: 0.2, ease: [0.4, 0, 0.2, 1] }}
                   className="text-5xl sm:text-6xl md:text-7xl xl:text-8xl font-light font-serif tracking-tight leading-[0.95]"
                 >
-                  The awards
+                  Recognition 
                   <br />
-                  ceremony
+                   begins with
                   <br />
-                  starts with
-                  <br />
-                  <span className="text-secondary italic">your vote.</span>
+                  <span className="text-secondary italic">intention.</span>
                 </motion.h1>
 
                 <motion.p
@@ -91,8 +89,8 @@ export default function StackingCardsHero(): JSX.Element {
                   transition={{ duration: 0.6, delay: 0.45, ease: [0.4, 0, 0.2, 1] }}
                   className="mt-8 text-base md:text-lg font-light text-primary-foreground/50 max-w-md leading-relaxed"
                 >
-                  Secure, transparent digital voting for campus award shows across Ghana.
-                  Every vote counts. Every champion is chosen by the community.
+                  Experience a secure, transparent voting system built to celebrate excellence on a global stage.
+                  Every vote matters.
                 </motion.p>
 
                 <motion.div
@@ -103,7 +101,7 @@ export default function StackingCardsHero(): JSX.Element {
                 >
                   <Button size="lg" variant="secondary" className="flex-1" asChild>
                     <Link href="/events">
-                      Browse Events
+                      Explore Events
                       <ArrowRight className="ml-2 w-4 h-4" />
                     </Link>
                   </Button>
@@ -112,7 +110,7 @@ export default function StackingCardsHero(): JSX.Element {
                     className="flex-1 bg-transparent border border-primary-foreground/25 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shadow-none"
                     asChild
                   >
-                    <Link href="/nominations">Nominate Someone</Link>
+                    <Link href="/nominations">Submit a Nomination</Link>
                   </Button>
                 </motion.div>
               </div>
