@@ -3,10 +3,10 @@ import { ArrowDown } from 'lucide-react';
 
 export function ValuesSection() {
   const values = [
-    { principle: "Access over exclusivity", description: "Mentorship shouldn't depend on who you know" },
-    { principle: "Clarity over confusion", description: "Plain guidance, no jargon or gatekeeping" },
-    { principle: "Connection over isolation", description: "Building a community, not just a platform" },
-    { principle: "Growth over perfection", description: "Supporting students at every stage" }
+    { principle: "Access over exclusivity", description: "Opportunity should not depend on who you know." },
+    { principle: "Clarity over confusion", description: "We remove noise and replace it with direction." },
+    { principle: "Connection over isolation", description: "We build real relationships, not just networks." },
+    { principle: "Progress over perfection", description: "We value momentum at every stage of growth." }
   ];
 
   return (
@@ -22,7 +22,7 @@ export function ValuesSection() {
           {values.map((value, index) => (
             <div key={index} className="border border-white/10 rounded-lg p-6 hover:border-white/30 transition-all group">
               <div className="flex gap-3 items-start">
-                <div className="w-2 h-2 rounded-full bg-white/50 mt-2 group-hover:bg-blue-400 transition-colors flex-shrink-0"></div>
+                <div className="w-2 h-2 rounded-full bg-white/50 mt-2 group-hover:bg-blue-400 transition-colors shrink-0"></div>
                 <div>
                   <div className="font-bold mb-1">{value.principle}</div>
                   <div className="text-gray-400 text-sm">{value.description}</div>
