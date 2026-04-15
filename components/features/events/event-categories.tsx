@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, Layers, Search } from "lucide-react";
+import { Clock, Layers, Search, Ticket } from "lucide-react";
 import CategoryCard from "@/components/features/events/category-card";
 import { getDaysLeft } from "@/lib/utils";
 import { useMemo, useState } from "react";
@@ -10,11 +10,19 @@ import EmptyState from "@/components/shared/empty-state";
 import FeatureNavigationWrapper from "@/components/shared/feature-navigation-wrapper";
 import { useEvent } from "@/hooks/use-event";
 import { CategoryCardSkeleton } from "@/components/ui/skeleton";
+import TicketPurchaseSection from "@/components/features/tickets/ticket-purchase-section";
+import TicketPurchaseModal from "@/components/features/tickets/ticket-purchase-modal";
+import { isTicketingEnabled, getEventTicketInfo } from "@/components/features/tickets/mock-data";
+import { TicketType } from "@/components/features/tickets";
 
 const EventCategories = ({ eventId }: { eventId: string }) => {
   const [query, setQuery] = useState<string>("");
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
+  const [selectedTicketType, setSelectedTicketType] = useState<TicketType | null>(null);
+  const [ticketModalOpen, setTicketModalOpen] = useState(false);
   const { event, loading, error } = useEvent(eventId);
+
+  const ticketInfo = isTicketingEnabled(eventId) ? getEventTicketInfo(eventId) : undefined;
 
   const eventCategories = useMemo(() => {
     if (!event) return [];
@@ -79,6 +87,18 @@ const EventCategories = ({ eventId }: { eventId: string }) => {
           <Clock className="h-4 w-4 text-primary" />
           {daysLeft === 0 ? "Event ended" : `${daysLeft} days left`}
         </Button>
+        {ticketInfo && (
+          <Button
+            variant="ghost"
+            className="flex items-center gap-2 rounded-full bg-secondary/70 border border-secondary/40 text-secondary-foreground hover:bg-secondary/90"
+            onClick={() =>
+              document.getElementById("tickets-section")?.scrollIntoView({ behavior: "smooth" })
+            }
+          >
+            <Ticket className="h-4 w-4" />
+            Get Tickets
+          </Button>
+        )}
         {showSearchBar && <SearchBar query={query} setQuery={setQuery} />}
       </div>
 
@@ -97,6 +117,25 @@ const EventCategories = ({ eventId }: { eventId: string }) => {
 
       {eventCategories.length === 0 && (
         <EmptyState onReset={() => setQuery("")} />
+      )}
+
+      {ticketInfo && (
+        <TicketPurchaseSection
+          ticketInfo={ticketInfo}
+          onSelectType={(type) => {
+            setSelectedTicketType(type);
+            setTicketModalOpen(true);
+          }}
+        />
+      )}
+
+      {ticketInfo && (
+        <TicketPurchaseModal
+          open={ticketModalOpen}
+          setOpen={setTicketModalOpen}
+          ticketInfo={ticketInfo}
+          selectedType={selectedTicketType}
+        />
       )}
     </FeatureNavigationWrapper>
   );
