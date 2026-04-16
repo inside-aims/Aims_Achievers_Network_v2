@@ -1,8 +1,10 @@
-import type { Metadata } from "next"
-import { ComingSoon } from "@/components/features/dashboard/shared/coming-soon"
+import { redirect } from "next/navigation"
 
-export const metadata: Metadata = { title: "New Event | AIMS Achievers Network" }
-
-export default function NewEventPage() {
-  return <ComingSoon title="Create New Event" />
+export default async function NewEventRedirectPage({
+  params,
+}: {
+  params: Promise<{ uuid: string }>
+}) {
+  const { uuid } = await params
+  redirect(`/user/${uuid}/new-event`)
 }

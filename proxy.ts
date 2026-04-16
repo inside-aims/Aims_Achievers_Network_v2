@@ -8,7 +8,6 @@ const isOrganizerRoute = createRouteMatcher([
   "/admin(.*)",
   "/user(.*)",
   "/dashboard(.*)",
-  "/events/new(.*)",
 ]);
 
 // TODO: set to false before shipping
