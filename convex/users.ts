@@ -4,12 +4,6 @@ import { api, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
-/** Generates a RFC-4122 v4 UUID using the Web Crypto API (available in Convex runtime). */
-function generateUUID(): string {
-  // crypto.randomUUID is available in the Convex V8 runtime
-  return crypto.randomUUID();
-}
-
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 /** Temporary password assigned to all newly created organizer accounts. */
@@ -21,7 +15,8 @@ const ADMIN_SEED_PASSWORD = "password123";
 // ─── Public Queries ───────────────────────────────────────────────────────────
 
 /**
- * Returns the authenticated user's profile plus their uuid from the users table.
+ * Returns the authenticated user's organizerProfile.
+ * The profile's _id is used as the stable URL identifier for dashboard routes.
  * Used post-login to determine the redirect route.
  */
 export const getMyProfile = query({
@@ -30,15 +25,10 @@ export const getMyProfile = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
 
-    const profile = await ctx.db
+    return await ctx.db
       .query("organizerProfiles")
       .withIndex("by_userId", (q) => q.eq("userId", userId))
       .unique();
-
-    if (!profile) return null;
-
-    const user = await ctx.db.get(userId);
-    return { ...profile, uuid: user?.uuid ?? null };
   },
 });
 
@@ -396,12 +386,6 @@ export const _createAdminProfile = internalMutation({
       .unique();
     if (existing) return existing._id;
 
-    // Stamp the uuid on the auth users record
-    const user = await ctx.db.get(args.userId);
-    if (user && !user.uuid) {
-      await ctx.db.patch(args.userId, { uuid: generateUUID() });
-    }
-
     const now = Date.now();
     return await ctx.db.insert("organizerProfiles", {
       userId: args.userId,
@@ -430,12 +414,6 @@ export const _createOrganizerProfile = internalMutation({
       .withIndex("by_userId", (q) => q.eq("userId", args.userId))
       .unique();
     if (existing) throw new Error("A profile already exists for this user");
-
-    // Stamp the uuid on the auth users record
-    const user = await ctx.db.get(args.userId);
-    if (user && !user.uuid) {
-      await ctx.db.patch(args.userId, { uuid: generateUUID() });
-    }
 
     const now = Date.now();
     return await ctx.db.insert("organizerProfiles", {

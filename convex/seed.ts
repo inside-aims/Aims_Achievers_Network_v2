@@ -36,27 +36,6 @@ export const migrateProfiles = internalMutation({
   },
 });
 
-/**
- * One-time migration: stamp uuid on all users records that don't have one yet.
- * Run via: npx convex run seed:migrateUUIDs
- */
-export const migrateUUIDs = internalMutation({
-  args: {},
-  handler: async (ctx) => {
-    const users = await ctx.db.query("users").take(500);
-    let patched = 0;
-
-    for (const user of users) {
-      if (!(user as any).uuid) {
-        await ctx.db.patch(user._id, { uuid: crypto.randomUUID() } as any);
-        patched++;
-      }
-    }
-
-    return { status: "ok", patched };
-  },
-});
-
 // ─── Raw seed data (mirrors scripts/seed.ts) ─────────────────────────────────
 
 const EVENTS_DATA = [

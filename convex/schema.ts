@@ -14,12 +14,9 @@ export default defineSchema({
     phone: v.optional(v.string()),
     phoneVerificationTime: v.optional(v.number()),
     isAnonymous: v.optional(v.boolean()),
-    // ── Custom field ───────────────────────────────────────────────────
-    uuid: v.optional(v.string()),   // stable external identifier (set on account creation)
   })
     .index("email", ["email"])
-    .index("phone", ["phone"])
-    .index("uuid", ["uuid"]),
+    .index("phone", ["phone"]),
 
   // ─────────────────────────────────────────────
   // ORGANIZER PROFILES

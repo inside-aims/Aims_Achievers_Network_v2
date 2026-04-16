@@ -56,9 +56,9 @@ const USER_NAV = [
 export function AppSidebar() {
   const pathname = usePathname();
   const params   = useParams();
-  const uuid     = params.uuid as string;
-  const isAdmin  = pathname.startsWith("/admin");
-  const base     = isAdmin ? `/admin/${uuid}` : `/user/${uuid}`;
+  const profileId = params.profileId as string;
+  const isAdmin   = pathname.startsWith("/admin");
+  const base      = isAdmin ? `/admin/${profileId}` : `/user/${profileId}`;
   const navItems = isAdmin ? ADMIN_NAV : USER_NAV;
 
   const { signOut } = useAuthActions();

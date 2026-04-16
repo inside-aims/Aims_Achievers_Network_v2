@@ -39,8 +39,8 @@ const LoginForm = () => {
   useEffect(() => {
     if (!pendingRedirect || !profile) return;
     const path = profile.role === "admin"
-      ? `/admin/${profile.uuid}`
-      : `/user/${profile.uuid}`;
+      ? `/admin/${profile._id}`
+      : `/user/${profile._id}`;
     router.push(path);
   }, [pendingRedirect, profile, router]);
 
