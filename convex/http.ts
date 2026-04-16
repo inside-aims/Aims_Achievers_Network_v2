@@ -2,6 +2,7 @@ import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { auth } from "./auth";
+import { resend } from "./resend";
 
 const http = httpRouter();
 
@@ -70,6 +71,16 @@ http.route({
     }
 
     return new Response("OK", { status: 200 });
+  }),
+});
+
+// ─── Resend Webhook ───────────────────────────────────────────────────────────
+
+http.route({
+  path: "/resend-webhook",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    return await resend.handleResendEventWebhook(ctx, req);
   }),
 });
 

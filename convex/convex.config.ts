@@ -2,6 +2,7 @@ import { defineApp } from "convex/server";
 import aggregate from "@convex-dev/aggregate/convex.config.js";
 import shardedCounter from "@convex-dev/sharded-counter/convex.config.js";
 import rateLimiter from "@convex-dev/rate-limiter/convex.config.js";
+import resend from "@convex-dev/resend/convex.config.js";
 
 const app = defineApp();
 
@@ -22,5 +23,8 @@ app.use(shardedCounter, { name: "nomineeVoteCounts" });
 
 // Application-layer rate limiting (nominations spam prevention, etc.)
 app.use(rateLimiter);
+
+// Transactional email delivery
+app.use(resend);
 
 export default app;
