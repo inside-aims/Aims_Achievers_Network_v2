@@ -20,9 +20,9 @@ function toInputDate(dateStr: string): string {
 export default async function EditEventPage({
   params,
 }: {
-  params: Promise<{ uuid: string; eventId: string }>
+  params: Promise<{ profileId: string; eventId: string }>
 }) {
-  const { uuid, eventId } = await params
+  const { profileId, eventId } = await params
   const raw = MOCK_EVENT_DETAILS[eventId]
 
   // TODO: fetch from Convex when DB is wired up.
@@ -50,7 +50,7 @@ export default async function EditEventPage({
 
   return (
     <NewEventForm
-      base={`/user/${uuid}`}
+      base={`/user/${profileId}`}
       initialValues={initialValues}
       eventId={eventId}
     />

@@ -6,8 +6,8 @@ export const metadata: Metadata = { title: "New Event | AIMS Achievers Network" 
 export default async function NewEventPage({
   params,
 }: {
-  params: Promise<{ uuid: string }>
+  params: Promise<{ profileId: string }>
 }) {
-  const { uuid } = await params
-  return <NewEventForm base={`/user/${uuid}`} />
+  const { profileId } = await params
+  return <NewEventForm base={`/user/${profileId}`} />
 }

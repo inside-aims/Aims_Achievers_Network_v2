@@ -3,12 +3,7 @@ import { action, internalAction, internalMutation, internalQuery, query } from "
 import { api, internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
 import { getAuthUserId } from "@convex-dev/auth/server";
-
-/** Generates a RFC-4122 v4 UUID using the Web Crypto API (available in Convex runtime). */
-function generateUUID(): string {
-  // crypto.randomUUID is available in the Convex V8 runtime
-  return crypto.randomUUID();
-}
+import { resend } from "./resend";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -21,7 +16,8 @@ const ADMIN_SEED_PASSWORD = "password123";
 // ─── Public Queries ───────────────────────────────────────────────────────────
 
 /**
- * Returns the authenticated user's profile plus their uuid from the users table.
+ * Returns the authenticated user's organizerProfile.
+ * The profile's _id is used as the stable URL identifier for dashboard routes.
  * Used post-login to determine the redirect route.
  */
 export const getMyProfile = query({
@@ -30,15 +26,10 @@ export const getMyProfile = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
 
-    const profile = await ctx.db
+    return await ctx.db
       .query("organizerProfiles")
       .withIndex("by_userId", (q) => q.eq("userId", userId))
       .unique();
-
-    if (!profile) return null;
-
-    const user = await ctx.db.get(userId);
-    return { ...profile, uuid: user?.uuid ?? null };
   },
 });
 
@@ -80,6 +71,93 @@ export const listOrganizers = query({
       .query("organizerProfiles")
       .withIndex("by_role", (q) => q.eq("role", "organizer"))
       .take(200);
+  },
+});
+
+// ─── Dev Utilities ────────────────────────────────────────────────────────────
+
+/**
+ * Dev/ops only: create an organizer account without requiring an authenticated
+ * admin session. Use this from the CLI while the admin dashboard UI is not yet
+ * built.
+ *
+ * Run with:
+ *   npx convex run users:createOrganizerDev '{"displayName":"Jane Doe","email":"jane@example.com"}'
+ *
+ * Optional phone:
+ *   npx convex run users:createOrganizerDev '{"displayName":"Jane Doe","email":"jane@example.com","phone":"0551234567"}'
+ */
+export const createOrganizerDev = internalAction({
+  args: {
+    displayName: v.string(),
+    email: v.string(),
+    phone: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const normalizedEmail = args.email.trim().toLowerCase();
+
+    const existingProfile = await ctx.runQuery(internal.users._getProfileByEmail, {
+      email: normalizedEmail,
+    });
+    if (existingProfile) {
+      throw new Error(`An account with email ${normalizedEmail} already exists`);
+    }
+
+    const result: { user: { _id: Id<"users"> } } = await ctx.runMutation(
+      "auth:store" as any,
+      {
+        args: {
+          type: "createAccountFromCredentials",
+          provider: "password",
+          account: {
+            id: normalizedEmail,
+            secret: DEFAULT_ORGANIZER_PASSWORD,
+          },
+          profile: {
+            email: normalizedEmail,
+            name: args.displayName,
+          },
+        },
+      },
+    );
+
+    // Find the admin profile to satisfy createdBy (use any admin)
+    const adminProfiles = await ctx.runQuery(internal.users._getAdminProfile);
+    if (!adminProfiles) {
+      throw new Error("No admin profile found. Run seedAdmin first.");
+    }
+
+    await ctx.runMutation(internal.users._createOrganizerProfile, {
+      userId: result.user._id,
+      displayName: args.displayName,
+      email: normalizedEmail,
+      phone: args.phone,
+      createdBy: adminProfiles._id,
+    });
+
+    // Send welcome email (non-fatal if it fails)
+    const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? "https://aimsachieversnetwork.com"}/login`;
+    try {
+      await resend.sendEmail(ctx, {
+        from: "AAN Platform <noreply@mail.xolace.app>",
+        to: normalizedEmail,
+        subject: "Your AAN Organizer Account is Ready",
+        html: welcomeEmailHtml({
+          displayName: args.displayName,
+          email: normalizedEmail,
+          password: DEFAULT_ORGANIZER_PASSWORD,
+          loginUrl,
+        }),
+      });
+    } catch (emailErr) {
+      console.error("Welcome email failed to send:", emailErr);
+    }
+
+    return {
+      success: true,
+      email: normalizedEmail,
+      defaultPassword: DEFAULT_ORGANIZER_PASSWORD,
+    };
   },
 });
 
@@ -141,6 +219,25 @@ export const createOrganizerAccount = action({
       phone: args.phone,
       createdBy: callerProfile._id,
     });
+
+    // Send welcome email with credentials
+    const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? "https://aimsachieversnetwork.com"}/login`;
+    try {
+      await resend.sendEmail(ctx, {
+        from: "AAN Platform <noreply@mail.xolace.app>",
+        to: normalizedEmail,
+        subject: "Your AAN Organizer Account is Ready",
+        html: welcomeEmailHtml({
+          displayName: args.displayName,
+          email: normalizedEmail,
+          password: DEFAULT_ORGANIZER_PASSWORD,
+          loginUrl,
+        }),
+      });
+    } catch (emailErr) {
+      // Account was created — log the email failure but don't roll back.
+      console.error("Welcome email failed to send:", emailErr);
+    }
 
     return { success: true, email: normalizedEmail };
   },
@@ -367,6 +464,16 @@ export const resetAdminPassword = internalAction({
 
 // ─── Internal Helpers ─────────────────────────────────────────────────────────
 
+export const _getAdminProfile = internalQuery({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db
+      .query("organizerProfiles")
+      .withIndex("by_role", (q) => q.eq("role", "admin"))
+      .first();
+  },
+});
+
 export const _getProfileByEmail = internalQuery({
   args: { email: v.string() },
   handler: async (ctx, args) => {
@@ -396,12 +503,6 @@ export const _createAdminProfile = internalMutation({
       .unique();
     if (existing) return existing._id;
 
-    // Stamp the uuid on the auth users record
-    const user = await ctx.db.get(args.userId);
-    if (user && !user.uuid) {
-      await ctx.db.patch(args.userId, { uuid: generateUUID() });
-    }
-
     const now = Date.now();
     return await ctx.db.insert("organizerProfiles", {
       userId: args.userId,
@@ -430,12 +531,6 @@ export const _createOrganizerProfile = internalMutation({
       .withIndex("by_userId", (q) => q.eq("userId", args.userId))
       .unique();
     if (existing) throw new Error("A profile already exists for this user");
-
-    // Stamp the uuid on the auth users record
-    const user = await ctx.db.get(args.userId);
-    if (user && !user.uuid) {
-      await ctx.db.patch(args.userId, { uuid: generateUUID() });
-    }
 
     const now = Date.now();
     return await ctx.db.insert("organizerProfiles", {
@@ -480,3 +575,86 @@ export const updateOrganizerStatus = internalMutation({
     });
   },
 });
+
+// ─── Email Templates ──────────────────────────────────────────────────────────
+
+function welcomeEmailHtml({
+  displayName,
+  email,
+  password,
+  loginUrl,
+}: {
+  displayName: string;
+  email: string;
+  password: string;
+  loginUrl: string;
+}): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your AAN Organizer Account</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f4f5;font-family:system-ui,-apple-system,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:40px 16px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+          <!-- Header -->
+          <tr>
+            <td style="background:#18181b;padding:32px 40px;">
+              <p style="margin:0;color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.3px;">AAN Platform</p>
+              <p style="margin:4px 0 0;color:#a1a1aa;font-size:13px;">AIMS Achievers Network</p>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:40px 40px 32px;">
+              <p style="margin:0 0 16px;font-size:16px;color:#18181b;font-weight:600;">Hi ${displayName},</p>
+              <p style="margin:0 0 24px;font-size:14px;color:#52525b;line-height:1.6;">
+                Your organizer account has been set up. Use the credentials below to sign in and get started.
+                You'll be prompted to change your password on your first login.
+              </p>
+
+              <!-- Credentials box -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;border-radius:8px;margin-bottom:28px;">
+                <tr>
+                  <td style="padding:20px 24px;">
+                    <p style="margin:0 0 12px;font-size:12px;font-weight:600;color:#71717a;text-transform:uppercase;letter-spacing:0.5px;">Your credentials</p>
+                    <p style="margin:0 0 8px;font-size:14px;color:#18181b;">
+                      <span style="color:#71717a;">Email:&nbsp;</span>
+                      <strong>${email}</strong>
+                    </p>
+                    <p style="margin:0;font-size:14px;color:#18181b;">
+                      <span style="color:#71717a;">Password:&nbsp;</span>
+                      <strong style="font-family:monospace;background:#e4e4e7;padding:2px 6px;border-radius:4px;">${password}</strong>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA -->
+              <a href="${loginUrl}" style="display:inline-block;background:#18181b;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;padding:12px 24px;border-radius:8px;">
+                Sign in to your dashboard →
+              </a>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:24px 40px;border-top:1px solid #f4f4f5;">
+              <p style="margin:0;font-size:12px;color:#a1a1aa;line-height:1.5;">
+                If you didn't expect this email, please ignore it or contact your administrator.
+                This message was sent by the AAN platform team.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}

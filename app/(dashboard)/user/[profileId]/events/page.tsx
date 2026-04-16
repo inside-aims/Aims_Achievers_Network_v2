@@ -3,7 +3,7 @@ import { UserEvents } from "@/components/features/dashboard/user/events/user-eve
 
 export const metadata: Metadata = { title: "My Events | AIMS Achievers Network" };
 
-export default async function UserEventsPage({ params }: { params: Promise<{ uuid: string }> }) {
-  const { uuid } = await params;
-  return <UserEvents base={`/user/${uuid}`} />;
+export default async function UserEventsPage({ params }: { params: Promise<{ profileId: string }> }) {
+  const { profileId } = await params;
+  return <UserEvents base={`/user/${profileId}`} />;
 }
