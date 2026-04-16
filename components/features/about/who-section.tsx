@@ -4,20 +4,20 @@ import { ArrowDown } from 'lucide-react';
 export function WhoSection() {
   const audiences = [
     {
-      title: "Students",
-      description: "High school and college students seeking mentorship and career guidance"
+      title: "Students & Emerging Talent",
+      description: "Ambitious individuals seeking clarity, mentorship, and pathways to unlock their full potential."
     },
     {
-      title: "Mentors",
-      description: "Professionals and educators wanting to guide the next generation"
+      title: "Mentors & Industry Leaders",
+      description: "Experienced professionals, educators, and thought leaders passionate about guiding and shaping the next generation of achievers."
     },
     {
-      title: "Institutions",
-      description: "Schools connecting their students with meaningful opportunities"
+      title: "Institutions & Organizations",
+      description: "Forward-thinking schools, universities, and organizations looking to connect their communities with real-world opportunities and global networks."
     },
     {
-      title: "Parents",
-      description: "Families seeking trusted resources for their student's journey"
+      title: "Parents & Support Systems",
+      description: "Families and guardians seeking trusted guidance, resources, and opportunities to support the journey of those they care about."
     }
   ];
 
@@ -28,8 +28,8 @@ export function WhoSection() {
           <div className="inline-block px-4 py-1 border border-white/20 rounded-full text-xs font-mono tracking-wide">
             WHO IS IT FOR?
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold">
-            AIMS is built for:
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">
+            AIMS Achievers Network is designed for individuals and organizations committed to growth, impact, and meaningful progress.
           </h2>
         </div>
 

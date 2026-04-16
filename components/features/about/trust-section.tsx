@@ -21,12 +21,12 @@ export function TrustSection() {
 
         <div className="text-center space-y-4">
           <p className="text-lg text-gray-400 leading-relaxed max-w-2xl mx-auto">
-            AIMS Achievers Network is created by educators, students, and professionals 
-            who understand what it&apos;s like to navigate these systems.
+            AIMS is created by educators, students, and professionals who have lived the gaps they are solving.
+            This is not theoretical. It is practical, grounded, and built from experience.
           </p>
 
           <p className="text-gray-500">
-            We&apos;re not here to sell dreams. We&apos;re here to provide clear paths.
+            We are not here to sell ambition. We are here to make progress navigable.
           </p>
         </div>
 
@@ -47,7 +47,7 @@ export function TrustSection() {
           
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button className="px-6 py-2.5 border border-white/30 rounded hover:bg-white hover:text-black transition-all duration-300 font-mono text-sm">
-              [Join as Student]
+              [Join the Network]
             </button>
             <button className="px-6 py-2.5 border border-white/30 rounded hover:bg-white hover:text-black transition-all duration-300 font-mono text-sm">
               [Become a Mentor]

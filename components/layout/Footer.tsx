@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { InstagramIcon } from "../ui/svgs/instagramIcon";
 import { Linkedin } from "../ui/svgs/linkedin";
-import { Mail, X } from "lucide-react";
+import { Mail, Timer } from "lucide-react";
 
 const AimsFooter = () => {
   const currentYear = new Date().getFullYear();
@@ -166,7 +166,7 @@ const AimsFooter = () => {
                   className="text-muted-foreground hover:text-foreground transition-colors duration-200"
                   aria-label="Twitter"
                 >
-                  <X className="w-5 h-5" />
+                  <Timer className="w-5 h-5" />
                 </Link>
               </div>
 
