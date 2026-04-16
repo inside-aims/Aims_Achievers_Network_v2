@@ -13,6 +13,7 @@ import type * as categories from "../categories.js";
 import type * as crons from "../crons.js";
 import type * as dashboard from "../dashboard.js";
 import type * as events from "../events.js";
+import type * as fileStorage from "../fileStorage.js";
 import type * as gallery from "../gallery.js";
 import type * as helpers from "../helpers.js";
 import type * as http from "../http.js";
@@ -40,6 +41,7 @@ declare const fullApi: ApiFromModules<{
   crons: typeof crons;
   dashboard: typeof dashboard;
   events: typeof events;
+  fileStorage: typeof fileStorage;
   gallery: typeof gallery;
   helpers: typeof helpers;
   http: typeof http;

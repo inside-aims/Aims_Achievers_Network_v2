@@ -231,6 +231,7 @@ export const createWithCategories = mutation({
     currency: v.optional(v.string()),
     description: v.optional(v.string()),
     bannerUrl: v.optional(v.string()),
+    bannerStorageId: v.optional(v.string()),
     location: v.optional(v.string()),
     eventDate: v.optional(v.number()),
     votingStartsAt: v.optional(v.number()),
@@ -260,6 +261,13 @@ export const createWithCategories = mutation({
 
     const platformCutPercent = await getPlatformCutPercent(ctx);
 
+    // Resolve banner: prefer explicit URL, otherwise resolve from storageId
+    let resolvedBannerUrl = args.bannerUrl;
+    if (!resolvedBannerUrl && args.bannerStorageId) {
+      resolvedBannerUrl =
+        (await ctx.storage.getUrl(args.bannerStorageId as Id<"_storage">)) ?? undefined;
+    }
+
     const eventId = await ctx.db.insert("events", {
       organizerId: profile._id,
       title: args.title,
@@ -269,7 +277,7 @@ export const createWithCategories = mutation({
       slug,
       eventCode,
       description: args.description,
-      bannerUrl: args.bannerUrl,
+      bannerUrl: resolvedBannerUrl,
       location: args.location,
       eventDate: args.eventDate,
       status: "draft",

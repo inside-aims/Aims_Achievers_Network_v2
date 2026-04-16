@@ -65,9 +65,10 @@ export function NewEventForm({ base, initialValues, eventId }: Props) {
       const newEventId = await createWithCategories({
         title:               values.title,
         description:         values.description,
-        institution:         values.institution || undefined,
-        eventType:           values.eventType   || undefined,
-        currency:            values.currency    || "GHS",
+        institution:         values.institution     || undefined,
+        eventType:           values.eventType       || undefined,
+        currency:            values.currency        || "GHS",
+        bannerStorageId:     values.bannerStorageId || undefined,
         location:            values.location,
         eventDate:           toMs(values.eventDate),
         votingStartsAt:      toMs(values.votingOpens),
@@ -121,7 +122,9 @@ export function NewEventForm({ base, initialValues, eventId }: Props) {
 
               {/* Right column — media + config */}
               <div className="space-y-5">
-                <EventCoverSection />
+                <EventCoverSection
+                  onStorageId={(id) => form.setValue("bannerStorageId", id ?? undefined)}
+                />
                 <VotingSetupSection  control={form.control} />
                 <EventSettingsSection control={form.control} />
               </div>
