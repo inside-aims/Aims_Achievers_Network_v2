@@ -23,6 +23,7 @@ import type * as nominees from "../nominees.js";
 import type * as organizerProfiles from "../organizerProfiles.js";
 import type * as outlets from "../outlets.js";
 import type * as seed from "../seed.js";
+import type * as users from "../users.js";
 import type * as ussd from "../ussd.js";
 import type * as voting from "../voting.js";
 
@@ -48,6 +49,7 @@ declare const fullApi: ApiFromModules<{
   organizerProfiles: typeof organizerProfiles;
   outlets: typeof outlets;
   seed: typeof seed;
+  users: typeof users;
   ussd: typeof ussd;
   voting: typeof voting;
 }>;

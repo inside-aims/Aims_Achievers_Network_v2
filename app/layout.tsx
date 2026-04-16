@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryProvider } from "@/providers/query-provider";
 import { ConvexClientProvider } from "@/providers/convex-auth-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export const metadata: Metadata = {
   title: {
@@ -56,7 +57,9 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <QueryProvider>
-                {children}
+                <TooltipProvider>
+                  {children}
+                </TooltipProvider>
                 <Toaster position={"top-center"} richColors />
               </QueryProvider>
             </ThemeProvider>

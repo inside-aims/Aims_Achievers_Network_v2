@@ -4,17 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="48008f26-d1dc-4f7e-b70b-a93096b41883" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/app/(root)/become-partner/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(root)/become-partner/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(root)/how-it-works/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(root)/how-it-works/page.tsx" afterDir="false" />
-    </list>
+    <list default="true" id="48008f26-d1dc-4f7e-b70b-a93096b41883" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="154" />
+    <option name="cachedIndexableFilesCount" value="397" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -41,11 +38,11 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "git-widget-placeholder": "feat-ui-wrap-up",
+    "git-widget-placeholder": "feat-auth-pages",
     "javascript.preferred.runtime.type.id": "bun",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
-    "last_opened_file_path": "C:/Users/Work/Aims/Aims_Achievers_Network_v2",
+    "last_opened_file_path": "C:/Users/Work/Aims/Aims_Achievers_Network_v2/public",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -56,12 +53,15 @@
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\public" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\features\dashboard\user\overview" />
+      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\features\dashboard\user\events" />
       <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\lib\types" />
       <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\layout" />
       <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\extras" />
-      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\shared" />
-      <recent name="C:\Users\Work\Aims\Aims_Achievers_Network_v2\components\features" />
     </key>
   </component>
   <component name="RunManager" selected="npm.Next.js: server-side">
@@ -111,6 +111,7 @@
       <workItem from="1775264323657" duration="2831000" />
       <workItem from="1775385351216" duration="8324000" />
       <workItem from="1775488805860" duration="4624000" />
+      <workItem from="1775812270783" duration="8021000" />
     </task>
     <servers />
   </component>

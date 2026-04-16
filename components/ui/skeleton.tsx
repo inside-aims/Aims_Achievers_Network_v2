@@ -3,8 +3,11 @@
 import { cn } from "@/lib/utils";
 
 // ─── Base skeleton block ──────────────────────────────────────────────────────
-export function Skeleton({ className }: { className?: string }) {
-  return <div className={cn("skeleton", className)} />;
+export function Skeleton({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn("skeleton", className)} {...props} />;
 }
 
 // ─── Event card skeleton ──────────────────────────────────────────────────────

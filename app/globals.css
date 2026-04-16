@@ -1,8 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-
-
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -189,7 +187,7 @@
     @apply px-4 md:px-8 lg:px-16 py-16 md:py-20;
   }
 
-  /* Horizontal padding only — used by full-width landing sections
+  /* Horizontal padding only - used by full-width landing sections
      that manage their own vertical rhythm */
   .feature-no {
     @apply px-4 md:px-8 lg:px-16;
@@ -211,9 +209,75 @@
     @apply shadow-sm rounded-lg;
   }
 
-  /* Skeleton shimmer */
   .skeleton {
     @apply bg-muted animate-pulse rounded;
   }
+
+  .clickable {
+    cursor: pointer;
+    transition: background-color 150ms ease;
+  }
+  .clickable:hover {
+    background-color: var(--hover-surface);
+  }
+
+  .dash-page {
+    @apply flex-1 overflow-auto p-6;
+  }
+
+  [data-sidebar="menu-button"] {
+    padding-block: 0.625rem;
+    font-size: 0.875rem;
+  }
+
+  /* ─── Form / creation page utilities ────────────────── */
+  .form-section {
+    @apply bg-card border border-border rounded-lg p-5 md:p-6 space-y-4;
+  }
+
+  .form-section-title {
+    @apply text-base font-bold;
+  }
+
+  .form-section-desc {
+    @apply text-xs text-muted-foreground;
+  }
+
+  .form-grid-2 {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+  }
+
+  .form-grid-3 {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-4;
+  }
+}
+
+:root {
+  --hover-surface: oklch(0.91 0.014 248);
+}
+.dark {
+  --hover-surface: oklch(0.33 0.038 248);
+}
+
+@keyframes live-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 oklch(0.70 0.18 142 / 0.55);
+  }
+  60% {
+    box-shadow: 0 0 0 5px oklch(0.70 0.18 142 / 0);
+  }
+}
+
+.badge-live {
+  animation: live-glow 2s ease-out infinite;
+}
+
+/* ─── Visible field borders (unlayered — beats @layer utilities) ─── */
+/* border-input maps to --input which is near-invisible in light mode. */
+/* Placing this outside any @layer ensures it overrides utility classes. */
+[data-slot="input"],
+[data-slot="textarea"],
+[data-slot="select-trigger"] {
+  border-color: var(--border) !important;
 }
 

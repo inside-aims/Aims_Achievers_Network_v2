@@ -1,29 +1,38 @@
 import { MutationCtx, QueryCtx } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
-/** Returns the authenticated organizer profile, or throws. */
+// ─── Auth helpers ─────────────────────────────────────────────────────────────
+
+/** Returns the authenticated organizer profile (any role), or throws. */
 export async function requireOrganizerProfile(ctx: QueryCtx | MutationCtx) {
-  const identity = await ctx.auth.getUserIdentity();
-  if (!identity) throw new Error("Not authenticated");
-
-  // In Convex Auth, subject is the user's _id in the authTables users table
-  const userId = identity.subject as Id<"users">;
+  const userId = await getAuthUserId(ctx);
+  if (!userId) throw new Error("Not authenticated");
 
   const profile = await ctx.db
     .query("organizerProfiles")
     .withIndex("by_userId", (q) => q.eq("userId", userId))
     .unique();
 
-  if (!profile) throw new Error("Organizer profile not found. Please complete sign-up.");
+  if (!profile) throw new Error("Organizer profile not found");
+  // status is optional for backward-compat; treat undefined as "active"
+  if (profile.status === "suspended" || profile.status === "inactive") {
+    throw new Error("Account is inactive or suspended");
+  }
+  return profile;
+}
+
+/** Returns the authenticated ADMIN profile, or throws. */
+export async function requireAdminProfile(ctx: QueryCtx | MutationCtx) {
+  const profile = await requireOrganizerProfile(ctx);
+  if (profile.role !== "admin") throw new Error("Unauthorized: admin access required");
   return profile;
 }
 
 /** Returns the authenticated organizer profile, or null if unauthenticated / no profile. */
 export async function getOrganizerProfileOrNull(ctx: QueryCtx | MutationCtx) {
-  const identity = await ctx.auth.getUserIdentity();
-  if (!identity) return null;
-
-  const userId = identity.subject as Id<"users">;
+  const userId = await getAuthUserId(ctx);
+  if (!userId) return null;
 
   return await ctx.db
     .query("organizerProfiles")
@@ -31,7 +40,7 @@ export async function getOrganizerProfileOrNull(ctx: QueryCtx | MutationCtx) {
     .unique();
 }
 
-/** Asserts the caller owns the given event. */
+/** Asserts the caller owns the given event. Also checks organizer is active. */
 export async function requireEventOwner(
   ctx: QueryCtx | MutationCtx,
   eventId: Id<"events">,
@@ -72,4 +81,51 @@ export function generateEventCode(title: string): string {
     .map((w) => w[0].toUpperCase())
     .join("");
   return code || title.substring(0, 3).toUpperCase();
+}
+
+// ─── Date / time utilities ─────────────────────────────────────────────────────
+
+/**
+ * Formats a ms timestamp as "Jan 15, 2025".
+ * Returns an empty string if the value is undefined.
+ */
+export function formatDate(ms: number | undefined): string {
+  if (ms === undefined) return "";
+  return new Date(ms).toLocaleDateString("en-GH", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+/**
+ * Formats a ms timestamp as "Jan 15, 2025 · 2:30 PM".
+ */
+export function formatDateTime(ms: number | undefined): string {
+  if (ms === undefined) return "";
+  return new Date(ms).toLocaleString("en-GH", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
+/**
+ * Returns a human-readable relative time string.
+ * e.g. "2 hours ago", "3 days ago", "just now"
+ */
+export function timeSince(ms: number): string {
+  const diff = Date.now() - ms;
+  const minutes = Math.floor(diff / 60_000);
+  const hours = Math.floor(diff / 3_600_000);
+  const days = Math.floor(diff / 86_400_000);
+
+  if (minutes < 1) return "just now";
+  if (minutes < 60) return `${minutes}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  if (days < 30) return `${days}d ago`;
+  return formatDate(ms);
 }
