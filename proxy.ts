@@ -12,6 +12,7 @@ const isProtectedRoute = createRouteMatcher([
 
 export const proxy = convexAuthNextjsMiddleware(
   async (request, { convexAuth }) => {
+    console.log("isAuthenticated", await convexAuth.isAuthenticated());
     if (
       isProtectedRoute(request) &&
       !(await convexAuth.isAuthenticated())

@@ -74,6 +74,93 @@ export const listOrganizers = query({
   },
 });
 
+// ─── Dev Utilities ────────────────────────────────────────────────────────────
+
+/**
+ * Dev/ops only: create an organizer account without requiring an authenticated
+ * admin session. Use this from the CLI while the admin dashboard UI is not yet
+ * built.
+ *
+ * Run with:
+ *   npx convex run users:createOrganizerDev '{"displayName":"Jane Doe","email":"jane@example.com"}'
+ *
+ * Optional phone:
+ *   npx convex run users:createOrganizerDev '{"displayName":"Jane Doe","email":"jane@example.com","phone":"0551234567"}'
+ */
+export const createOrganizerDev = internalAction({
+  args: {
+    displayName: v.string(),
+    email: v.string(),
+    phone: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const normalizedEmail = args.email.trim().toLowerCase();
+
+    const existingProfile = await ctx.runQuery(internal.users._getProfileByEmail, {
+      email: normalizedEmail,
+    });
+    if (existingProfile) {
+      throw new Error(`An account with email ${normalizedEmail} already exists`);
+    }
+
+    const result: { user: { _id: Id<"users"> } } = await ctx.runMutation(
+      "auth:store" as any,
+      {
+        args: {
+          type: "createAccountFromCredentials",
+          provider: "password",
+          account: {
+            id: normalizedEmail,
+            secret: DEFAULT_ORGANIZER_PASSWORD,
+          },
+          profile: {
+            email: normalizedEmail,
+            name: args.displayName,
+          },
+        },
+      },
+    );
+
+    // Find the admin profile to satisfy createdBy (use any admin)
+    const adminProfiles = await ctx.runQuery(internal.users._getAdminProfile);
+    if (!adminProfiles) {
+      throw new Error("No admin profile found. Run seedAdmin first.");
+    }
+
+    await ctx.runMutation(internal.users._createOrganizerProfile, {
+      userId: result.user._id,
+      displayName: args.displayName,
+      email: normalizedEmail,
+      phone: args.phone,
+      createdBy: adminProfiles._id,
+    });
+
+    // Send welcome email (non-fatal if it fails)
+    const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? "https://aimsachieversnetwork.com"}/login`;
+    try {
+      await resend.sendEmail(ctx, {
+        from: "AAN Platform <noreply@mail.xolace.app>",
+        to: "delivered@resend.dev",
+        subject: "Your AAN Organizer Account is Ready",
+        html: welcomeEmailHtml({
+          displayName: args.displayName,
+          email: normalizedEmail,
+          password: DEFAULT_ORGANIZER_PASSWORD,
+          loginUrl,
+        }),
+      });
+    } catch (emailErr) {
+      console.error("Welcome email failed to send:", emailErr);
+    }
+
+    return {
+      success: true,
+      email: normalizedEmail,
+      defaultPassword: DEFAULT_ORGANIZER_PASSWORD,
+    };
+  },
+});
+
 // ─── Public Actions ───────────────────────────────────────────────────────────
 
 /**
@@ -376,6 +463,16 @@ export const resetAdminPassword = internalAction({
 });
 
 // ─── Internal Helpers ─────────────────────────────────────────────────────────
+
+export const _getAdminProfile = internalQuery({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db
+      .query("organizerProfiles")
+      .withIndex("by_role", (q) => q.eq("role", "admin"))
+      .first();
+  },
+});
 
 export const _getProfileByEmail = internalQuery({
   args: { email: v.string() },

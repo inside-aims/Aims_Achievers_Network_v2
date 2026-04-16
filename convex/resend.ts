@@ -6,5 +6,5 @@ import { Resend } from "@convex-dev/resend";
  * Import `resend` from this file and call `resend.sendEmail(ctx, { ... })`.
  */
 export const resend = new Resend(components.resend, {
-  testMode: false,
+  testMode: true,
 });
