@@ -8,7 +8,61 @@ import {
   votesByTime,
   nomineeVoteCounts,
 } from "./internal/aggregates";
-import { Id } from "./_generated/dataModel";
+
+/**
+ * Aggregate overview for the organizer's dashboard home page.
+ * Returns event counts by status, total votes + revenue across all events,
+ * and a trimmed event list for the "My Events" preview card.
+ */
+export const organizerOverview = query({
+  args: {},
+  handler: async (ctx) => {
+    const profile = await getOrganizerProfileOrNull(ctx);
+    if (!profile) return null;
+
+    const events = await ctx.db
+      .query("events")
+      .withIndex("by_organizer", (q) => q.eq("organizerId", profile._id))
+      .order("desc")
+      .take(100);
+
+    const counts = { total: events.length, live: 0, published: 0, draft: 0, closed: 0 };
+    for (const e of events) {
+      if (e.status === "live") counts.live++;
+      else if (e.status === "published") counts.published++;
+      else if (e.status === "draft") counts.draft++;
+      else if (e.status === "closed") counts.closed++;
+    }
+
+    const aggregates = await Promise.all(
+      events.map((e) =>
+        Promise.all([
+          votesByNominee.sum(ctx, { namespace: e._id }),
+          revenueByEvent.sum(ctx, { namespace: e._id }),
+        ]),
+      ),
+    );
+    let totalVotes = 0;
+    let totalRevenuePesewas = 0;
+    for (const [votes, revenue] of aggregates) {
+      totalVotes += votes;
+      totalRevenuePesewas += revenue;
+    }
+
+    return {
+      counts,
+      totalVotes,
+      totalRevenuePesewas,
+      // Trim to 10 most recent for the overview card
+      events: events.slice(0, 10).map((e) => ({
+        _id: e._id,
+        title: e.title,
+        location: e.location ?? "",
+        status: e.status,
+      })),
+    };
+  },
+});
 
 /**
  * Full dashboard stats for an event.

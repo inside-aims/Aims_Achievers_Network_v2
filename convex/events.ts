@@ -1,7 +1,8 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { MutationCtx, QueryCtx } from "./_generated/server";
-import { requireEventOwner, requireOrganizerProfile, getOrganizerProfileOrNull, slugify, generateEventCode } from "./helpers";
+import { Id } from "./_generated/dataModel";
+import { requireEventOwner, requireOrganizerProfile, getOrganizerProfileOrNull, slugify, generateEventCode, abbreviate } from "./helpers";
 
 // ─── Public queries ───────────────────────────────────────────────────────────
 
@@ -141,6 +142,17 @@ export const getById = query({
 
 // ─── Organizer queries ────────────────────────────────────────────────────────
 
+export const getByIdForOrganizer = query({
+  args: { eventId: v.id("events") },
+  handler: async (ctx, args) => {
+    const profile = await getOrganizerProfileOrNull(ctx);
+    if (!profile) return null;
+    const event = await ctx.db.get(args.eventId);
+    if (!event || event.organizerId !== profile._id) return null;
+    return event;
+  },
+});
+
 export const listByOrganizer = query({
   args: {},
   handler: async (ctx) => {
@@ -159,6 +171,9 @@ export const listByOrganizer = query({
 export const create = mutation({
   args: {
     title: v.string(),
+    institution: v.optional(v.string()),
+    eventType: v.optional(v.string()),
+    currency: v.optional(v.string()),
     description: v.optional(v.string()),
     bannerUrl: v.optional(v.string()),
     location: v.optional(v.string()),
@@ -189,6 +204,9 @@ export const create = mutation({
     return await ctx.db.insert("events", {
       organizerId: profile._id,
       title: args.title,
+      institution: args.institution,
+      eventType: args.eventType,
+      currency: args.currency ?? "GHS",
       slug,
       eventCode,
       description: args.description,
@@ -209,6 +227,102 @@ export const create = mutation({
       nominationRequiresAuth: false,
       createdAt: Date.now(),
     });
+  },
+});
+
+/**
+ * Creates an event together with its initial categories in a single transaction.
+ * Use this from the "New Event" form instead of calling create + categories.create N times.
+ */
+export const createWithCategories = mutation({
+  args: {
+    title: v.string(),
+    institution: v.optional(v.string()),
+    eventType: v.optional(v.string()),
+    currency: v.optional(v.string()),
+    description: v.optional(v.string()),
+    bannerUrl: v.optional(v.string()),
+    bannerStorageId: v.optional(v.string()),
+    location: v.optional(v.string()),
+    eventDate: v.optional(v.number()),
+    votingStartsAt: v.optional(v.number()),
+    votingEndsAt: v.optional(v.number()),
+    votingMode: v.union(v.literal("standard"), v.literal("bulk")),
+    pricePerVotePesewas: v.number(),
+    bulkTiers: v.optional(
+      v.array(v.object({ amountPesewas: v.number(), votes: v.number() })),
+    ),
+    showVotes: v.optional(v.boolean()),
+    votingOpen: v.optional(v.boolean()),
+    publicPageVisible: v.optional(v.boolean()),
+    nominationsOpen: v.optional(v.boolean()),
+    nominationAutoApprove: v.optional(v.boolean()),
+    categories: v.array(
+      v.object({ name: v.string(), description: v.optional(v.string()) }),
+    ),
+  },
+  handler: async (ctx, args) => {
+    const profile = await requireOrganizerProfile(ctx);
+
+    const baseSlug = slugify(args.title);
+    const slug = await uniqueSlug(ctx, baseSlug);
+
+    const baseCode = generateEventCode(args.title).toUpperCase();
+    const eventCode = await uniqueEventCode(ctx, baseCode);
+
+    const platformCutPercent = await getPlatformCutPercent(ctx);
+
+    // Resolve banner: prefer explicit URL, otherwise resolve from storageId
+    let resolvedBannerUrl = args.bannerUrl;
+    if (!resolvedBannerUrl && args.bannerStorageId) {
+      resolvedBannerUrl =
+        (await ctx.storage.getUrl(args.bannerStorageId as Id<"_storage">)) ?? undefined;
+    }
+
+    const eventId = await ctx.db.insert("events", {
+      organizerId: profile._id,
+      title: args.title,
+      institution: args.institution,
+      eventType: args.eventType,
+      currency: args.currency ?? "GHS",
+      slug,
+      eventCode,
+      description: args.description,
+      bannerUrl: resolvedBannerUrl,
+      location: args.location,
+      eventDate: args.eventDate,
+      status: "draft",
+      votingStartsAt: args.votingStartsAt,
+      votingEndsAt: args.votingEndsAt,
+      votingMode: args.votingMode,
+      pricePerVotePesewas: args.pricePerVotePesewas,
+      bulkTiers: args.bulkTiers,
+      platformCutPercent,
+      showVotes: args.showVotes ?? true,
+      votingOpen: args.votingOpen ?? false,
+      publicPageVisible: args.publicPageVisible ?? false,
+      nominationsOpen: args.nominationsOpen ?? false,
+      nominationRequiresAuth: false,
+      nominationAutoApprove: args.nominationAutoApprove ?? false,
+      createdAt: Date.now(),
+    });
+
+    const now = Date.now();
+    for (const cat of args.categories) {
+      const baseCode = abbreviate(cat.name).toUpperCase();
+      const categoryCode = await uniqueCategoryCodeForEvent(ctx, eventId, baseCode);
+      await ctx.db.insert("categories", {
+        eventId,
+        name: cat.name,
+        description: cat.description,
+        categoryCode,
+        allowsNominations: true,
+        nomineeSequence: 0,
+        createdAt: now,
+      });
+    }
+
+    return eventId;
   },
 });
 
@@ -266,6 +380,7 @@ export const updateLiveSettings = mutation({
     publicPageVisible: v.optional(v.boolean()),
     nominationsOpen: v.optional(v.boolean()),
     nominationRequiresAuth: v.optional(v.boolean()),
+    nominationAutoApprove: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const { eventId, ...settings } = args;
@@ -329,4 +444,22 @@ async function uniqueEventCode(ctx: QueryCtx | MutationCtx, base: string): Promi
 async function getPlatformCutPercent(ctx: QueryCtx | MutationCtx): Promise<number> {
   const config = await ctx.db.query("platformConfig").first();
   return config?.defaultPlatformCutPercent ?? 10;
+}
+
+/** Ensures a category code is unique within an event (used by createWithCategories). */
+async function uniqueCategoryCodeForEvent(
+  ctx: QueryCtx | MutationCtx,
+  eventId: Id<"events">,
+  base: string,
+): Promise<string> {
+  let code = base;
+  let n = 2;
+  while (true) {
+    const existing = await ctx.db
+      .query("categories")
+      .withIndex("by_event_code", (q) => q.eq("eventId", eventId).eq("categoryCode", code))
+      .unique();
+    if (!existing) return code;
+    code = `${base}${n++}`;
+  }
 }

@@ -6,6 +6,8 @@ import { toast } from "sonner"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
+import { useMutation } from "convex/react"
+import { api } from "@/convex/_generated/api"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { cn } from "@/lib/utils"
@@ -34,6 +36,8 @@ export function NewEventForm({ base, initialValues, eventId }: Props) {
   const isEdit = Boolean(eventId)
   const router = useRouter()
 
+  const createWithCategories = useMutation(api.events.createWithCategories)
+
   // z.coerce.number() in zod v4 widens the input type to unknown which
   // conflicts with react-hook-form's Resolver generic. The cast is safe
   // because the runtime behaviour and output type are correct.
@@ -48,16 +52,45 @@ export function NewEventForm({ base, initialValues, eventId }: Props) {
 
   async function onSubmit(values: NewEventFormValues) {
     try {
-      // TODO: replace with Convex mutation when DB is wired up
-      console.log(`[NewEventForm] ${isEdit ? "update" : "create"}:`, values)
-      toast.success(isEdit ? "Event updated!" : "Event created!", {
-        description: isEdit
-          ? "Your changes have been saved."
-          : "Your event has been saved as a draft.",
-      })
       if (isEdit && eventId) {
+        // Edit path — TODO: wire up updateDetails mutation
+        toast.success("Event updated!", { description: "Your changes have been saved." })
         router.push(`${base}/events/${eventId}`)
+        return
       }
+
+      const toMs = (dateStr: string) =>
+        dateStr ? new Date(dateStr).getTime() : undefined
+
+      const newEventId = await createWithCategories({
+        title:               values.title,
+        description:         values.description,
+        institution:         values.institution     || undefined,
+        eventType:           values.eventType       || undefined,
+        currency:            values.currency        || "GHS",
+        bannerStorageId:     values.bannerStorageId || undefined,
+        location:            values.location,
+        eventDate:           toMs(values.eventDate),
+        votingStartsAt:      toMs(values.votingOpens),
+        votingEndsAt:        toMs(values.votingCloses),
+        votingMode:          "standard",
+        // price is in GHS on the form; store as pesewas (× 100)
+        pricePerVotePesewas: Math.round(values.pricePerVote * 100),
+        showVotes:              values.showVotes              === "yes",
+        votingOpen:             values.votingOpenByDefault    === "yes",
+        publicPageVisible:      values.publicPage             === "yes",
+        nominationsOpen:        values.nominationsEnabled     === "yes",
+        nominationAutoApprove:  values.autoPublishNominations === "yes",
+        categories: values.categories.map((c) => ({
+          name:        c.name,
+          description: c.description || undefined,
+        })),
+      })
+
+      toast.success("Event created!", {
+        description: "Your event has been saved as a draft.",
+      })
+      router.push(`${base}/events/${newEventId}`)
     } catch {
       toast.error(isEdit ? "Failed to update event" : "Failed to create event", {
         description: "Something went wrong. Please try again.",
@@ -89,7 +122,9 @@ export function NewEventForm({ base, initialValues, eventId }: Props) {
 
               {/* Right column — media + config */}
               <div className="space-y-5">
-                <EventCoverSection />
+                <EventCoverSection
+                  onStorageId={(id) => form.setValue("bannerStorageId", id ?? undefined)}
+                />
                 <VotingSetupSection  control={form.control} />
                 <EventSettingsSection control={form.control} />
               </div>

@@ -1,10 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import { CalendarDays, TrendingUp, BarChart3, Banknote } from "lucide-react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatCard } from "../../shared/stat-card";
 import { EventRow } from "../../shared/event-row";
 import { PageHeader } from "../../shared/page-header";
-import { computeOverviewStats, getMyEvents } from "./overview";
+import { OverviewSkeleton } from "../../shared/overview-skeleton";
 import type { StatVariant } from "../../shared/stat-card";
 
 interface StatConfig {
@@ -20,20 +24,37 @@ interface Props {
   base: string;
 }
 
+function formatRevenue(pesewas: number): string {
+  return new Intl.NumberFormat("en-GH", {
+    style: "currency",
+    currency: "GHS",
+    currencyDisplay: "code",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(pesewas / 100);
+}
+
 export function UserOverview({ base }: Props) {
-  const stats  = computeOverviewStats();
-  const events = getMyEvents();
+  const data = useQuery(api.dashboard.organizerOverview);
+
+  if (data === undefined) return <OverviewSkeleton />;
+
+  const counts  = data?.counts  ?? { total: 0, live: 0, published: 0, draft: 0, closed: 0 };
+  const events  = data?.events  ?? [];
+  const totalVotes         = data?.totalVotes         ?? 0;
+  const totalRevenuePesewas = data?.totalRevenuePesewas ?? 0;
 
   const STATUS_SUMMARY = [
-    stats.liveEvents   > 0 && `${stats.liveEvents} live`,
-    stats.draftEvents  > 0 && `${stats.draftEvents} draft`,
-    stats.closedEvents > 0 && `${stats.closedEvents} closed`,
+    counts.live      > 0 && `${counts.live} live`,
+    counts.published > 0 && `${counts.published} published`,
+    counts.draft     > 0 && `${counts.draft} draft`,
+    counts.closed    > 0 && `${counts.closed} closed`,
   ].filter(Boolean).join(" · ");
 
   const STAT_CARDS: StatConfig[] = [
     {
       label:    "My Events",
-      value:    stats.totalEvents,
+      value:    counts.total,
       sub:      STATUS_SUMMARY || "No events yet",
       icon:     CalendarDays,
       variant:  "default",
@@ -41,24 +62,24 @@ export function UserOverview({ base }: Props) {
     },
     {
       label:    "Live Events",
-      value:    stats.liveEvents,
-      sub:      stats.liveEvents > 0 ? "Currently accepting votes" : "No active events",
+      value:    counts.live,
+      sub:      counts.live > 0 ? "Currently accepting votes" : "No active events",
       icon:     TrendingUp,
       variant:  "success",
       routeKey: "events",
     },
     {
       label:    "Total Votes",
-      value:    stats.totalVotes,
-      sub:      `Across ${stats.totalEvents} event${stats.totalEvents !== 1 ? "s" : ""}`,
+      value:    totalVotes,
+      sub:      `Across ${counts.total} event${counts.total !== 1 ? "s" : ""}`,
       icon:     BarChart3,
       variant:  "info",
       routeKey: "analytics",
     },
     {
       label:    "Revenue",
-      value:    stats.revenue,
-      sub:      `From ${stats.totalVotes.toLocaleString()} votes`,
+      value:    formatRevenue(totalRevenuePesewas),
+      sub:      `From ${totalVotes.toLocaleString()} votes`,
       icon:     Banknote,
       variant:  "warning",
       routeKey: "analytics",
@@ -108,11 +129,11 @@ export function UserOverview({ base }: Props) {
             <div className="divide-y">
               {events.map((e) => (
                 <EventRow
-                  key={e.id}
+                  key={e._id}
                   title={e.title}
                   sub={e.location}
                   status={e.status}
-                  href={`${base}/events/${e.id}`}
+                  href={`${base}/events/${e._id}`}
                 />
               ))}
             </div>

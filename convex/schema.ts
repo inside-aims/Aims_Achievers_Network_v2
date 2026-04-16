@@ -61,6 +61,10 @@ export default defineSchema({
     slug: v.string(),                 // URL-friendly: cs-awards-2025
     eventCode: v.string(),            // Shortcode prefix for nominees: e.g. "XA"
 
+    institution: v.optional(v.string()),
+    eventType: v.optional(v.string()),
+    currency: v.optional(v.string()),           // e.g. "GHS" — display only
+
     description: v.optional(v.string()),
     bannerUrl: v.optional(v.string()),
     location: v.optional(v.string()),

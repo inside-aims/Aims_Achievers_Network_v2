@@ -144,6 +144,81 @@ export const submit = mutation({
 
 // ─── Organizer queries ────────────────────────────────────────────────────────
 
+/**
+ * All nomination submissions for the organizer, grouped by event → category.
+ * Returns a structure compatible with the NominationEvent[] shape used by the UI.
+ */
+export const listForOrganizer = query({
+  args: {},
+  handler: async (ctx) => {
+    const profile = await getOrganizerProfileOrNull(ctx);
+    if (!profile) return [];
+
+    const events = await ctx.db
+      .query("events")
+      .withIndex("by_organizer", (q) => q.eq("organizerId", profile._id))
+      .order("desc")
+      .take(50);
+
+    return Promise.all(
+      events.map(async (event) => {
+        const [categories, allSubmissions] = await Promise.all([
+          ctx.db
+            .query("categories")
+            .withIndex("by_event", (q) => q.eq("eventId", event._id))
+            .order("asc")
+            .take(100),
+          ctx.db
+            .query("nominationSubmissions")
+            .withIndex("by_event", (q) => q.eq("eventId", event._id))
+            .order("desc")
+            .take(200),
+        ]);
+
+        const subsByCategory = new Map<string, typeof allSubmissions>();
+        for (const s of allSubmissions) {
+          const key = s.categoryId as string;
+          if (!subsByCategory.has(key)) subsByCategory.set(key, []);
+          subsByCategory.get(key)!.push(s);
+        }
+
+        const categoriesWithSubs = categories.map((cat) => ({
+          id: cat._id as string,
+          name: cat.name,
+          categoryCode: cat.categoryCode,
+          submissions: (subsByCategory.get(cat._id as string) ?? []).map((s) => ({
+            id: s._id as string,
+            categoryId: s.categoryId as string,
+            eventId: s.eventId as string,
+            nomineeName: s.nomineeName,
+            nomineePhone: s.nomineeIdentifier,
+            nomineeDepartment: s.nomineeDepartment,
+            nomineeYear: s.nomineeYear,
+            nomineeProgram: s.nomineeProgram,
+            avatarUrl: s.avatarUrl,
+            nominatorName: s.nominatorName,
+            nominatorEmail: s.nominatorEmail,
+            nominatorPhone: s.nominatorPhone,
+            nominatorRelationship: s.nominatorRelationship,
+            nominationReason: s.nominationReason,
+            achievements: s.achievements,
+            status: s.status,
+            createdAt: new Date(s.createdAt).toISOString(),
+          })),
+        }));
+
+        return {
+          id: event._id as string,
+          title: event.title,
+          status: event.status,
+          eventCode: event.eventCode,
+          categories: categoriesWithSubs,
+        };
+      }),
+    );
+  },
+});
+
 export const listPending = query({
   args: { eventId: v.id("events") },
   handler: async (ctx, args) => {

@@ -3,8 +3,13 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { ClipboardList } from "lucide-react";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 import { PageHeader } from "@/components/features/dashboard/shared/page-header";
-import { MOCK_NOMINATIONS, type NominationEvent, type SubmissionStatus } from "./nominations";
+import type { SubmissionStatus } from "./nominations";
 import { NominationEventAccordion } from "./nomination-event-accordion";
 
 type TabId = "all" | SubmissionStatus;
@@ -23,49 +28,49 @@ const TAB_COUNT_STYLES: Record<TabId, string> = {
   rejected: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400",
 };
 
+function NominationsSkeleton() {
+  return (
+    <div className="space-y-3">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div key={i} className="rounded-xl border overflow-hidden">
+          <div className="flex items-center gap-3 px-4 py-4">
+            <Skeleton className="size-9 rounded-lg shrink-0" />
+            <div className="flex-1 space-y-1.5">
+              <Skeleton className="h-4 w-48" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function UserNominations() {
-  const [activeTab, setActiveTab]   = useState<TabId>("pending");
+  const [activeTab, setActiveTab]     = useState<TabId>("pending");
   const [openEventId, setOpenEventId] = useState<string | null>(null);
 
-  // Local status map - mirrors what Convex will drive
-  const [statuses, setStatuses] = useState<Record<string, SubmissionStatus>>(() => {
-    const map: Record<string, SubmissionStatus> = {};
-    for (const event of MOCK_NOMINATIONS) {
-      for (const cat of event.categories) {
-        for (const sub of cat.submissions) {
-          map[sub.id] = sub.status;
-        }
-      }
-    }
-    return map;
-  });
-
-  // Merge overridden statuses into mock data
-  const data: NominationEvent[] = MOCK_NOMINATIONS.map((event) => ({
-    ...event,
-    categories: event.categories.map((cat) => ({
-      ...cat,
-      submissions: cat.submissions.map((sub) => ({
-        ...sub,
-        status: statuses[sub.id] ?? sub.status,
-      })),
-    })),
-  }));
+  const data     = useQuery(api.nominations.listForOrganizer);
+  const approve  = useMutation(api.nominations.approve);
+  const reject   = useMutation(api.nominations.reject);
 
   function handleApprove(id: string) {
-    setStatuses((prev) => ({ ...prev, [id]: "approved" }));
+    approve({ submissionId: id as Id<"nominationSubmissions"> }).catch(() => {
+      toast.error("Failed to approve nomination. Please try again.");
+    });
   }
 
   function handleReject(id: string) {
-    setStatuses((prev) => ({ ...prev, [id]: "rejected" }));
+    reject({ submissionId: id as Id<"nominationSubmissions"> }).catch(() => {
+      toast.error("Failed to reject nomination. Please try again.");
+    });
   }
 
   function toggleEvent(id: string) {
     setOpenEventId((prev) => (prev === id ? null : id));
   }
 
-  // Tab counts
-  const allSubs = data.flatMap((e) => e.categories.flatMap((c) => c.submissions));
+  const allSubs = (data ?? []).flatMap((e) => e.categories.flatMap((c) => c.submissions));
   const counts: Record<TabId, number> = {
     all:      allSubs.length,
     pending:  allSubs.filter((s) => s.status === "pending").length,
@@ -109,7 +114,9 @@ export function UserNominations() {
         ))}
       </div>
 
-      {counts[activeTab] === 0 && (
+      {data === undefined ? (
+        <NominationsSkeleton />
+      ) : counts[activeTab] === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
           <div className="size-12 rounded-full bg-muted flex items-center justify-center">
             <ClipboardList className="size-5 text-muted-foreground" />
@@ -120,14 +127,12 @@ export function UserNominations() {
             </p>
             <p className="text-sm text-muted-foreground mt-1">
               {activeTab === "pending"
-                ? "All caught up - no submissions are waiting for review."
+                ? "All caught up — no submissions are waiting for review."
                 : `No nominations have been ${activeTab} yet.`}
             </p>
           </div>
         </div>
-      )}
-
-      {counts[activeTab] > 0 && (
+      ) : (
         <div className="space-y-3">
           {data.map((group) => (
             <NominationEventAccordion

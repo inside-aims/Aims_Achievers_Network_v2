@@ -20,6 +20,9 @@ export const CURRENCIES = [
 
 export const newEventSchema = z
   .object({
+    // Cover image — storageId returned from Convex storage upload
+    bannerStorageId: z.string().optional(),
+
     // Event basics
     title:       z.string().min(3,  "Title must be at least 3 characters"),
     description: z.string().min(10, "Description must be at least 10 characters"),
@@ -67,6 +70,7 @@ export const newEventSchema = z
 export type NewEventFormValues = z.infer<typeof newEventSchema>
 
 export const NEW_EVENT_DEFAULTS: NewEventFormValues = {
+  bannerStorageId:     undefined,
   title:               "",
   description:         "",
   eventType:           "",

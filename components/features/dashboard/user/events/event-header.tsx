@@ -20,8 +20,13 @@ import {
   Tag,
   Users,
   Lock,
+  Rocket,
+  Loader2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +36,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/date-utils";
 import { StatusBadge } from "../../shared/status-badge";
@@ -97,6 +110,30 @@ interface Props {
 
 export function EventHeader({ event, stats, base }: Props) {
   const [nomineeDialogOpen, setNomineeDialogOpen] = useState(false);
+  const [publishDialogOpen, setPublishDialogOpen] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+
+  const updateStatus = useMutation(api.events.updateStatus);
+
+  async function handlePublish() {
+    setPublishing(true);
+    try {
+      await updateStatus({
+        eventId: event.id as Id<"events">,
+        status: "live",
+      });
+      toast.success("Your event is now live!", {
+        description: "Voters can now discover and vote on your event.",
+      });
+      setPublishDialogOpen(false);
+    } catch {
+      toast.error("Failed to publish event", {
+        description: "Please try again.",
+      });
+    } finally {
+      setPublishing(false);
+    }
+  }
 
   async function handleShare() {
     const url = `${window.location.origin}/events/${event.id}`;
@@ -197,7 +234,19 @@ export function EventHeader({ event, stats, base }: Props) {
                 )}
               </div>
 
-              <DropdownMenu>
+              <div className="flex items-center gap-2 shrink-0">
+                {event.status === "draft" && (
+                  <Button
+                    size="sm"
+                    className="gap-1.5 h-8"
+                    onClick={() => setPublishDialogOpen(true)}
+                  >
+                    <Rocket className="size-3.5" />
+                    Go Live
+                  </Button>
+                )}
+
+                <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="size-8 shrink-0">
                     <MoreHorizontal className="size-4" />
@@ -249,6 +298,7 @@ export function EventHeader({ event, stats, base }: Props) {
                   })}
                 </DropdownMenuContent>
               </DropdownMenu>
+              </div>
             </div>
 
             <div className="mt-4 md:mt-5 pt-4 md:pt-5 border-t grid grid-cols-2 sm:grid-cols-4 gap-x-4 md:gap-x-6 gap-y-3 md:gap-y-4">
@@ -277,6 +327,36 @@ export function EventHeader({ event, stats, base }: Props) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Go Live confirmation dialog */}
+      <Dialog open={publishDialogOpen} onOpenChange={setPublishDialogOpen}>
+        <DialogContent showCloseButton={false} className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Rocket className="size-4 text-primary" />
+              Go live with this event?
+            </DialogTitle>
+            <DialogDescription className="pt-1">
+              Once your event goes live it <strong className="text-foreground">cannot be reverted to draft</strong>.
+              All toggles (voting, public page, etc.) will remain under your control.
+              To take the event completely offline later, please contact support.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setPublishDialogOpen(false)}
+              disabled={publishing}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handlePublish} disabled={publishing}>
+              {publishing && <Loader2 className="size-3.5 mr-1.5 animate-spin" />}
+              {publishing ? "Publishing…" : "Go Live"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Nominee dialog — rendered outside the card so it portals correctly */}
       <AddNomineeDialog
