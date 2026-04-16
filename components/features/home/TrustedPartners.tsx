@@ -40,9 +40,9 @@ const TrustedPartners = () => {
             OUR PARTNERS
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-light font-serif tracking-tight leading-tight">
-            Brands that believe
+            For brands
             <br />
-            <span className="text-muted-foreground/50">in campus culture.</span>
+            <span className="text-muted-foreground/50">that value meaningful recognition.</span>
           </h2>
         </div>
         <Link
@@ -73,8 +73,8 @@ const TrustedPartners = () => {
       {/* Bottom strip */}
       <div className="mt-12 md:mt-16 pt-8 border-t border-border/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <p className="text-sm font-light text-muted-foreground leading-relaxed max-w-md">
-          Trusted by institutions, media houses, and brands across Ghana to
-          celebrate student excellence.
+          Trusted by forward-thinking institutions, media platforms, and global brands to elevate excellence.
+          Partner in experiences that resonate, inspire, and leave a lasting impression.
         </p>
         <div className="flex items-center gap-2 text-xs font-mono tracking-[0.2em] text-muted-foreground/50 shrink-0">
           <span className="w-1.5 h-1.5 rounded-full bg-secondary/60" />
