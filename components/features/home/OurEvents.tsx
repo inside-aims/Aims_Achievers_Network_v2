@@ -22,7 +22,7 @@ export default function OurEvents() {
           <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light font-serif tracking-tight leading-[1.0] mt-4">
             Events worth
             <br />
-            <span className="text-muted-foreground/60">voting for.</span>
+            <span className="text-muted-foreground/60">recognizing.</span>
           </h2>
         </div>
         <Link
@@ -35,8 +35,8 @@ export default function OurEvents() {
       </div>
 
       <p className="text-base font-light text-muted-foreground max-w-xl mb-12 md:mb-16 leading-relaxed">
-        Every event is crafted to celebrate the talent that lives on Ghanaian
-        campuses — from the first nomination to the final applause.
+        Every event is thoughtfully designed to celebrate excellence from the first nomination to the final moment of recognition.
+        A seamless journey that honors impact, creativity, and distinction.
       </p>
 
       {/* Event cards */}

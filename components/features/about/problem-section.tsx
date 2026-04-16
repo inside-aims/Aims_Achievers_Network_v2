@@ -123,8 +123,8 @@ export function ProblemSection() {
           >
             <h3 className="text-xl font-bold text-red-400">The Challenge</h3>
             <p className="text-gray-400 leading-relaxed">
-              Finding mentorship is hard. Information about opportunities is scattered. 
-              Students often don&apos;t know what questions to ask, where to look, or who to trust.
+              Access to meaningful mentorship and opportunities remains fragmented and uneven.
+              Information is scattered, guidance is often out of reach, and many driven individuals regardless of background lack the clarity, direction, or trusted networks needed to move forward with confidence.
             </p>
           </div>
 
@@ -150,8 +150,7 @@ export function ProblemSection() {
           >
             <h3 className="text-xl font-bold text-blue-400">Our Approach</h3>
             <p className="text-gray-400 leading-relaxed">
-              AIMS exists to level the playing field. We create a space where students can 
-              find mentors and discover opportunities—regardless of their background.
+              We are building an inclusive, globally connected ecosystem where individuals can access mentorship, discover opportunities, and engage with the right people at the right time. By bringing structure to scattered resources and fostering authentic connections, we make growth more accessible, intentional, and equitable.
             </p>
           </div>
         </div>

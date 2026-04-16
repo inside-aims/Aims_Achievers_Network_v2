@@ -23,40 +23,40 @@ const steps = [
     icon: Calendar,
     title: "Discover an Event",
     description:
-      "Browse active campus award events across Ghanaian institutions - each with its own categories, nominees, and story.",
-    note: "Filter by institution, date, or award type to find what matters to you.",
+      "Explore active award experiences across institutions and communities, each with its own categories, nominees, and story.",
+    note: "Refine by organization, timeline, or award type to find what matters most.",
   },
   {
     number: "02",
     icon: Users,
-    title: "Pick a Category",
+    title: "⁠Explore Categories",
     description:
-      "Dive into specific award categories - academic excellence, cultural performance, social impact, and more. Each one tells a different story.",
-    note: "Read full nominee profiles and achievements before you decide.",
+      "Step into distinct categories—from academic excellence to cultural impact and beyond.",
+    note: "Each category holds unique stories and achievements waiting to be discovered.",
   },
   {
     number: "03",
     icon: MousePointerClick,
-    title: "Choose Your Nominee",
+    title: "Select a Nominee",
     description:
-      "Select the person you believe deserves the award. Your vote is a statement of confidence in their work and character.",
-    note: "Nominees see their count update live as votes come in.",
+      "Choose the individual who stands out. Your vote represents recognition, trust, and belief in their impact.",
+    note: "Nominee rankings update in real time.",
   },
   {
     number: "04",
     icon: Shield,
     title: "Vote Securely",
     description:
-      "A quick, encrypted payment confirms your vote. 256-bit protection means every ballot is tamper-proof and permanently recorded.",
-    note: "MTN MoMo, Vodafone Cash, AirtelTigo, and cards all accepted.",
+      "Complete your vote through a fast, encrypted process. Every transaction is protected and permanently recorded",
+    note: "Supports modern payment methods across regions.",
   },
   {
     number: "05",
     icon: BarChart3,
-    title: "Watch Results Live",
+    title: "Follow the Results",
     description:
-      "Track the leaderboard as votes roll in. Verified final results are announced at the awards ceremony - no surprises, just transparency.",
-    note: "Live tallies visible throughout the entire voting period.",
+      "Watch outcomes unfold live through transparent, real-time tallies.",
+    note: "Final results are verified and announced with complete integrity, no ambiguity.",
   },
 ];
 
@@ -161,8 +161,7 @@ export default function HowItWorksPage() {
 
           <div className="space-y-6 lg:pb-2">
             <p className="text-base md:text-lg font-light text-muted-foreground leading-relaxed">
-              Five steps from opening the app to watching your nominee&apos;s count
-              rise. Secure, instant, and built for Ghanaian campuses.
+              From discovery to decision in five seamless steps. Secure, instant, and designed for trusted participation anywhere.
             </p>
             <div className="flex flex-wrap gap-3">
               <Button size="default" className="flex-1" asChild>
@@ -280,25 +279,25 @@ export default function HowItWorksPage() {
             {
               icon: Shield,
               title: "Tamper-Proof",
-              body: "Every vote is cryptographically sealed the moment it is cast. No manipulation, no double-counting - just a permanent, verified record.",
+              body: "Every vote is securely sealed at the moment it’s cast—protected, immutable, and fully verifiable",
               wide: true,
             },
             {
               icon: Zap,
               title: "Instant Confirmation",
-              body: "Your vote is confirmed in under a second. A clean receipt appears immediately - no refreshing, no uncertainty.",
+              body: "Votes are confirmed instantly, with a clear receipt delivered in seconds",
               wide: false,
             },
             {
               icon: Trophy,
               title: "Fair Competition",
-              body: "Transparent vote tallying means the best candidate wins - always. Every nominee starts at zero.",
+              body: "Transparent systems ensure every nominee starts equally—and wins are earned, not influenced.",
               wide: false,
             },
             {
               icon: Users,
-              title: "Built for Ghana",
-              body: "Designed from the ground up for Ghanaian campus culture - local payment methods, local context, real community impact.",
+              title: "Built with context",
+              body: "Designed to adapt across regions while staying grounded in real communities and real experiences.",
               wide: false,
             },
           ].map((g, i) => {
@@ -401,13 +400,13 @@ export default function HowItWorksPage() {
               <h2 className="mt-3 text-4xl md:text-5xl lg:text-6xl font-light font-serif text-primary-foreground tracking-tight leading-[1.03]">
                 Your vote shapes
                 <br />
-                <span className="text-secondary italic">campus history.</span>
+                <span className="text-secondary italic">what comes next.</span>
               </h2>
             </div>
             <div className="flex flex-col gap-3 md:items-end">
               <Button size="lg" variant="secondary" className="w-full" asChild>
                 <Link href="/events">
-                  View Events
+                  Start Voting
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Link>
               </Button>
