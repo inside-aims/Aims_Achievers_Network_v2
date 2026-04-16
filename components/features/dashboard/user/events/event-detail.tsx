@@ -1,28 +1,59 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
 import { EventHeader } from "./event-header";
 import { CategoriesList } from "./categories-list";
 import { EventSidebar } from "./event-sidebar";
-import { MOCK_EVENT_DETAILS, computeStats } from "./events";
-import type { EventControls } from "./events";
+import type { RichEventDetail, ComputedStats, EventControls, CategoryDetail } from "./events";
+import { formatCurrency } from "./events";
 
 interface Props {
   base: string;
   eventId: string;
 }
 
-export function EventDetail({ base, eventId }: Props) {
-  const raw = MOCK_EVENT_DETAILS[eventId];
-
-  const [controls, setControls] = useState<EventControls>(
-    raw
-      ? { ...raw.controls }
-      : { showVotes: false, votingOpen: false, publicPage: false, nominationsOpen: false, autoPublishNominations: false }
+function EventDetailSkeleton() {
+  return (
+    <div className="space-y-4 md:space-y-5">
+      <Card>
+        <CardContent className="py-5 space-y-4">
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-64" />
+            <Skeleton className="h-4 w-48" />
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="space-y-1">
+                <Skeleton className="h-6 w-16" />
+                <Skeleton className="h-3 w-20" />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
+}
 
-  if (!raw) {
+export function EventDetail({ base, eventId }: Props) {
+  const convexId = eventId as Id<"events">;
+
+  const event       = useQuery(api.events.getById,           { eventId: convexId });
+  const statsData   = useQuery(api.dashboard.eventStats,     { eventId: convexId });
+  const leaderboard = useQuery(api.dashboard.leaderboard,    { eventId: convexId });
+
+  const updateSettings = useMutation(api.events.updateLiveSettings);
+
+  // Loading
+  if (event === undefined) return <EventDetailSkeleton />;
+
+  // Not found or unauthorized
+  if (event === null) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-2 text-center">
         <p className="font-semibold text-lg">Event not found</p>
@@ -33,30 +64,87 @@ export function EventDetail({ base, eventId }: Props) {
     );
   }
 
+  const currency = event.currency ?? "GHS";
+
+  // Build categories from leaderboard (organizer always sees votes regardless of showVotes)
+  const categories: CategoryDetail[] = (leaderboard ?? []).map(({ category, nominees }) => ({
+    id: category._id as string,
+    name: category.name,
+    description: category.description ?? "",
+    nominees: nominees.map((n) => ({
+      id: n._id as string,
+      name: n.displayName,
+      votes: n.totalVotes,
+    })),
+  }));
+
+  // Compute stats from Convex aggregates + leaderboard
+  const totalVotes      = statsData?.totalVotes ?? 0;
+  const totalCategories = statsData?.categoriesCount ?? 0;
+  const totalNominees   = categories.reduce((sum, c) => sum + c.nominees.length, 0);
+  const revenueRaw      = (statsData?.grossRevenuePesewas ?? 0) / 100;
+  const priceGhs        = event.pricePerVotePesewas / 100;
+
+  const computedStats: ComputedStats = {
+    totalVotes,
+    totalCategories,
+    totalNominees,
+    revenueRaw,
+    revenue:    formatCurrency(revenueRaw, currency),
+    priceLabel: `${formatCurrency(priceGhs, currency)} / vote`,
+  };
+
+  const richEvent: RichEventDetail = {
+    id:           event._id as string,
+    title:        event.title,
+    institution:  event.institution ?? "",
+    description:  event.description ?? "",
+    location:     event.location ?? "",
+    date:         event.eventDate ? new Date(event.eventDate).toISOString() : "",
+    status:       event.status,
+    currency,
+    pricePerVote: priceGhs,
+    closesDate:   event.votingEndsAt ? new Date(event.votingEndsAt).toISOString() : "",
+    votesThisHour: statsData?.votesLastHour ?? 0,
+    createdAt:    new Date(event.createdAt).toISOString(),
+    controls: {
+      showVotes:              event.showVotes,
+      votingOpen:             event.votingOpen,
+      publicPage:             event.publicPageVisible,
+      nominationsOpen:        event.nominationsOpen,
+      autoPublishNominations: event.nominationAutoApprove ?? false,
+    },
+    categories,
+  };
+
+  // Map EventControls key → updateLiveSettings field name
+  const CONTROL_FIELD_MAP: Record<keyof EventControls, string> = {
+    showVotes:              "showVotes",
+    votingOpen:             "votingOpen",
+    publicPage:             "publicPageVisible",
+    nominationsOpen:        "nominationsOpen",
+    autoPublishNominations: "nominationAutoApprove",
+  };
+
   function handleToggle(key: keyof EventControls, value: boolean) {
-    const next = { ...controls, [key]: value };
-    setControls(next);
-    console.log("[EventDetail] controls updated:", next);
+    updateSettings({
+      eventId: convexId,
+      [CONTROL_FIELD_MAP[key]]: value,
+    });
   }
-
-  const event = { ...raw, controls };
-  const stats = computeStats(event);
-
-  console.log("[EventDetail] event:", event);
-  console.log("[EventDetail] computed stats:", stats);
 
   return (
     <div className="space-y-4 md:space-y-5">
-      <EventHeader event={event} stats={stats} base={base} />
+      <EventHeader event={richEvent} stats={computedStats} base={base} />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 md:gap-5 items-start">
-        <CategoriesList categories={event.categories} />
+        <CategoriesList categories={categories} />
 
         <EventSidebar
-          stats={stats}
-          closesDate={event.closesDate}
-          createdAt={event.createdAt}
-          controls={controls}
+          stats={computedStats}
+          closesDate={richEvent.closesDate}
+          createdAt={richEvent.createdAt}
+          controls={richEvent.controls}
           onToggle={handleToggle}
         />
       </div>
