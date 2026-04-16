@@ -7,11 +7,11 @@ import {
   MapPin,
   Phone,
   Send,
-  ArrowRight,
-  Instagram,
-  Twitter,
-  Linkedin,
+  ArrowRight
 } from "lucide-react";
+import { LinkedIn } from "@/components/icons/Linkedin";
+import { Instagram } from "@/components/icons/Instagram";
+import { XformerlyTwitter } from "@/components/icons/X-light";
 import { Button } from "@/components/ui/button";
 
 const subjects = [
@@ -178,8 +178,8 @@ export default function ContactPage() {
                 <div className="flex gap-4">
                   {[
                     { icon: Instagram, label: "Instagram", href: "#" },
-                    { icon: Twitter, label: "Twitter / X", href: "#" },
-                    { icon: Linkedin, label: "LinkedIn", href: "#" },
+                    { icon: XformerlyTwitter, label: "Twitter / X", href: "#" },
+                    { icon: LinkedIn, label: "LinkedIn", href: "#" },
                   ].map((s) => {
                     const Icon = s.icon;
                     return (
