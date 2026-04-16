@@ -11,6 +11,7 @@ import { CategoriesList } from "./categories-list";
 import { EventSidebar } from "./event-sidebar";
 import type { RichEventDetail, ComputedStats, EventControls, CategoryDetail } from "./events";
 import { formatCurrency } from "./events";
+import { toast } from "sonner";
 
 interface Props {
   base: string;
@@ -43,7 +44,7 @@ function EventDetailSkeleton() {
 export function EventDetail({ base, eventId }: Props) {
   const convexId = eventId as Id<"events">;
 
-  const event       = useQuery(api.events.getById,           { eventId: convexId });
+  const event       = useQuery(api.events.getByIdForOrganizer, { eventId: convexId });
   const statsData   = useQuery(api.dashboard.eventStats,     { eventId: convexId });
   const leaderboard = useQuery(api.dashboard.leaderboard,    { eventId: convexId });
 
@@ -127,9 +128,8 @@ export function EventDetail({ base, eventId }: Props) {
   };
 
   function handleToggle(key: keyof EventControls, value: boolean) {
-    updateSettings({
-      eventId: convexId,
-      [CONTROL_FIELD_MAP[key]]: value,
+    updateSettings({ eventId: convexId, [CONTROL_FIELD_MAP[key]]: value }).catch(() => {
+      toast.error("Failed to update setting. Please try again.");
     });
   }
 

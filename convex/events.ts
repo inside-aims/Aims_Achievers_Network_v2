@@ -142,6 +142,17 @@ export const getById = query({
 
 // ─── Organizer queries ────────────────────────────────────────────────────────
 
+export const getByIdForOrganizer = query({
+  args: { eventId: v.id("events") },
+  handler: async (ctx, args) => {
+    const profile = await getOrganizerProfileOrNull(ctx);
+    if (!profile) return null;
+    const event = await ctx.db.get(args.eventId);
+    if (!event || event.organizerId !== profile._id) return null;
+    return event;
+  },
+});
+
 export const listByOrganizer = query({
   args: {},
   handler: async (ctx) => {

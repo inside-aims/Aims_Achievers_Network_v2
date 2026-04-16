@@ -34,13 +34,17 @@ export const organizerOverview = query({
       else if (e.status === "closed") counts.closed++;
     }
 
+    const aggregates = await Promise.all(
+      events.map((e) =>
+        Promise.all([
+          votesByNominee.sum(ctx, { namespace: e._id }),
+          revenueByEvent.sum(ctx, { namespace: e._id }),
+        ]),
+      ),
+    );
     let totalVotes = 0;
     let totalRevenuePesewas = 0;
-    for (const e of events) {
-      const [votes, revenue] = await Promise.all([
-        votesByNominee.sum(ctx, { namespace: e._id }),
-        revenueByEvent.sum(ctx, { namespace: e._id }),
-      ]);
+    for (const [votes, revenue] of aggregates) {
       totalVotes += votes;
       totalRevenuePesewas += revenue;
     }

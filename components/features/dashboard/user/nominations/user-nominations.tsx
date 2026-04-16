@@ -6,6 +6,7 @@ import { ClipboardList } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PageHeader } from "@/components/features/dashboard/shared/page-header";
 import type { SubmissionStatus } from "./nominations";
@@ -54,11 +55,15 @@ export function UserNominations() {
   const reject   = useMutation(api.nominations.reject);
 
   function handleApprove(id: string) {
-    approve({ submissionId: id as Id<"nominationSubmissions"> });
+    approve({ submissionId: id as Id<"nominationSubmissions"> }).catch(() => {
+      toast.error("Failed to approve nomination. Please try again.");
+    });
   }
 
   function handleReject(id: string) {
-    reject({ submissionId: id as Id<"nominationSubmissions"> });
+    reject({ submissionId: id as Id<"nominationSubmissions"> }).catch(() => {
+      toast.error("Failed to reject nomination. Please try again.");
+    });
   }
 
   function toggleEvent(id: string) {
