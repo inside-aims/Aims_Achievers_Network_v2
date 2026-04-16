@@ -140,7 +140,7 @@ export const createOrganizerDev = internalAction({
     try {
       await resend.sendEmail(ctx, {
         from: "AAN Platform <noreply@mail.xolace.app>",
-        to: "delivered@resend.dev",
+        to: normalizedEmail,
         subject: "Your AAN Organizer Account is Ready",
         html: welcomeEmailHtml({
           displayName: args.displayName,
@@ -221,10 +221,10 @@ export const createOrganizerAccount = action({
     });
 
     // Send welcome email with credentials
-    const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? "https://aimsachievernetwork.com"}/login`;
+    const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? "https://aimsachieversnetwork.com"}/login`;
     try {
       await resend.sendEmail(ctx, {
-        from: "AAN Platform <noreply@aimsachievernetwork.com>",
+        from: "AAN Platform <noreply@mail.xolace.app>",
         to: normalizedEmail,
         subject: "Your AAN Organizer Account is Ready",
         html: welcomeEmailHtml({

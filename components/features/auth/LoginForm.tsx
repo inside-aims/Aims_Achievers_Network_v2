@@ -37,8 +37,6 @@ const LoginForm = () => {
   const profile = useQuery(api.users.getMyProfile);
 
   useEffect(() => {
-    console.log("pendingRedirect", pendingRedirect);
-    console.log("profile", profile);
     if (!pendingRedirect || !profile) return;
     const path = profile.role === "admin"
       ? `/admin/${profile._id}`
