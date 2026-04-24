@@ -39,7 +39,8 @@
       "Bash(bun x:*)",
       "Bash(printf 'N\\\\nN\\\\nN\\\\nN\\\\nN\\\\n')",
       "Bash(yes N)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(bunx --bun shadcn@latest add tabs)"
     ]
   }
 }
