@@ -29,7 +29,6 @@ const statusConfig: Record<TicketStatus, {
   },
 };
 
-// Reusable badge that shows ticket status with icon and color
 const TicketStatusBadge = ({ status, className = "" }: TicketStatusBadgeProps) => {
   const config = statusConfig[status];
   const Icon = config.icon;

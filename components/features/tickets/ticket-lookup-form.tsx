@@ -11,7 +11,6 @@ import { lookupByEmail, lookupByPhone, lookupByCode } from "./mock-data";
 import TicketCard from "./ticket-card";
 import EmptyState from "@/components/shared/empty-state";
 
-// Tab-based lookup form: Email / Phone / Ticket Code
 const TicketLookupForm = () => {
   const [mode, setMode] = useState<LookupMode>("email");
   const [inputValue, setInputValue] = useState("");
@@ -62,7 +61,6 @@ const TicketLookupForm = () => {
 
   return (
     <div className="space-y-6">
-      {/* Tab switcher */}
       <div className="flex rounded-lg border border-border bg-muted p-1 gap-1">
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -85,7 +83,6 @@ const TicketLookupForm = () => {
         })}
       </div>
 
-      {/* Search input */}
       <div className="space-y-2">
         <Label htmlFor="ticket-lookup-input">{activeTab.label}</Label>
         <div className="flex gap-2">
@@ -113,10 +110,8 @@ const TicketLookupForm = () => {
         </div>
       </div>
 
-      {/* Results */}
       {results !== null && (
         <div className="space-y-4">
-          {/* Results count */}
           <div className="flex items-center gap-2">
             <div className="flex-1 h-px bg-border" />
             <span className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
@@ -125,7 +120,6 @@ const TicketLookupForm = () => {
             <div className="flex-1 h-px bg-border" />
           </div>
 
-          {/* Ticket cards */}
           {results.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2">
               {results.map((ticket) => (

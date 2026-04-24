@@ -5,7 +5,6 @@ interface TicketCardFooterProps {
   ticket: Ticket;
 }
 
-// Footer section showing re-entry history and previous codes
 const TicketCardFooter = ({ ticket }: TicketCardFooterProps) => {
   const hasPreviousCodes = ticket.previousCodes && ticket.previousCodes.length > 0;
 
@@ -13,14 +12,12 @@ const TicketCardFooter = ({ ticket }: TicketCardFooterProps) => {
 
   return (
     <div className="w-full pt-3 border-t border-border">
-      {/* Used at timestamp */}
       {ticket.status === "used" && ticket.usedAt && (
         <p className="text-xs text-muted-foreground text-center">
           Checked in at {formatTime(ticket.usedAt)}
         </p>
       )}
 
-      {/* Re-entry history */}
       {hasPreviousCodes && (
         <div className="mt-2 flex flex-col items-center gap-1">
           <div className="flex items-center gap-1 text-xs text-muted-foreground">

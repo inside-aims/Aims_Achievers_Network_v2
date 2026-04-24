@@ -157,8 +157,6 @@ const TicketPurchaseModal = ({
   );
 };
 
-// ─── Shared purchase content ──────────────────────────────────────────────────
-
 interface PurchaseContentProps {
   step: Step;
   selectedType: TicketType;
@@ -227,8 +225,6 @@ function PurchaseContent({
   />;
 }
 
-// ─── Form step ────────────────────────────────────────────────────────────────
-
 function FormStep({
   selectedType,
   quantity,
@@ -247,7 +243,6 @@ function FormStep({
 }: Omit<PurchaseContentProps, "step" | "onClose">) {
   return (
     <div className="space-y-5 pt-1 pb-2">
-      {/* Selected ticket summary */}
       <div className="flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 px-4 py-3">
         <div>
           <p className="text-sm font-bold">{selectedType.name}</p>
@@ -260,7 +255,6 @@ function FormStep({
         </Badge>
       </div>
 
-      {/* Quantity */}
       <div className="space-y-2">
         <Label className="text-sm font-medium">Quantity</Label>
         <div className="flex items-center gap-3">
@@ -287,7 +281,6 @@ function FormStep({
         </div>
       </div>
 
-      {/* Buyer info */}
       <div className="space-y-3">
         <p className="text-sm font-medium">Your details</p>
 
@@ -334,7 +327,6 @@ function FormStep({
         </div>
       </div>
 
-      {/* Order summary */}
       <div className="rounded-lg border border-border bg-muted/40 px-4 py-3 space-y-2">
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">
@@ -365,8 +357,6 @@ function FormStep({
   );
 }
 
-// ─── Loading step ─────────────────────────────────────────────────────────────
-
 function LoadingStep() {
   return (
     <div className="flex flex-col items-center justify-center py-14 gap-4">
@@ -375,8 +365,6 @@ function LoadingStep() {
     </div>
   );
 }
-
-// ─── Success step ─────────────────────────────────────────────────────────────
 
 function SuccessStep({
   name,

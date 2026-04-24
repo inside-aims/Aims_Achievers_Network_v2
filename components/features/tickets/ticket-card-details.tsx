@@ -6,7 +6,6 @@ interface TicketCardDetailsProps {
   compact?: boolean;
 }
 
-// Grid of ticket detail items: holder name, email, phone
 const TicketCardDetails = ({ ticket, compact = false }: TicketCardDetailsProps) => {
   if (compact) {
     return (
@@ -48,7 +47,6 @@ const TicketCardDetails = ({ ticket, compact = false }: TicketCardDetailsProps) 
   );
 };
 
-// Individual detail row
 function DetailItem({
   icon,
   label,

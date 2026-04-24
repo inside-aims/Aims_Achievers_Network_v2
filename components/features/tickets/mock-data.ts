@@ -1,6 +1,5 @@
 import {
   Ticket,
-  TicketOrder,
   TicketType,
   EventTicketInfo,
   ScanResult,
@@ -16,10 +15,7 @@ function makeCode(prefix: string, index: number): string {
   return `${prefix}-${code}${index}`;
 }
 
-// ============================================================
 // TICKET TYPES PER EVENT
-// ============================================================
-
 export const FAST_TICKET_TYPES: TicketType[] = [
   {
     id: "fast-general",
@@ -35,7 +31,7 @@ export const FAST_TICKET_TYPES: TicketType[] = [
     id: "fast-vip",
     name: "VIP",
     description: "Front row seating, complimentary drinks, and backstage access",
-    pricePesewas: 5000, // GHS 50.00
+    pricePesewas: 5000,
     quantityTotal: 100,
     quantitySold: 87,
     salesStartAt: "2026-03-01",
@@ -45,9 +41,9 @@ export const FAST_TICKET_TYPES: TicketType[] = [
     id: "fast-early",
     name: "Early Bird",
     description: "Discounted general admission for early purchasers",
-    pricePesewas: 1500, // GHS 15.00
+    pricePesewas: 1500,
     quantityTotal: 200,
-    quantitySold: 200, // sold out
+    quantitySold: 200,
     salesStartAt: "2026-02-01",
     salesEndAt: "2026-02-28",
   },
@@ -76,10 +72,7 @@ export const FBNE_TICKET_TYPES: TicketType[] = [
   },
 ];
 
-// ============================================================
 // EVENT TICKET INFO (used by ticket purchase section)
-// ============================================================
-
 export const EVENT_TICKET_INFO: Record<string, EventTicketInfo> = {
   "fast-awards-2025": {
     eventId: "fast-awards-2025",
@@ -100,6 +93,75 @@ export const EVENT_TICKET_INFO: Record<string, EventTicketInfo> = {
     ticketTypes: FBNE_TICKET_TYPES,
   },
 };
+
+// SCAN ACCESS CODES (one per event — given to organizer staff at entrance)
+export const SCAN_ACCESS_CODES: Record<string, string> = {
+  "fast-awards-2025": "FAST-SCAN-2025",
+  "fbne-awards-2025": "FBNE-SCAN-2025",
+};
+
+// Returns true if the provided code matches the event's scan access code (case-insensitive)
+export function verifyScanAccess(eventId: string, code: string): boolean {
+  const expected = SCAN_ACCESS_CODES[eventId];
+  if (!expected) return false;
+  return expected.toLowerCase() === code.trim().toLowerCase();
+}
+
+// Verifies a ticket code against the event's ticket pool.
+// usedCodes tracks codes already verified as "success" in the current scan session.
+export function verifyTicketCode(
+  eventId: string,
+  code: string,
+  usedCodes: Set<string>
+): ScanResult {
+  const now = new Date().toISOString();
+  const ticket = SAMPLE_TICKETS.find(
+    (t) => t.ticketCode.toLowerCase() === code.trim().toLowerCase()
+  );
+
+  if (!ticket) {
+    return {
+      type: "invalid",
+      ticket: null,
+      message: "No ticket found for this code. Please check and try again.",
+      scannedAt: now,
+    };
+  }
+
+  if (ticket.eventId !== eventId) {
+    return {
+      type: "invalid",
+      ticket: null,
+      message: "This ticket does not belong to this event.",
+      scannedAt: now,
+    };
+  }
+
+  if (ticket.status === "cancelled") {
+    return {
+      type: "cancelled",
+      ticket,
+      message: "This ticket has been cancelled and is no longer valid.",
+      scannedAt: now,
+    };
+  }
+
+  if (ticket.status === "used" || usedCodes.has(ticket.ticketCode)) {
+    return {
+      type: "already_used",
+      ticket,
+      message: "This ticket has already been scanned. If re-entry is needed, generate a new QR code.",
+      scannedAt: now,
+    };
+  }
+
+  return {
+    type: "success",
+    ticket,
+    message: "Ticket verified successfully. Welcome!",
+    scannedAt: now,
+  };
+}
 
 // ============================================================
 // SAMPLE TICKETS (for lookup pages)
@@ -134,7 +196,7 @@ export const SAMPLE_TICKETS: Ticket[] = [
     ticketTypeName: "VIP",
     ticketCode: makeCode("FAST", 2),
     holderName: "Abena Osei",
-    holderEmail: "kwame.mensah@email.com", // same buyer, different holder
+    holderEmail: "kwame.mensah@email.com",
     holderPhone: "0551234567",
     status: "valid",
     themeId: "royal-night",
@@ -192,67 +254,58 @@ export const SAMPLE_TICKETS: Ticket[] = [
     themeId: "campus-vibes",
     createdAt: "2026-04-08T16:20:00Z",
   },
-];
-
-// ============================================================
-// SAMPLE ORDERS (for organizer dashboard)
-// ============================================================
-
-export const SAMPLE_ORDERS: TicketOrder[] = [
+  // Fixed-code demo tickets for manual entry testing on the scan page
   {
-    id: "ord-001",
+    id: "tkt-demo-01",
     eventId: "fast-awards-2025",
     eventTitle: "FAST Excellence Awards 2025",
-    ticketTypeName: "VIP",
-    quantity: 2,
-    totalPesewas: 10000,
-    buyerName: "Kwame Mensah",
-    buyerEmail: "kwame.mensah@email.com",
-    buyerPhone: "0551234567",
-    status: "confirmed",
-    createdAt: "2026-04-10T14:30:00Z",
-    tickets: SAMPLE_TICKETS.filter((t) => t.orderId === "ord-001"),
-  },
-  {
-    id: "ord-002",
-    eventId: "fast-awards-2025",
-    eventTitle: "FAST Excellence Awards 2025",
+    eventDate: "2026-06-15",
+    eventTime: "7:00 PM",
+    venue: "Great Hall, UENR Campus",
+    orderId: "ord-demo",
     ticketTypeName: "General Admission",
-    quantity: 1,
-    totalPesewas: 2000,
-    buyerName: "Daniel Adjei",
-    buyerEmail: "daniel.adjei@email.com",
-    buyerPhone: "0247890123",
-    status: "confirmed",
-    createdAt: "2026-04-05T09:15:00Z",
-    tickets: SAMPLE_TICKETS.filter((t) => t.orderId === "ord-002"),
+    ticketCode: "FAST-DEMO01",
+    holderName: "Ama Serwaa",
+    holderEmail: "ama.serwaa@email.com",
+    holderPhone: "0244001122",
+    status: "valid",
+    themeId: "royal-night",
+    createdAt: "2026-04-20T10:00:00Z",
   },
   {
-    id: "ord-003",
+    id: "tkt-demo-02",
+    eventId: "fast-awards-2025",
+    eventTitle: "FAST Excellence Awards 2025",
+    eventDate: "2026-06-15",
+    eventTime: "7:00 PM",
+    venue: "Great Hall, UENR Campus",
+    orderId: "ord-demo",
+    ticketTypeName: "VIP",
+    ticketCode: "FAST-DEMO02",
+    holderName: "Kofi Boateng",
+    holderEmail: "kofi.boateng@email.com",
+    holderPhone: "0277334455",
+    status: "used",
+    usedAt: "2026-06-15T18:20:00Z",
+    themeId: "royal-night",
+    createdAt: "2026-04-20T10:05:00Z",
+  },
+  {
+    id: "tkt-demo-03",
     eventId: "fbne-awards-2025",
     eventTitle: "FBNE Innovation Awards 2025",
+    eventDate: "2026-12-16",
+    eventTime: "6:30 PM",
+    venue: "Multi Purpose Hall, UENR Campus",
+    orderId: "ord-demo-fbne",
     ticketTypeName: "Premium Pass",
-    quantity: 1,
-    totalPesewas: 8000,
-    buyerName: "Grace Boateng",
-    buyerEmail: "grace.boateng@email.com",
-    buyerPhone: "0201234567",
-    status: "confirmed",
-    createdAt: "2026-04-12T11:00:00Z",
-    tickets: SAMPLE_TICKETS.filter((t) => t.orderId === "ord-003"),
-  },
-  {
-    id: "ord-004",
-    eventId: "fbne-awards-2025",
-    eventTitle: "FBNE Innovation Awards 2025",
-    ticketTypeName: "Standard Pass",
-    quantity: 1,
-    totalPesewas: 1500,
-    buyerName: "Emmanuel Asante",
-    buyerEmail: "emmanuel.asante@email.com",
-    status: "cancelled",
-    createdAt: "2026-04-08T16:20:00Z",
-    tickets: SAMPLE_TICKETS.filter((t) => t.orderId === "ord-004"),
+    ticketCode: "FBNE-DEMO01",
+    holderName: "Nana Yaa Asante",
+    holderEmail: "nana.asante@email.com",
+    holderPhone: "0209887766",
+    status: "valid",
+    themeId: "campus-vibes",
+    createdAt: "2026-04-21T09:30:00Z",
   },
 ];
 

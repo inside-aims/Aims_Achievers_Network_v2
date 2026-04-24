@@ -34,7 +34,6 @@ const TicketTypeCard = ({ ticketType, onSelect }: TicketTypeCardProps) => {
           : "border-primary/15 bg-card hover:border-primary/40 hover:shadow-sm"
       )}
     >
-      {/* Left accent bar */}
       <div
         className={cn(
           "absolute left-0 top-3 bottom-3 w-1 rounded-r-full",
@@ -42,7 +41,6 @@ const TicketTypeCard = ({ ticketType, onSelect }: TicketTypeCardProps) => {
         )}
       />
 
-      {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <h4 className="text-sm font-bold">{name}</h4>
@@ -61,7 +59,6 @@ const TicketTypeCard = ({ ticketType, onSelect }: TicketTypeCardProps) => {
           {description}
         </p>
 
-        {/* Availability bar */}
         {!isUnlimited && !isSoldOut && quantityTotal > 0 && (
           <div className="mt-2.5 space-y-1">
             <div className="h-1 w-full rounded-full bg-muted overflow-hidden">
@@ -77,7 +74,6 @@ const TicketTypeCard = ({ ticketType, onSelect }: TicketTypeCardProps) => {
         )}
       </div>
 
-      {/* Price + action */}
       <div className="flex flex-col items-end gap-2 shrink-0">
         <span
           className={cn(

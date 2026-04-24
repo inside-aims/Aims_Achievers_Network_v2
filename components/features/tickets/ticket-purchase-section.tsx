@@ -24,7 +24,6 @@ const TicketPurchaseSection = ({ ticketInfo, onSelectType }: TicketPurchaseSecti
 
   return (
     <section id="tickets-section" className="space-y-3">
-      {/* Divider label */}
       <div className="flex items-center gap-3">
         <div className="h-px flex-1 bg-border" />
         <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
@@ -34,9 +33,7 @@ const TicketPurchaseSection = ({ ticketInfo, onSelectType }: TicketPurchaseSecti
         <div className="h-px flex-1 bg-border" />
       </div>
 
-      {/* Main ticket card */}
       <div className="rounded-xl border border-primary/15 bg-card overflow-hidden shadow-sm">
-        {/* Header band with event info */}
         <div className="bg-primary/5 border-b border-primary/10 px-4 md:px-6 py-4">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
@@ -70,14 +67,12 @@ const TicketPurchaseSection = ({ ticketInfo, onSelectType }: TicketPurchaseSecti
           </div>
         </div>
 
-        {/* Perforated divider */}
         <div className="relative flex items-center">
           <div className="h-4 w-4 rounded-full bg-background border border-primary/15 -ml-2 z-10 shrink-0" />
           <div className="flex-1 border-t border-dashed border-primary/20" />
           <div className="h-4 w-4 rounded-full bg-background border border-primary/15 -mr-2 z-10 shrink-0" />
         </div>
 
-        {/* Ticket type list */}
         <div className="px-4 md:px-6 py-4 space-y-3">
           {ticketInfo.ticketTypes.map((ticketType) => (
             <TicketTypeCard
@@ -88,7 +83,6 @@ const TicketPurchaseSection = ({ ticketInfo, onSelectType }: TicketPurchaseSecti
           ))}
         </div>
 
-        {/* Footer */}
         <div className="border-t border-dashed border-primary/10 px-4 md:px-6 py-3 bg-muted/30">
           <p className="text-xs text-muted-foreground text-center">
             Your ticket and QR code will be sent to your email after purchase
@@ -96,7 +90,6 @@ const TicketPurchaseSection = ({ ticketInfo, onSelectType }: TicketPurchaseSecti
         </div>
       </div>
 
-      {/* Find ticket CTA */}
       <div className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-3 gap-3">
         <div className="min-w-0">
           <p className="text-sm font-medium">Already have a ticket?</p>
