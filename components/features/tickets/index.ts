@@ -69,6 +69,30 @@ export interface ScanResult {
 
 export type LookupMode = "email" | "phone" | "code";
 
+export interface ScanEntry {
+  id: string;
+  ticketCode: string;
+  holderName: string;
+  ticketTypeName: string;
+  result: ScanResultType;
+  scannedAt: string; // ISO datetime
+  accessCodeId: string;
+}
+
+export interface ScanAccessCode {
+  id: string;
+  eventId: string;
+  code: string; // e.g. "FAST-GATE-7K2M9P"
+  staffName: string;
+  staffRole: string; // e.g. "Main Entrance"
+  staffPhone?: string;
+  generatedAt: string; // ISO datetime
+  isActive: boolean;
+  scansCount: number;
+  lastScannedAt?: string; // ISO datetime
+  scans: ScanEntry[];
+}
+
 export interface EventTicketInfo {
   eventId: string;
   eventTitle: string;

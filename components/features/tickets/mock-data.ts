@@ -3,6 +3,8 @@ import {
   TicketType,
   EventTicketInfo,
   ScanResult,
+  ScanAccessCode,
+  ScanEntry,
 } from "./index";
 
 // Helper to generate ticket codes
@@ -94,17 +96,117 @@ export const EVENT_TICKET_INFO: Record<string, EventTicketInfo> = {
   },
 };
 
-// SCAN ACCESS CODES (one per event — given to organizer staff at entrance)
-export const SCAN_ACCESS_CODES: Record<string, string> = {
-  "fast-awards-2025": "FAST-SCAN-2025",
-  "fbne-awards-2025": "FBNE-SCAN-2025",
+const FAST_SCAN_ENTRIES: ScanEntry[] = [
+  {
+    id: "se-001",
+    ticketCode: "FAST-DEMO01",
+    holderName: "Ama Serwaa",
+    ticketTypeName: "General Admission",
+    result: "success",
+    scannedAt: "2026-04-20T18:30:00Z",
+    accessCodeId: "sac-fast-001",
+  },
+  {
+    id: "se-002",
+    ticketCode: "FAST-DEMO02",
+    holderName: "Kofi Boateng",
+    ticketTypeName: "VIP",
+    result: "already_used",
+    scannedAt: "2026-04-20T18:45:00Z",
+    accessCodeId: "sac-fast-001",
+  },
+  {
+    id: "se-003",
+    ticketCode: "FAST-DEMO01",
+    holderName: "Ama Serwaa",
+    ticketTypeName: "General Admission",
+    result: "success",
+    scannedAt: "2026-04-20T19:15:00Z",
+    accessCodeId: "sac-fast-001",
+  },
+  {
+    id: "se-004",
+    ticketCode: "INVALID-XYZ",
+    holderName: "Unknown",
+    ticketTypeName: "N/A",
+    result: "invalid",
+    scannedAt: "2026-04-20T18:50:00Z",
+    accessCodeId: "sac-fast-002",
+  },
+];
+
+export const SCAN_ACCESS_CODE_LIST: Record<string, ScanAccessCode[]> = {
+  "fast-awards-2025": [
+    {
+      id: "sac-fast-001",
+      eventId: "fast-awards-2025",
+      code: "FAST-GATE-7K2M9P",
+      staffName: "Kwesi Antwi",
+      staffRole: "Main Entrance",
+      staffPhone: "0551122334",
+      generatedAt: "2026-06-14T10:00:00Z",
+      isActive: true,
+      scansCount: 3,
+      lastScannedAt: "2026-04-20T19:15:00Z",
+      scans: FAST_SCAN_ENTRIES.filter((e) => e.accessCodeId === "sac-fast-001"),
+    },
+    {
+      id: "sac-fast-002",
+      eventId: "fast-awards-2025",
+      code: "FAST-GATE-R3NX8W",
+      staffName: "Abena Frimpong",
+      staffRole: "Side Entrance",
+      staffPhone: "0247889900",
+      generatedAt: "2026-06-14T10:05:00Z",
+      isActive: true,
+      scansCount: 1,
+      lastScannedAt: "2026-04-20T18:50:00Z",
+      scans: FAST_SCAN_ENTRIES.filter((e) => e.accessCodeId === "sac-fast-002"),
+    },
+    {
+      id: "sac-fast-003",
+      eventId: "fast-awards-2025",
+      code: "FAST-GATE-Q5VH2T",
+      staffName: "Yaw Osei",
+      staffRole: "VIP Entrance",
+      generatedAt: "2026-06-14T11:30:00Z",
+      isActive: false,
+      scansCount: 0,
+      scans: [],
+    },
+  ],
+  "fbne-awards-2025": [
+    {
+      id: "sac-fbne-001",
+      eventId: "fbne-awards-2025",
+      code: "FBNE-GATE-M7KP4X",
+      staffName: "Nana Asante",
+      staffRole: "Main Gate",
+      staffPhone: "0201234567",
+      generatedAt: "2026-11-01T09:00:00Z",
+      isActive: true,
+      scansCount: 0,
+      scans: [],
+    },
+  ],
 };
 
-// Returns true if the provided code matches the event's scan access code (case-insensitive)
 export function verifyScanAccess(eventId: string, code: string): boolean {
-  const expected = SCAN_ACCESS_CODES[eventId];
-  if (!expected) return false;
-  return expected.toLowerCase() === code.trim().toLowerCase();
+  const codes = SCAN_ACCESS_CODE_LIST[eventId] ?? [];
+  return codes.some(
+    (c) => c.isActive && c.code.toLowerCase() === code.trim().toLowerCase()
+  );
+}
+
+export function getEventScanCodes(eventId: string): ScanAccessCode[] {
+  return SCAN_ACCESS_CODE_LIST[eventId] ?? [];
+}
+
+export function getAllScanEntries(eventId: string): ScanEntry[] {
+  const codes = getEventScanCodes(eventId);
+  return codes
+    .flatMap((c) => c.scans)
+    .sort((a, b) => new Date(b.scannedAt).getTime() - new Date(a.scannedAt).getTime());
 }
 
 // Verifies a ticket code against the event's ticket pool.
