@@ -1,4 +1,5 @@
-import { mutation } from "./_generated/server";
+import { internalQuery, mutation } from "./_generated/server";
+import { v } from "convex/values";
 import { requireOrganizerProfile } from "./helpers";
 
 /**
@@ -11,6 +12,13 @@ import { requireOrganizerProfile } from "./helpers";
  *   3. Response JSON → `{ storageId }`
  *   4. Pass `storageId` to any write mutation that stores it (e.g. createWithCategories)
  */
+export const getFileUrl = internalQuery({
+  args: { storageId: v.id("_storage") },
+  handler: async (ctx, args) => {
+    return await ctx.storage.getUrl(args.storageId);
+  },
+});
+
 export const generateUploadUrl = mutation({
   args: {},
   handler: async (ctx) => {

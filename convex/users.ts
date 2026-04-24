@@ -10,8 +10,8 @@ import { resend } from "./resend";
 /** Temporary password assigned to all newly created organizer accounts. */
 export const DEFAULT_ORGANIZER_PASSWORD = "AAN@Org2025!";
 
-const ADMIN_SEED_EMAIL = "example123@gmail.com";
-const ADMIN_SEED_PASSWORD = "password123";
+const ADMIN_SEED_EMAIL = process.env.ADMIN_SEED_EMAIL || "example123@gmail.com";
+const ADMIN_SEED_PASSWORD = process.env.ADMIN_SEED_PASSWORD || "password123";
 
 // ─── Public Queries ───────────────────────────────────────────────────────────
 
