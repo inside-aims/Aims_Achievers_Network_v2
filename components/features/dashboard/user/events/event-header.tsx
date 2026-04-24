@@ -89,13 +89,22 @@ function StatPill({ label, value, sub, trend, icon: Icon }: StatPillProps) {
   );
 }
 
-interface Props {
-  event: RichEventDetail;
-  stats: ComputedStats;
-  base:  string;
+export interface TicketHeaderStats {
+  sold:    number;
+  revenue: string;
+  types:   number;
+  scans:   number;
 }
 
-export function EventHeader({ event, stats, base }: Props) {
+interface Props {
+  event:        RichEventDetail;
+  stats:        ComputedStats;
+  base:         string;
+  activeTab?:   string;
+  ticketStats?: TicketHeaderStats;
+}
+
+export function EventHeader({ event, stats, base, activeTab, ticketStats }: Props) {
   const [nomineeDialogOpen, setNomineeDialogOpen] = useState(false);
 
   async function handleShare() {
@@ -154,14 +163,6 @@ export function EventHeader({ event, stats, base }: Props) {
   return (
     <>
       <div className="space-y-3">
-        <Link
-          href={`${base}/events`}
-          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="size-3.5" />
-          Back to events
-        </Link>
-
         <Card>
           <CardContent className="py-5">
             <div className="flex items-start justify-between gap-4">
@@ -252,27 +253,30 @@ export function EventHeader({ event, stats, base }: Props) {
             </div>
 
             <div className="mt-4 md:mt-5 pt-4 md:pt-5 border-t grid grid-cols-2 sm:grid-cols-4 gap-x-4 md:gap-x-6 gap-y-3 md:gap-y-4">
-              <StatPill
-                label="Revenue"
-                value={stats.revenue}
-                trend={event.votesThisHour > 0 ? "up" : "flat"}
-              />
-              <StatPill
-                label="Votes cast"
-                value={stats.totalVotes}
-                trend={voteTrend}
-                sub={voteSub}
-              />
-              <StatPill
-                label="Categories"
-                value={stats.totalCategories}
-                icon={Tag}
-              />
-              <StatPill
-                label="Nominees"
-                value={stats.totalNominees}
-                icon={Users}
-              />
+              {activeTab === "tickets" && ticketStats ? (
+                <>
+                  <StatPill label="Tickets Sold"  value={ticketStats.sold}    icon={Tag}   />
+                  <StatPill label="Ticket Revenue" value={ticketStats.revenue} icon={Users} />
+                  <StatPill label="Ticket Types"   value={ticketStats.types}   icon={Tag}   />
+                  <StatPill label="Total Scans"    value={ticketStats.scans}   icon={Users} />
+                </>
+              ) : (
+                <>
+                  <StatPill
+                    label="Revenue"
+                    value={stats.revenue}
+                    trend={event.votesThisHour > 0 ? "up" : "flat"}
+                  />
+                  <StatPill
+                    label="Votes cast"
+                    value={stats.totalVotes}
+                    trend={voteTrend}
+                    sub={voteSub}
+                  />
+                  <StatPill label="Categories" value={stats.totalCategories} icon={Tag}   />
+                  <StatPill label="Nominees"   value={stats.totalNominees}   icon={Users} />
+                </>
+              )}
             </div>
           </CardContent>
         </Card>

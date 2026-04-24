@@ -29,6 +29,7 @@ export const newEventSchema = z
     // Location & schedule
     location:     z.string().min(2, "Venue / location is required"),
     eventDate:    z.string().min(1, "Event date is required"),
+    eventTime:    z.string().min(1, "Event time is required"),
     votingOpens:  z.string().min(1, "Voting open date is required"),
     votingCloses: z.string().min(1, "Voting close date is required"),
 
@@ -42,6 +43,18 @@ export const newEventSchema = z
     votingOpenByDefault:    z.enum(["yes", "no"]),
     nominationsEnabled:     z.enum(["yes", "no"]),
     autoPublishNominations: z.enum(["yes", "no"]),
+
+    // Ticketing
+    ticketingEnabled: z.enum(["yes", "no"]),
+    ticketTypes: z
+      .array(
+        z.object({
+          name:     z.string().min(1, "Ticket type name is required"),
+          price:    z.coerce.number().min(0, "Price must be 0 or greater"),
+          quantity: z.coerce.number().int().min(-1, "Enter a quantity or -1 for unlimited"),
+        })
+      )
+      .optional(),
 
     // Categories
     categories: z
@@ -63,6 +76,13 @@ export const newEventSchema = z
       path: ["votingCloses"],
     },
   )
+  .refine(
+    (d) => d.ticketingEnabled !== "yes" || (d.ticketTypes && d.ticketTypes.length > 0),
+    {
+      message: "Add at least one ticket type when ticketing is enabled",
+      path: ["ticketTypes"],
+    },
+  )
 
 export type NewEventFormValues = z.infer<typeof newEventSchema>
 
@@ -73,6 +93,7 @@ export const NEW_EVENT_DEFAULTS: NewEventFormValues = {
   institution:         "",
   location:            "",
   eventDate:           "",
+  eventTime:           "",
   votingOpens:         "",
   votingCloses:        "",
   currency:            "",
@@ -82,5 +103,7 @@ export const NEW_EVENT_DEFAULTS: NewEventFormValues = {
   votingOpenByDefault:    "no",
   nominationsEnabled:     "yes",
   autoPublishNominations: "no",
+  ticketingEnabled:       "no",
+  ticketTypes:            [],
   categories:             [],
 }
