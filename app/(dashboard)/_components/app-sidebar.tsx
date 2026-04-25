@@ -41,7 +41,6 @@ const ADMIN_NAV = [
   { label: "Events",     icon: CalendarDays,    href: "/events"     },
   { label: "Organizers", icon: Users,           href: "/organizers" },
   { label: "Analytics",  icon: BarChart3,       href: "/analytics"  },
-  { label: "Settings",   icon: Settings2,       href: "/settings"   },
 ];
 
 const USER_NAV = [
@@ -65,7 +64,7 @@ export function AppSidebar() {
   const profile = useQuery(api.users.getMyProfile);
 
   const displayName = profile?.displayName ?? DUMMY_PROFILE.name;
-  const displayRole = profile?.role        ?? DUMMY_PROFILE.role;
+  const displayRole = isAdmin ? "Administrator" : (profile?.role ?? "Organiser");
   const initials    = displayName.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
 
   return (
@@ -131,7 +130,13 @@ export function AppSidebar() {
                   </div>
                   <div className="flex flex-col gap-0.5 leading-none min-w-0">
                     <span className="font-medium text-sm truncate">{displayName}</span>
-                    <span className="text-[11px] text-sidebar-foreground/60 capitalize">{displayRole}</span>
+                    {isAdmin ? (
+                      <span className="text-[10px] font-semibold text-sidebar-primary uppercase tracking-wide">
+                        {displayRole}
+                      </span>
+                    ) : (
+                      <span className="text-[11px] text-sidebar-foreground/60">{displayRole}</span>
+                    )}
                   </div>
                   <ChevronUp className="ml-auto size-4 shrink-0" />
                 </SidebarMenuButton>
@@ -144,7 +149,13 @@ export function AppSidebar() {
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-semibold truncate">{displayName}</p>
-                    <p className="text-[11px] text-muted-foreground capitalize truncate">{displayRole}</p>
+                    {isAdmin ? (
+                      <p className="text-[10px] font-semibold text-primary uppercase tracking-wide truncate">
+                        {displayRole}
+                      </p>
+                    ) : (
+                      <p className="text-[11px] text-muted-foreground truncate">{displayRole}</p>
+                    )}
                   </div>
                 </div>
 
