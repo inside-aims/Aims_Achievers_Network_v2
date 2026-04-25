@@ -16,6 +16,7 @@ import {
   type PayoutMethod,
 } from "./settings.data"
 import { Field, SaveBar, SectionCard } from "./settings-primitives"
+import { DUMMY_PAYOUT_CONFIG } from "@/components/features/dashboard/admin/settings/admin-settings.data"
 
 const PAYOUT_INITIAL = {
   method:    "momo" as PayoutMethod,
@@ -26,7 +27,6 @@ const PAYOUT_INITIAL = {
   accName:   "",
 }
 
-const THRESHOLD_INITIAL = "100"
 
 export function BillingTab() {
   const [method,    setMethod]    = useState<PayoutMethod>(PAYOUT_INITIAL.method)
@@ -35,8 +35,7 @@ export function BillingTab() {
   const [bankName,  setBankName]  = useState(PAYOUT_INITIAL.bankName)
   const [accNum,    setAccNum]    = useState(PAYOUT_INITIAL.accNum)
   const [accName,   setAccName]   = useState(PAYOUT_INITIAL.accName)
-  const [threshold, setThreshold] = useState(THRESHOLD_INITIAL)
-  const [payoutSaved,    setPayoutSaved]    = useState(false)
+  const [payoutSaved, setPayoutSaved] = useState(false)
 
   const payoutDirty =
     method   !== PAYOUT_INITIAL.method   ||
@@ -46,7 +45,7 @@ export function BillingTab() {
     accNum   !== PAYOUT_INITIAL.accNum   ||
     accName  !== PAYOUT_INITIAL.accName
 
-  function saveMethod()    { setPayoutSaved(true);    setTimeout(() => setPayoutSaved(false),    2500) }
+  function saveMethod() { setPayoutSaved(true); setTimeout(() => setPayoutSaved(false), 2500) }
 
   return (
     <div className="space-y-5">
@@ -111,22 +110,22 @@ export function BillingTab() {
 
       <SectionCard
         title="Payout threshold"
-        desc="Payouts are processed once your balance meets this amount."
+        desc="The minimum balance required before a payout can be requested. This is set by the platform."
       >
         <div className="max-w-xs">
-          <Field label="Minimum payout (GHS)" hint="Payments below this amount will not be processed.">
+          <Field
+            label="Minimum payout (GHS)"
+            hint="This value is configured by the platform administrator and cannot be changed."
+          >
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium pointer-events-none select-none">
                 GHS
               </span>
               <Input
-                type="number"
-                min="50"
-                step="0.01"
-                value={threshold}
+                value={DUMMY_PAYOUT_CONFIG.globalMinPayout}
                 disabled
-                onChange={(e) => setThreshold(e.target.value)}
-                className="pl-12"
+                className="pl-12 bg-muted/50 text-muted-foreground cursor-not-allowed"
+                readOnly
               />
             </div>
           </Field>
