@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AdminEventDetail } from "@/components/features/dashboard/admin/admin-event-detail";
+import { AdminEventDetail } from "@/components/features/dashboard/admin/events/admin-event-detail";
 
 export const metadata: Metadata = { title: "Event Detail | AIMS Achievers Network" };
 
