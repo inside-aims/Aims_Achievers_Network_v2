@@ -1,12 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { StatCard } from "../shared/stat-card";
-import { EventRow } from "../shared/event-row";
-import { PageHeader } from "../shared/page-header";
+import { StatCard } from "../../shared/stat-card";
+import { EventRow } from "../../shared/event-row";
+import { PageHeader } from "../../shared/page-header";
 import {
   getAdminStatCards,
   ADMIN_EVENTS,
   getOrganizerById,
-} from "./data/admin-data";
+} from "../data/admin-data";
 
 interface Props {
   base: string;
