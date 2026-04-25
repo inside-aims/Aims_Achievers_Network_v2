@@ -23,6 +23,12 @@ export function SecurityTab() {
     passwords["conf-pw"].length > 0 &&
     passwords["new-pw"] !== passwords["conf-pw"]
 
+  const canSavePassword =
+    passwords["cur-pw"].length > 0 &&
+    passwords["new-pw"].length >= 8 &&
+    passwords["conf-pw"].length > 0 &&
+    !mismatch
+
   function setField(id: PwFieldId, val: string) {
     setPasswords((p) => ({ ...p, [id]: val }))
   }
@@ -50,7 +56,7 @@ export function SecurityTab() {
             </Field>
           ))}
         </div>
-        <SaveBar onSave={savePassword} saved={saved} />
+        <SaveBar onSave={savePassword} saved={saved} disabled={!canSavePassword} />
       </SectionCard>
 
       <div className={cn("rounded-2xl border border-destructive/40 overflow-hidden")}>
