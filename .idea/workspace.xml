@@ -5,18 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="48008f26-d1dc-4f7e-b70b-a93096b41883" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(dashboard)/_components/nav-header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(dashboard)/_components/nav-header.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(dashboard)/admin/[uuid]/events/[eventId]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(dashboard)/admin/[uuid]/events/[eventId]/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/(dashboard)/admin/[uuid]/settings/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(dashboard)/admin/[uuid]/settings/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/globals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/dashboard/admin/admin-event-detail.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/admin/admin-event-detail.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/events/event-detail.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/events/event-detail.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/events/event-header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/events/event-header.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/events/events.ts" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/events/events.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/new-event/event-schedule-section.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/new-event/event-schedule-section.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/new-event/new-event-form.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/new-event/new-event-form.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/new-event/new-event-schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/new-event/new-event-schema.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/tickets/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/tickets/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/tickets/mock-data.ts" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/tickets/mock-data.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/settings/billing-tab.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/settings/billing-tab.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/settings/defaults-tab.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/settings/defaults-tab.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/settings/notifications-tab.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/settings/notifications-tab.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/settings/profile-tab.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/settings/profile-tab.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/settings/security-tab.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/settings/security-tab.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/settings/settings-primitives.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/settings/settings-primitives.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/settings/user-settings.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/settings/user-settings.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -136,7 +136,7 @@
       <workItem from="1776546189772" duration="516000" />
       <workItem from="1776856222865" duration="4775000" />
       <workItem from="1776943811766" duration="1345000" />
-      <workItem from="1777017665414" duration="8528000" />
+      <workItem from="1777017665414" duration="12989000" />
     </task>
     <servers />
   </component>

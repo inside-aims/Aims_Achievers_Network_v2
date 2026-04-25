@@ -272,6 +272,13 @@
   animation: live-glow 2s ease-out infinite;
 }
 
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* ─── Visible field borders (unlayered — beats @layer utilities) ─── */
 /* border-input maps to --input which is near-invisible in light mode. */
 /* Placing this outside any @layer ensures it overrides utility classes. */
