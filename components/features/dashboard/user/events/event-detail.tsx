@@ -93,19 +93,9 @@ export function EventDetail({ base, eventId }: Props) {
 
       {event.ticketingEnabled && event.ticketEventId ? (
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="bg-muted p-1">
-            <TabsTrigger
-              value="voting"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-secondary data-[state=inactive]:text-secondary-foreground"
-            >
-              Voting
-            </TabsTrigger>
-            <TabsTrigger
-              value="tickets"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-secondary data-[state=inactive]:text-secondary-foreground"
-            >
-              Tickets
-            </TabsTrigger>
+          <TabsList>
+            <TabsTrigger value="voting">Voting</TabsTrigger>
+            <TabsTrigger value="tickets">Tickets</TabsTrigger>
           </TabsList>
           <TabsContent value="voting" className="mt-4">
             {overviewGrid}
