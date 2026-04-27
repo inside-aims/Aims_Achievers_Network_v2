@@ -34,7 +34,7 @@ export interface RichEventDetail {
   createdAt: string;
   controls: EventControls;
   categories: CategoryDetail[];
-  ticketingEnabled: boolean;
+  ticketingEnabled?: boolean;
   ticketEventId?: string; // links to EVENT_TICKET_INFO key e.g. "fast-awards-2025"
   eventTime?: string;     // e.g. "7:00 PM"
 }
