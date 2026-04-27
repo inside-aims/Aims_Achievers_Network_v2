@@ -3,6 +3,16 @@ import { internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
 
+
+
+const CONVEX_ENV = process.env.CONVEX_ENV;
+const VALID_ENVS = ["production", "development"] as const;
+if (CONVEX_ENV !== undefined && !(VALID_ENVS as readonly string[]).includes(CONVEX_ENV)) {
+  throw new Error(
+    `Invalid CONVEX_ENV="${CONVEX_ENV}". Expected one of: ${VALID_ENVS.join(", ")} (or leave unset for development).`,
+  );
+}
+const isProd = CONVEX_ENV === "production";
 // ─── Internal mutation ────────────────────────────────────────────────────────
 
 /**
@@ -43,7 +53,7 @@ const crons = cronJobs();
 // Check every 5 minutes for events that should be auto-closed
 crons.interval(
   "auto-close expired events",
-  { minutes: 5 },
+  isProd ? { minutes: 10 } : { hours: 24 },
   internal.crons.closeExpiredEvents,
   {},
 );
@@ -51,7 +61,7 @@ crons.interval(
 // Prune stale USSD sessions every 15 minutes
 crons.interval(
   "prune expired ussd sessions",
-  { minutes: 15 },
+  isProd ? { minutes: 15 } : { hours: 24 },
   internal.ussd.pruneExpiredSessions,
   {},
 );

@@ -2,6 +2,9 @@
 
 import { useState, useMemo } from "react";
 import { Search, Plus } from "lucide-react";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,9 +12,9 @@ import { cn } from "@/lib/utils";
 import { PageHeader } from "../../shared/page-header";
 import { OrganizerRow } from "./organizer-row";
 import { NewOrganizerDialog } from "./new-organizer-dialog";
-import { ADMIN_ORGANIZERS, type Organizer, type OrganizerStatus } from "../data/admin-data";
+import type { Id } from "@/convex/_generated/dataModel";
 
-type Filter = "all" | OrganizerStatus;
+type Filter = "all" | "active" | "suspended";
 
 const FILTERS: { id: Filter; label: string }[] = [
   { id: "all",       label: "All"       },
@@ -22,45 +25,51 @@ const FILTERS: { id: Filter; label: string }[] = [
 interface Props { base: string }
 
 export function AdminOrganizers({ base }: Props) {
-  const [organizers, setOrganizers] = useState<Organizer[]>(ADMIN_ORGANIZERS);
+  const organizers   = useQuery(api.users.listOrganizers);
+  const setStatus    = useMutation(api.admin.setOrganizerStatus);
   const [filter,     setFilter]     = useState<Filter>("all");
   const [query,      setQuery]      = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const counts = useMemo(() => ({
-    all:       organizers.length,
-    active:    organizers.filter((o) => o.status === "active").length,
-    suspended: organizers.filter((o) => o.status === "suspended").length,
+    all:       organizers?.length ?? 0,
+    active:    organizers?.filter((o) => o.status === "active" || o.status === undefined).length ?? 0,
+    suspended: organizers?.filter((o) => o.status === "suspended").length ?? 0,
   }), [organizers]);
 
-  const filtered = useMemo(() =>
-    organizers.filter((o) => {
-      const matchStatus = filter === "all" || o.status === filter;
-      const matchQuery  = !query ||
-        o.name.toLowerCase().includes(query.toLowerCase()) ||
-        o.email.toLowerCase().includes(query.toLowerCase());
+  const filtered = useMemo(() => {
+    if (!organizers) return [];
+    return organizers.filter((o) => {
+      const isActive = o.status === "active" || o.status === undefined;
+      const matchStatus =
+        filter === "all" ||
+        (filter === "active" && isActive) ||
+        (filter === "suspended" && o.status === "suspended");
+      const matchQuery =
+        !query ||
+        o.displayName.toLowerCase().includes(query.toLowerCase()) ||
+        (o.email ?? "").toLowerCase().includes(query.toLowerCase());
       return matchStatus && matchQuery;
-    }),
-  [organizers, filter, query]);
+    });
+  }, [organizers, filter, query]);
 
-  function toggleStatus(id: string) {
-    setOrganizers((prev) =>
-      prev.map((o) =>
-        o.id === id ? { ...o, status: o.status === "active" ? "suspended" : "active" } : o
-      )
+  async function toggleStatus(id: Id<"organizerProfiles">, currentStatus: string | undefined) {
+    const next = currentStatus === "suspended" ? "active" : "suspended";
+    await setStatus({ profileId: id, status: next }).catch(() =>
+      toast.error("Failed to update organizer status"),
     );
   }
 
-  function addOrganizer(org: Omit<Organizer, "id" | "joinedAt" | "status">) {
-    const newOrg: Organizer = {
-      ...org,
-      id:       `org-${Date.now()}`,
-      joinedAt: new Date().toISOString().split("T")[0],
-      status:   "active",
-    };
-    console.log("[AdminOrganizers] TODO: persist to DB:", newOrg);
-    setOrganizers((prev) => [newOrg, ...prev]);
-    setDialogOpen(false);
+  if (organizers === undefined) {
+    return (
+      <div className="space-y-6 animate-pulse">
+        <div className="h-10 w-48 bg-muted rounded" />
+        <div className="grid grid-cols-3 gap-3">
+          {Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-16 bg-muted rounded-xl" />)}
+        </div>
+        <div className="h-64 bg-muted rounded-xl" />
+      </div>
+    );
   }
 
   return (
@@ -133,10 +142,10 @@ export function AdminOrganizers({ base }: Props) {
             <div className="divide-y">
               {filtered.map((org) => (
                 <OrganizerRow
-                  key={org.id}
+                  key={org._id}
                   org={org}
                   base={base}
-                  onToggleStatus={() => toggleStatus(org.id)}
+                  onToggleStatus={() => toggleStatus(org._id, org.status)}
                 />
               ))}
             </div>
@@ -147,7 +156,7 @@ export function AdminOrganizers({ base }: Props) {
       <NewOrganizerDialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
-        onCreate={addOrganizer}
+        onSuccess={() => setDialogOpen(false)}
       />
     </div>
   );

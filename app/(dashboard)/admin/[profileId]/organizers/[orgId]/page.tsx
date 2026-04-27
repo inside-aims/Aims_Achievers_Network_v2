@@ -4,10 +4,10 @@ import { AdminOrganizerDetail } from "@/components/features/dashboard/admin/orga
 export const metadata: Metadata = { title: "Organizer Profile | AIMS Achievers Network" };
 
 interface Props {
-  params: Promise<{ uuid: string; orgId: string }>;
+  params: Promise<{ profileId: string; orgId: string }>;
 }
 
 export default async function AdminOrganizerDetailPage({ params }: Props) {
-  const { uuid, orgId } = await params;
-  return <AdminOrganizerDetail base={`/admin/${uuid}`} orgId={orgId} />;
+  const { profileId, orgId } = await params;
+  return <AdminOrganizerDetail base={`/admin/${profileId}`} orgId={orgId} />;
 }

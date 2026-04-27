@@ -4,8 +4,6 @@ import Link from "next/link";
 import {
   ChevronRight,
   CalendarDays,
-  TrendingUp,
-  BarChart3,
   ShieldOff,
   ShieldCheck,
   Phone,
@@ -14,18 +12,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { getOrgStats, type Organizer } from "../data/admin-data";
+import type { Doc } from "@/convex/_generated/dataModel";
 
 interface Props {
-  org:            Organizer;
+  org:            Doc<"organizerProfiles">;
   base:           string;
   onToggleStatus: () => void;
 }
 
 export function OrganizerRow({ org, base, onToggleStatus }: Props) {
-  const stats    = getOrgStats(org.id);
-  const isActive = org.status === "active";
-  const initials = org.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+  const isActive = org.status === "active" || org.status === undefined;
+  const initials = org.displayName.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+  const joinedAt = new Date(org.createdAt).toLocaleDateString("en-GH", { month: "short", year: "numeric" });
 
   return (
     <div className={cn("px-5 py-4", !isActive && "opacity-60")}>
@@ -40,10 +38,10 @@ export function OrganizerRow({ org, base, onToggleStatus }: Props) {
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <Link
-              href={`${base}/organizers/${org.id}`}
+              href={`${base}/organizers/${org._id}`}
               className="text-sm font-semibold hover:text-primary transition-colors"
             >
-              {org.name}
+              {org.displayName}
             </Link>
             <Badge
               variant={isActive ? "outline" : "secondary"}
@@ -52,30 +50,23 @@ export function OrganizerRow({ org, base, onToggleStatus }: Props) {
                 isActive && "text-emerald-700 border-emerald-500/30 bg-emerald-500/10",
               )}
             >
-              {org.status}
+              {org.status ?? "active"}
             </Badge>
           </div>
 
           <div className="flex flex-wrap gap-x-3 mt-0.5 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1"><Mail className="size-3" />{org.email}</span>
-            <span className="flex items-center gap-1"><Phone className="size-3" />{org.phone}</span>
+            {org.email && (
+              <span className="flex items-center gap-1"><Mail className="size-3" />{org.email}</span>
+            )}
+            {org.phone && (
+              <span className="flex items-center gap-1"><Phone className="size-3" />{org.phone}</span>
+            )}
           </div>
 
           <div className="flex flex-wrap gap-x-4 mt-2 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
               <CalendarDays className="size-3" />
-              {stats.events} event{stats.events !== 1 ? "s" : ""}
-            </span>
-            <span className="flex items-center gap-1">
-              <TrendingUp className="size-3" />
-              GHS {stats.revenue.toLocaleString()}
-            </span>
-            <span className="flex items-center gap-1">
-              <BarChart3 className="size-3" />
-              {stats.votes.toLocaleString()} votes
-            </span>
-            <span>
-              Joined {new Date(org.joinedAt).toLocaleDateString("en-GH", { month: "short", year: "numeric" })}
+              Joined {joinedAt}
             </span>
           </div>
         </div>
@@ -98,7 +89,7 @@ export function OrganizerRow({ org, base, onToggleStatus }: Props) {
             }
           </Button>
           <Link
-            href={`${base}/organizers/${org.id}`}
+            href={`${base}/organizers/${org._id}`}
             className="flex items-center justify-center size-7 text-muted-foreground hover:text-foreground transition-colors"
           >
             <ChevronRight className="size-4" />

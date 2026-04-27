@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { UserPlus } from "lucide-react";
+import { useAction } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,28 +14,47 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { Organizer } from "../data/admin-data";
 
 interface Props {
-  open:     boolean;
-  onClose:  () => void;
-  onCreate: (org: Omit<Organizer, "id" | "joinedAt" | "status">) => void;
+  open:      boolean;
+  onClose:   () => void;
+  onSuccess: () => void;
 }
 
-export function NewOrganizerDialog({ open, onClose, onCreate }: Props) {
-  const [name,  setName]  = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+export function NewOrganizerDialog({ open, onClose, onSuccess }: Props) {
+  const [name,      setName]      = useState("");
+  const [email,     setEmail]     = useState("");
+  const [phone,     setPhone]     = useState("");
+  const [isPending, setIsPending] = useState(false);
 
-  function handleSubmit() {
-    if (!name.trim() || !email.trim()) return;
-    onCreate({ name: name.trim(), email: email.trim(), phone: phone.trim() });
+  const createOrganizer = useAction(api.users.createOrganizerAccount);
+
+  function reset() {
     setName(""); setEmail(""); setPhone("");
   }
 
   function handleClose() {
-    setName(""); setEmail(""); setPhone("");
+    reset();
     onClose();
+  }
+
+  async function handleSubmit() {
+    if (!name.trim() || !email.trim()) return;
+    setIsPending(true);
+    try {
+      await createOrganizer({
+        displayName: name.trim(),
+        email: email.trim(),
+        phone: phone.trim() || undefined,
+      });
+      toast.success("Organizer account created. Welcome email sent.");
+      reset();
+      onSuccess();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to create organizer");
+    } finally {
+      setIsPending(false);
+    }
   }
 
   return (
@@ -54,6 +76,7 @@ export function NewOrganizerDialog({ open, onClose, onCreate }: Props) {
               placeholder="e.g. Kwame Mensah"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              disabled={isPending}
             />
           </div>
           <div className="space-y-1.5">
@@ -66,6 +89,7 @@ export function NewOrganizerDialog({ open, onClose, onCreate }: Props) {
               placeholder="organizer@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={isPending}
             />
           </div>
           <div className="space-y-1.5">
@@ -78,14 +102,15 @@ export function NewOrganizerDialog({ open, onClose, onCreate }: Props) {
               placeholder="024 000 0000"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
+              disabled={isPending}
             />
           </div>
           <Button
             className="w-full"
             onClick={handleSubmit}
-            disabled={!name.trim() || !email.trim()}
+            disabled={!name.trim() || !email.trim() || isPending}
           >
-            Create Organizer
+            {isPending ? "Creating…" : "Create Organizer"}
           </Button>
         </div>
       </DialogContent>

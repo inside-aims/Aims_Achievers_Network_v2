@@ -2,13 +2,14 @@
 
 import { useState, useMemo } from "react";
 import { Search, TrendingUp, BarChart3, CalendarDays, Users } from "lucide-react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "../../shared/page-header";
 import { StatCard } from "../../shared/stat-card";
 import { AdminEventRow } from "./admin-event-row";
-import { ADMIN_EVENTS, getOrganizerById, getPlatformSummary } from "../data/admin-data";
 
 type Filter = "all" | "live" | "closed" | "draft";
 
@@ -22,29 +23,43 @@ const FILTERS: { id: Filter; label: string }[] = [
 interface Props { base: string }
 
 export function AdminEvents({ base }: Props) {
+  const events  = useQuery(api.admin.listAllEvents);
   const [filter, setFilter] = useState<Filter>("all");
   const [query,  setQuery]  = useState("");
 
-  const s = getPlatformSummary();
-
   const counts = useMemo(() => ({
-    all:    ADMIN_EVENTS.length,
-    live:   ADMIN_EVENTS.filter((e) => e.status === "live").length,
-    closed: ADMIN_EVENTS.filter((e) => e.status === "closed").length,
-    draft:  ADMIN_EVENTS.filter((e) => e.status === "draft").length,
-  }), []);
+    all:    events?.length ?? 0,
+    live:   events?.filter((e) => e.status === "live").length ?? 0,
+    closed: events?.filter((e) => e.status === "closed").length ?? 0,
+    draft:  events?.filter((e) => e.status === "draft").length ?? 0,
+  }), [events]);
 
-  const filtered = useMemo(() =>
-    ADMIN_EVENTS.filter((e) => {
-      const org = getOrganizerById(e.orgId);
-      return (
-        (filter === "all" || e.status === filter) &&
-        (!query ||
-          e.title.toLowerCase().includes(query.toLowerCase()) ||
-          org?.name.toLowerCase().includes(query.toLowerCase()))
-      );
-    }),
-  [filter, query]);
+  const totals = useMemo(() => ({
+    revenue: events?.reduce((s, e) => s + e.totalRevenuePesewas, 0) ?? 0,
+    votes:   events?.reduce((s, e) => s + e.totalVotes, 0) ?? 0,
+  }), [events]);
+
+  const filtered = useMemo(() => {
+    if (!events) return [];
+    return events.filter((e) =>
+      (filter === "all" || e.status === filter) &&
+      (!query ||
+        e.title.toLowerCase().includes(query.toLowerCase()) ||
+        e.organizerName.toLowerCase().includes(query.toLowerCase())),
+    );
+  }, [events, filter, query]);
+
+  if (events === undefined) {
+    return (
+      <div className="space-y-6 animate-pulse">
+        <div className="h-8 w-48 bg-muted rounded" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-28 bg-muted rounded-xl" />)}
+        </div>
+        <div className="h-64 bg-muted rounded-xl" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -54,10 +69,10 @@ export function AdminEvents({ base }: Props) {
       />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <StatCard label="Total Events"  value={s.totalEvents}                       sub={`${s.liveEvents} live`}      icon={CalendarDays} />
-        <StatCard label="Total Revenue" value={`GHS ${s.totalRevenue.toLocaleString()}`} sub="Gross"                 icon={TrendingUp}   variant="success" />
-        <StatCard label="Total Votes"   value={s.totalVotes.toLocaleString()}        sub="All events"                 icon={BarChart3}    variant="info" />
-        <StatCard label="Organizers"    value={s.totalOrganizers}                    sub={`${s.activeOrgs} active`}   icon={Users}        variant="warning" />
+        <StatCard label="Total Events"  value={counts.all}                                        sub={`${counts.live} live`}             icon={CalendarDays} />
+        <StatCard label="Total Revenue" value={`GHS ${(totals.revenue / 100).toLocaleString()}`}  sub="Gross"                             icon={TrendingUp}   variant="success" />
+        <StatCard label="Total Votes"   value={totals.votes.toLocaleString()}                     sub="All events"                        icon={BarChart3}    variant="info" />
+        <StatCard label="Organizers"    value={new Set(events.map((e) => e.organizerId)).size}     sub="across all events"                 icon={Users}        variant="warning" />
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
@@ -103,7 +118,7 @@ export function AdminEvents({ base }: Props) {
           ) : (
             <div className="divide-y">
               {filtered.map((event) => (
-                <AdminEventRow key={event.id} event={event} base={base} />
+                <AdminEventRow key={event._id} event={event} base={base} />
               ))}
             </div>
           )}
