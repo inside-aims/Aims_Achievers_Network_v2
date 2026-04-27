@@ -12,6 +12,7 @@ export function ProfileTab() {
   const [bio,   setBio]   = useState(DUMMY_PROFILE.bio)
   const [saved, setSaved] = useState(false)
 
+  const dirty = name !== DUMMY_PROFILE.name || bio !== DUMMY_PROFILE.bio
   const initials = name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase() || "?"
 
   function save() { setSaved(true); setTimeout(() => setSaved(false), 2500) }
@@ -57,7 +58,7 @@ export function ProfileTab() {
         />
       </div>
 
-      <SaveBar onSave={save} saved={saved} />
+      <SaveBar onSave={save} saved={saved} disabled={!dirty} />
     </SectionCard>
   )
 }

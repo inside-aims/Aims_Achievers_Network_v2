@@ -55,6 +55,22 @@ export function EventScheduleSection({ control }: Props) {
         )}
       />
 
+      <FormField
+        control={control}
+        name="eventTime"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>
+              Event Time <span className="text-destructive">*</span>
+            </FormLabel>
+            <FormControl>
+              <Input type="time" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
       <div className="form-grid-2">
         <FormField
           control={control}

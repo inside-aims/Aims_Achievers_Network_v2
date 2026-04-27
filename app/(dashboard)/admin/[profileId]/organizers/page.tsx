@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
-import { ComingSoon } from "@/components/features/dashboard/shared/coming-soon";
+import { AdminOrganizers } from "@/components/features/dashboard/admin/organizers/admin-organizers";
 
 export const metadata: Metadata = { title: "Organizers | AIMS Achievers Network" };
 
-export default function AdminOrganizersPage() {
-  return <ComingSoon title="Organizers" />;
+interface Props {
+  params: Promise<{ uuid: string }>;
+}
+
+export default async function AdminOrganizersPage({ params }: Props) {
+  const { uuid } = await params;
+  return <AdminOrganizers base={`/admin/${uuid}`} />;
 }

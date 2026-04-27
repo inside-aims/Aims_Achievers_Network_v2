@@ -63,9 +63,11 @@ export function Field({
 export function SaveBar({
   onSave,
   saved,
+  disabled = false,
 }: {
-  onSave: () => void
-  saved:  boolean
+  onSave:    () => void
+  saved:     boolean
+  disabled?: boolean
 }) {
   return (
     <div className="flex items-center justify-end gap-3 pt-4 mt-4 border-t">
@@ -75,7 +77,7 @@ export function SaveBar({
           Saved
         </span>
       )}
-      <Button size="sm" onClick={onSave}>Save changes</Button>
+      <Button size="sm" onClick={onSave} disabled={disabled}>Save changes</Button>
     </div>
   )
 }
