@@ -16,7 +16,6 @@ import {
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { DUMMY_PROFILE } from "@/components/features/dashboard/user/settings/settings.data";
 import {
   Sidebar,
   SidebarContent,
@@ -63,7 +62,7 @@ export function AppSidebar() {
   const { signOut } = useAuthActions();
   const profile = useQuery(api.users.getMyProfile);
 
-  const displayName = profile?.displayName ?? DUMMY_PROFILE.name;
+  const displayName = profile?.displayName ?? "User";
   const displayRole = isAdmin ? "Administrator" : (profile?.role ?? "Organiser");
   const initials    = displayName.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
 

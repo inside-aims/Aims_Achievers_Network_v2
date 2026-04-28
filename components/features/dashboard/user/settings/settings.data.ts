@@ -1,24 +1,15 @@
 import {
   User,
-  Bell,
   CreditCard,
   Sliders,
   ShieldCheck,
 } from "lucide-react"
 
-export const DUMMY_PROFILE = {
-  name:  "Emmanuel Somuah",
-  email: "emmanuel@example.com",
-  bio:   "",
-  role:  "organiser",
-}
-
 export const TABS = [
-  { id: "profile",       label: "Profile",       icon: User        },
-  { id: "notifications", label: "Notifications", icon: Bell        },
-  { id: "billing",       label: "Billing",       icon: CreditCard  },
-  { id: "defaults",      label: "Defaults",      icon: Sliders     },
-  { id: "security",      label: "Security",      icon: ShieldCheck },
+  { id: "profile",  label: "Profile",  icon: User        },
+  { id: "billing",  label: "Billing",  icon: CreditCard  },
+  { id: "defaults", label: "Defaults", icon: Sliders     },
+  { id: "security", label: "Security", icon: ShieldCheck },
 ] as const
 
 export type Tab = (typeof TABS)[number]["id"]

@@ -1,6 +1,8 @@
 "use client"
 
 import { useState } from "react"
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
 import {
   TrendingUp,
   TrendingDown,
@@ -21,80 +23,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton"
 import { PageHeader } from "@/components/features/dashboard/shared/page-header"
 import { StatusBadge } from "@/components/features/dashboard/shared/status-badge"
-import {
-  MOCK_EVENT_DETAILS,
-  computeStats,
-  formatCurrency,
-} from "../events/events"
-import { formatDate } from "@/lib/date-utils"
 import { cn } from "@/lib/utils"
 
-// ── Derived data ──────────────────────────────────────────────────────────────
+// ── Formatting ─────────────────────────────────────────────────────────────────
 
-const ALL_EVENTS = Object.values(MOCK_EVENT_DETAILS)
-
-interface EventRow {
-  id:              string
-  title:           string
-  institution:     string
-  status:          string
-  date:            string
-  totalVotes:      number
-  revenueRaw:      number
-  revenue:         string
-  totalCategories: number
-  totalNominees:   number
-  currency:        string
+function formatCurrency(pesewas: number, currency = "GHS") {
+  const major = pesewas / 100
+  return new Intl.NumberFormat("en-GH", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(major)
 }
 
-interface NomineeRow {
-  id:           string
-  name:         string
-  votes:        number
-  eventTitle:   string
-  categoryName: string
+function formatDate(ms: number | null) {
+  if (!ms) return "—"
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(ms))
 }
-
-const EVENT_ROWS: EventRow[] = ALL_EVENTS.map((event) => {
-  const s = computeStats(event)
-  return {
-    id:              event.id,
-    title:           event.title,
-    institution:     event.institution,
-    status:          event.status,
-    date:            event.date,
-    totalVotes:      s.totalVotes,
-    revenueRaw:      s.revenueRaw,
-    revenue:         s.revenue,
-    totalCategories: s.totalCategories,
-    totalNominees:   s.totalNominees,
-    currency:        event.currency,
-  }
-})
-
-const TOTAL_VOTES   = EVENT_ROWS.reduce((sum, e) => sum + e.totalVotes, 0)
-const TOTAL_REVENUE = EVENT_ROWS.reduce((sum, e) => sum + e.revenueRaw, 0)
-const LIVE_EVENTS   = ALL_EVENTS.filter((e) => e.status === "live").length
-const TOTAL_NOMINEES = EVENT_ROWS.reduce((sum, e) => sum + e.totalNominees, 0)
-const PRIMARY_CURRENCY = ALL_EVENTS[0]?.currency ?? "GHS"
-
-const ALL_NOMINEES: NomineeRow[] = ALL_EVENTS.flatMap((event) =>
-  event.categories.flatMap((cat) =>
-    cat.nominees.map((n) => ({
-      id:           n.id,
-      name:         n.name,
-      votes:        n.votes,
-      eventTitle:   event.title,
-      categoryName: cat.name,
-    })),
-  ),
-).sort((a, b) => b.votes - a.votes)
-
-const MAX_EVENT_VOTES   = Math.max(...EVENT_ROWS.map((e) => e.totalVotes), 1)
-const MAX_EVENT_REVENUE = Math.max(...EVENT_ROWS.map((e) => e.revenueRaw), 1)
-const MAX_NOMINEE_VOTES = ALL_NOMINEES[0]?.votes ?? 1
 
 // ── KPI card ──────────────────────────────────────────────────────────────────
 
@@ -140,6 +93,23 @@ function KpiCard({ label, value, icon: Icon, trend, sub, color = "text-primary" 
   )
 }
 
+function KpiSkeleton() {
+  return (
+    <Card>
+      <CardContent className="p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="space-y-2 flex-1">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-7 w-32" />
+            <Skeleton className="h-3 w-20" />
+          </div>
+          <Skeleton className="size-9 rounded-lg shrink-0" />
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 // ── Bar util ──────────────────────────────────────────────────────────────────
 
 function Bar({ pct, className }: { pct: number; className?: string }) {
@@ -153,16 +123,57 @@ function Bar({ pct, className }: { pct: number; className?: string }) {
   )
 }
 
+// ── Types ──────────────────────────────────────────────────────────────────────
+
+type EventStat = {
+  _id: string
+  title: string
+  institution: string
+  status: string
+  eventDate: number | null
+  currency: string
+  totalVotes: number
+  totalRevenuePesewas: number
+  totalCategories: number
+  totalNominees: number
+}
+
+type TopNominee = {
+  _id: string
+  displayName: string
+  totalVotes: number
+  eventTitle: string
+  categoryName: string
+}
+
+type CategoryBreakdown = {
+  eventId: string
+  categories: Array<{
+    _id: string
+    name: string
+    nominees: Array<{ _id: string; displayName: string; totalVotes: number }>
+  }>
+}
+
 // ── Event performance ─────────────────────────────────────────────────────────
 
 type PerfMode = "votes" | "revenue"
 
-function EventPerformance() {
+function EventPerformance({ events }: { events: EventStat[] }) {
   const [mode, setMode] = useState<PerfMode>("votes")
 
-  const sorted = [...EVENT_ROWS].sort((a, b) =>
-    mode === "votes" ? b.totalVotes - a.totalVotes : b.revenueRaw - a.revenueRaw,
+  const sorted = [...events].sort((a, b) =>
+    mode === "votes"
+      ? b.totalVotes - a.totalVotes
+      : b.totalRevenuePesewas - a.totalRevenuePesewas,
   )
+
+  const max =
+    mode === "votes"
+      ? Math.max(...events.map((e) => e.totalVotes), 1)
+      : Math.max(...events.map((e) => e.totalRevenuePesewas), 1)
+
+  const barColors = ["bg-chart-1", "bg-chart-2", "bg-chart-4", "bg-chart-5"]
 
   return (
     <Card className="flex flex-col">
@@ -180,38 +191,38 @@ function EventPerformance() {
       </CardHeader>
 
       <CardContent className="flex-1 space-y-4">
-        {sorted.map((event, i) => {
-          const pct =
-            mode === "votes"
-              ? (event.totalVotes / MAX_EVENT_VOTES) * 100
-              : (event.revenueRaw / MAX_EVENT_REVENUE) * 100
-          const label =
-            mode === "votes"
-              ? event.totalVotes.toLocaleString()
-              : event.revenue
+        {sorted.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-8">No events yet.</p>
+        ) : (
+          sorted.map((event, i) => {
+            const pct =
+              mode === "votes"
+                ? (event.totalVotes / max) * 100
+                : (event.totalRevenuePesewas / max) * 100
+            const label =
+              mode === "votes"
+                ? event.totalVotes.toLocaleString()
+                : formatCurrency(event.totalRevenuePesewas, event.currency)
 
-          const barColors = [
-            "bg-chart-1", "bg-chart-2", "bg-chart-4", "bg-chart-5",
-          ]
-
-          return (
-            <div key={event.id} className="space-y-1.5">
-              <div className="flex items-center justify-between gap-2 text-xs">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-muted-foreground shrink-0 w-4 text-right">{i + 1}.</span>
-                  <div className="min-w-0">
-                    <p className="font-medium truncate">{event.title}</p>
-                    <div className="flex items-center gap-1.5 text-muted-foreground mt-0.5">
-                      <StatusBadge status={event.status} />
+            return (
+              <div key={event._id} className="space-y-1.5">
+                <div className="flex items-center justify-between gap-2 text-xs">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-muted-foreground shrink-0 w-4 text-right">{i + 1}.</span>
+                    <div className="min-w-0">
+                      <p className="font-medium truncate">{event.title}</p>
+                      <div className="flex items-center gap-1.5 text-muted-foreground mt-0.5">
+                        <StatusBadge status={event.status} />
+                      </div>
                     </div>
                   </div>
+                  <span className="font-semibold tabular-nums shrink-0">{label}</span>
                 </div>
-                <span className="font-semibold tabular-nums shrink-0">{label}</span>
+                <Bar pct={pct} className={barColors[i % barColors.length]} />
               </div>
-              <Bar pct={pct} className={barColors[i % barColors.length]} />
-            </div>
-          )
-        })}
+            )
+          })
+        )}
       </CardContent>
     </Card>
   )
@@ -225,8 +236,8 @@ const RANK_COLORS = [
   "bg-amber-700 text-white",
 ]
 
-function TopNominees() {
-  const top = ALL_NOMINEES.slice(0, 8)
+function TopNominees({ nominees }: { nominees: TopNominee[] }) {
+  const maxVotes = nominees[0]?.totalVotes ?? 1
 
   return (
     <Card className="flex flex-col">
@@ -234,29 +245,33 @@ function TopNominees() {
         <CardTitle className="text-sm font-bold">Top Nominees by Votes</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 space-y-3">
-        {top.map((n, i) => {
-          const pct = (n.votes / MAX_NOMINEE_VOTES) * 100
-          return (
-            <div key={n.id} className="space-y-1">
-              <div className="flex items-center gap-2 text-xs">
-                <span
-                  className={cn(
-                    "size-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0",
-                    i < 3 ? RANK_COLORS[i] : "bg-muted text-muted-foreground",
-                  )}
-                >
-                  {i + 1}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="font-medium truncate">{n.name}</p>
-                  <p className="text-muted-foreground truncate">{n.categoryName}</p>
+        {nominees.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-8">No nominees yet.</p>
+        ) : (
+          nominees.map((n, i) => {
+            const pct = (n.totalVotes / maxVotes) * 100
+            return (
+              <div key={n._id} className="space-y-1">
+                <div className="flex items-center gap-2 text-xs">
+                  <span
+                    className={cn(
+                      "size-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0",
+                      i < 3 ? RANK_COLORS[i] : "bg-muted text-muted-foreground",
+                    )}
+                  >
+                    {i + 1}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium truncate">{n.displayName}</p>
+                    <p className="text-muted-foreground truncate">{n.categoryName}</p>
+                  </div>
+                  <span className="font-semibold tabular-nums shrink-0">{n.totalVotes.toLocaleString()}</span>
                 </div>
-                <span className="font-semibold tabular-nums shrink-0">{n.votes.toLocaleString()}</span>
+                <Bar pct={pct} className={i === 0 ? "bg-amber-400" : "bg-primary/60"} />
               </div>
-              <Bar pct={pct} className={i === 0 ? "bg-amber-400" : "bg-primary/60"} />
-            </div>
-          )
-        })}
+            )
+          })
+        )}
       </CardContent>
     </Card>
   )
@@ -264,12 +279,18 @@ function TopNominees() {
 
 // ── Category breakdown ────────────────────────────────────────────────────────
 
-function CategoryBreakdown() {
-  const eventsWithCategories = ALL_EVENTS.filter((e) => e.categories.length > 0)
-  const [selectedId, setSelectedId] = useState(eventsWithCategories[0]?.id ?? "")
+function CategoryBreakdown({
+  events,
+  breakdowns,
+}: {
+  events: EventStat[]
+  breakdowns: CategoryBreakdown[]
+}) {
+  const eventsWithCategories = events.filter((e) => e.totalCategories > 0)
+  const [selectedId, setSelectedId] = useState(eventsWithCategories[0]?._id ?? "")
 
-  const event = MOCK_EVENT_DETAILS[selectedId]
-  const categories = event?.categories ?? []
+  const breakdown = breakdowns.find((b) => b.eventId === selectedId)
+  const categories = breakdown?.categories ?? []
 
   return (
     <Card>
@@ -281,7 +302,7 @@ function CategoryBreakdown() {
           </SelectTrigger>
           <SelectContent>
             {eventsWithCategories.map((e) => (
-              <SelectItem key={e.id} value={e.id}>{e.title}</SelectItem>
+              <SelectItem key={e._id} value={e._id}>{e.title}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -295,10 +316,10 @@ function CategoryBreakdown() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {categories.map((cat) => {
-              const catTotal = cat.nominees.reduce((sum, n) => sum + n.votes, 0) || 1
-              const sorted = [...cat.nominees].sort((a, b) => b.votes - a.votes)
+              const catTotal = cat.nominees.reduce((sum, n) => sum + n.totalVotes, 0) || 1
+              const sorted = [...cat.nominees].sort((a, b) => b.totalVotes - a.totalVotes)
               return (
-                <div key={cat.id} className="space-y-3">
+                <div key={cat._id} className="space-y-3">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-semibold">{cat.name}</p>
                     <span className="text-xs text-muted-foreground">
@@ -307,18 +328,18 @@ function CategoryBreakdown() {
                   </div>
                   <div className="space-y-2">
                     {sorted.map((nominee, i) => {
-                      const pct = (nominee.votes / catTotal) * 100
+                      const pct = (nominee.totalVotes / catTotal) * 100
                       return (
-                        <div key={nominee.id} className="space-y-1">
+                        <div key={nominee._id} className="space-y-1">
                           <div className="flex items-center justify-between text-xs">
                             <div className="flex items-center gap-1.5 min-w-0">
                               {i === 0 && <Trophy className="size-3 text-amber-500 shrink-0" />}
                               <span className={cn("truncate", i === 0 ? "font-semibold" : "")}>
-                                {nominee.name}
+                                {nominee.displayName}
                               </span>
                             </div>
                             <span className="text-muted-foreground shrink-0 ml-2">
-                              {nominee.votes.toLocaleString()} ({Math.round(pct)}%)
+                              {nominee.totalVotes.toLocaleString()} ({Math.round(pct)}%)
                             </span>
                           </div>
                           <Bar
@@ -341,7 +362,11 @@ function CategoryBreakdown() {
 
 // ── Event summary table ───────────────────────────────────────────────────────
 
-function EventSummaryTable() {
+function EventSummaryTable({ events }: { events: EventStat[] }) {
+  const totalVotes   = events.reduce((sum, e) => sum + e.totalVotes, 0)
+  const totalRevenue = events.reduce((sum, e) => sum + e.totalRevenuePesewas, 0)
+  const primaryCurrency = events[0]?.currency ?? "GHS"
+
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -360,21 +385,21 @@ function EventSummaryTable() {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {EVENT_ROWS.map((event) => (
-                <tr key={event.id} className="hover:bg-muted/30 transition-colors">
+              {events.map((event) => (
+                <tr key={event._id} className="hover:bg-muted/30 transition-colors">
                   <td className="px-5 py-3">
                     <div>
                       <p className="font-medium leading-snug">{event.title}</p>
                       <div className="flex items-center gap-1.5 mt-1">
                         <Building2 className="size-3 text-muted-foreground shrink-0" />
                         <span className="text-muted-foreground truncate max-w-[180px]">
-                          {event.institution}
+                          {event.institution || "—"}
                         </span>
                       </div>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-right text-muted-foreground hidden sm:table-cell whitespace-nowrap">
-                    {formatDate(event.date)}
+                    {formatDate(event.eventDate)}
                   </td>
                   <td className="px-4 py-3 text-right font-semibold tabular-nums">
                     {event.totalVotes.toLocaleString()}
@@ -383,7 +408,7 @@ function EventSummaryTable() {
                     {event.totalNominees}
                   </td>
                   <td className="px-5 py-3 text-right font-semibold tabular-nums">
-                    {event.revenue}
+                    {formatCurrency(event.totalRevenuePesewas, event.currency)}
                   </td>
                 </tr>
               ))}
@@ -392,11 +417,11 @@ function EventSummaryTable() {
               <tr className="border-t bg-muted/20">
                 <td className="px-5 py-3 font-bold text-sm" colSpan={2}>Total</td>
                 <td className="px-4 py-3 text-right font-bold tabular-nums hidden sm:table-cell">
-                  {TOTAL_VOTES.toLocaleString()}
+                  {totalVotes.toLocaleString()}
                 </td>
                 <td className="px-4 py-3 text-right font-bold tabular-nums hidden md:table-cell" />
                 <td className="px-5 py-3 text-right font-bold tabular-nums">
-                  {formatCurrency(TOTAL_REVENUE, PRIMARY_CURRENCY)}
+                  {formatCurrency(totalRevenue, primaryCurrency)}
                 </td>
               </tr>
             </tfoot>
@@ -407,9 +432,59 @@ function EventSummaryTable() {
   )
 }
 
+// ── Skeleton loaders ──────────────────────────────────────────────────────────
+
+function AnalyticsSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <Skeleton className="h-7 w-28 mb-1.5" />
+        <Skeleton className="h-4 w-64" />
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => <KpiSkeleton key={i} />)}
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card><CardContent className="p-5"><Skeleton className="h-40 w-full" /></CardContent></Card>
+        <Card><CardContent className="p-5"><Skeleton className="h-40 w-full" /></CardContent></Card>
+      </div>
+      <Card><CardContent className="p-5"><Skeleton className="h-48 w-full" /></CardContent></Card>
+      <Card><CardContent className="p-5"><Skeleton className="h-32 w-full" /></CardContent></Card>
+    </div>
+  )
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 export function UserAnalytics() {
+  const data = useQuery(api.dashboard.analyticsOverview)
+
+  if (data === undefined) return <AnalyticsSkeleton />
+
+  if (data === null || data.eventStats.length === 0) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="Analytics"
+          description="Performance overview across all your events."
+        />
+        <Card>
+          <CardContent className="p-10 text-center text-sm text-muted-foreground">
+            No events yet. Create your first event to see analytics here.
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  const { eventStats, topNominees, categoryBreakdowns } = data
+
+  const totalVotes   = eventStats.reduce((sum, e) => sum + e.totalVotes, 0)
+  const totalRevenue = eventStats.reduce((sum, e) => sum + e.totalRevenuePesewas, 0)
+  const liveEvents   = eventStats.filter((e) => e.status === "live").length
+  const totalNominees = eventStats.reduce((sum, e) => sum + e.totalNominees, 0)
+  const primaryCurrency = eventStats[0]?.currency ?? "GHS"
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -421,28 +496,28 @@ export function UserAnalytics() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KpiCard
           label="Total Revenue"
-          value={formatCurrency(TOTAL_REVENUE, PRIMARY_CURRENCY)}
+          value={formatCurrency(totalRevenue, primaryCurrency)}
           icon={Wallet}
           trend="up"
           sub="across all events"
         />
         <KpiCard
           label="Total Votes"
-          value={TOTAL_VOTES}
+          value={totalVotes}
           icon={Vote}
           trend="up"
           sub="cumulative"
         />
         <KpiCard
           label="Live Events"
-          value={LIVE_EVENTS}
+          value={liveEvents}
           icon={CalendarDays}
-          trend={LIVE_EVENTS > 0 ? "up" : "flat"}
-          sub={`of ${ALL_EVENTS.length} total`}
+          trend={liveEvents > 0 ? "up" : "flat"}
+          sub={`of ${eventStats.length} total`}
         />
         <KpiCard
           label="Total Nominees"
-          value={TOTAL_NOMINEES}
+          value={totalNominees}
           icon={Users}
           trend="flat"
           sub="across all events"
@@ -451,15 +526,15 @@ export function UserAnalytics() {
 
       {/* Event performance + top nominees */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <EventPerformance />
-        <TopNominees />
+        <EventPerformance events={eventStats} />
+        <TopNominees nominees={topNominees} />
       </div>
 
       {/* Category breakdown */}
-      <CategoryBreakdown />
+      <CategoryBreakdown events={eventStats} breakdowns={categoryBreakdowns} />
 
       {/* Summary table */}
-      <EventSummaryTable />
+      <EventSummaryTable events={eventStats} />
     </div>
   )
 }

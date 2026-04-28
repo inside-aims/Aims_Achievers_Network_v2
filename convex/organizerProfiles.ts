@@ -21,6 +21,7 @@ export const update = mutation({
   args: {
     displayName: v.optional(v.string()),
     phone: v.optional(v.string()),
+    bio: v.optional(v.string()),
     avatarUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -40,6 +41,7 @@ export const update = mutation({
     const patch: Record<string, unknown> = { updatedAt: Date.now() };
     if (args.displayName !== undefined) patch.displayName = args.displayName;
     if (args.phone !== undefined) patch.phone = args.phone;
+    if (args.bio !== undefined) patch.bio = args.bio;
     if (args.avatarUrl !== undefined) patch.avatarUrl = args.avatarUrl;
 
     await ctx.db.patch(profile._id, patch);

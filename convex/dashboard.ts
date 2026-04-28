@@ -10,6 +10,121 @@ import {
 } from "./internal/aggregates";
 
 /**
+ * Full analytics overview for the organizer analytics page.
+ * Returns per-event stats (votes, revenue, nominees, categories) plus
+ * cross-event KPIs and top nominees across all events.
+ */
+export const analyticsOverview = query({
+  args: {},
+  handler: async (ctx) => {
+    const profile = await getOrganizerProfileOrNull(ctx);
+    if (!profile) return null;
+
+    const events = await ctx.db
+      .query("events")
+      .withIndex("by_organizer", (q) => q.eq("organizerId", profile._id))
+      .order("desc")
+      .take(100);
+
+    const eventStats = await Promise.all(
+      events.map(async (event) => {
+        const [totalVotes, totalRevenuePesewas, categories, nominees] = await Promise.all([
+          votesByNominee.sum(ctx, { namespace: event._id }),
+          revenueByEvent.sum(ctx, { namespace: event._id }),
+          ctx.db
+            .query("categories")
+            .withIndex("by_event", (q) => q.eq("eventId", event._id))
+            .take(100),
+          ctx.db
+            .query("nominees")
+            .withIndex("by_event", (q) => q.eq("eventId", event._id))
+            .take(200),
+        ]);
+
+        return {
+          _id: event._id,
+          title: event.title,
+          institution: event.institution ?? "",
+          status: event.status,
+          eventDate: event.eventDate ?? null,
+          currency: event.currency ?? "GHS",
+          totalVotes,
+          totalRevenuePesewas,
+          totalCategories: categories.length,
+          totalNominees: nominees.length,
+        };
+      }),
+    );
+
+    // Top nominees across all events, sorted by votes desc
+    const allNominees = await Promise.all(
+      events.map(async (event) => {
+        const nominees = await ctx.db
+          .query("nominees")
+          .withIndex("by_event_votes", (q) => q.eq("eventId", event._id))
+          .order("desc")
+          .take(20);
+
+        const categories = await ctx.db
+          .query("categories")
+          .withIndex("by_event", (q) => q.eq("eventId", event._id))
+          .take(100);
+
+        const categoryMap = new Map(categories.map((c) => [c._id, c.name]));
+
+        return nominees.map((n) => ({
+          _id: n._id,
+          displayName: n.displayName,
+          totalVotes: n.totalVotes,
+          eventTitle: event.title,
+          categoryName: categoryMap.get(n.categoryId) ?? "",
+        }));
+      }),
+    );
+
+    const topNominees = allNominees
+      .flat()
+      .sort((a, b) => b.totalVotes - a.totalVotes)
+      .slice(0, 8);
+
+    // Category breakdown for each event (for the breakdown selector)
+    const categoryBreakdowns = await Promise.all(
+      events.map(async (event) => {
+        const categories = await ctx.db
+          .query("categories")
+          .withIndex("by_event", (q) => q.eq("eventId", event._id))
+          .take(100);
+
+        const categoriesWithNominees = await Promise.all(
+          categories.map(async (cat) => {
+            const nominees = await ctx.db
+              .query("nominees")
+              .withIndex("by_event_category", (q) =>
+                q.eq("eventId", event._id).eq("categoryId", cat._id),
+              )
+              .take(50);
+
+            return {
+              _id: cat._id,
+              name: cat.name,
+              nominees: nominees.map((n) => ({
+                _id: n._id,
+                displayName: n.displayName,
+                totalVotes: n.totalVotes,
+              })),
+            };
+          }),
+        );
+
+        return { eventId: event._id, categories: categoriesWithNominees };
+      }),
+    );
+
+    return { eventStats, topNominees, categoryBreakdowns };
+  },
+});
+
+/**
  * Aggregate overview for the organizer's dashboard home page.
  * Returns event counts by status, total votes + revenue across all events,
  * and a trimmed event list for the "My Events" preview card.

@@ -30,6 +30,7 @@ export default defineSchema({
     // All new documents must include these — see convex/users.ts.
     email: v.optional(v.string()),
     phone: v.optional(v.string()),
+    bio: v.optional(v.string()),
     avatarUrl: v.optional(v.string()),
     role: v.union(
       v.literal("organizer"),
