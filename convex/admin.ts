@@ -44,11 +44,10 @@ export const platformOverview = query({
 
     console.log("All events ", allEvents)
 
-    const namespaces = allEvents.map((e) => ({ namespace: e._id }));
     const [voteSums, grossSums, orgRevSums] = await Promise.all([
-      votesByNominee.sumBatch(ctx, namespaces),
-      revenueByEvent.sumBatch(ctx, namespaces),
-      organizerRevenue.sumBatch(ctx, namespaces),
+      votesByNominee.sumBatch(ctx, allEvents.map((e) => ({ namespace: e._id, bounds: undefined }))),
+      revenueByEvent.sumBatch(ctx, allEvents.map((e) => ({ namespace: e._id, bounds: undefined }))),
+      organizerRevenue.sumBatch(ctx, allEvents.map((e) => ({ namespace: e._id, bounds: undefined }))),
     ]);
 
     let totalVotes = 0;
@@ -93,11 +92,10 @@ export const listAllEvents = query({
 
     const allEvents = await ctx.db.query("events").order("desc").take(500);
 
-    const namespaces = allEvents.map((e) => ({ namespace: e._id }));
     const [orgs, voteSums, revenueSums] = await Promise.all([
       Promise.all(allEvents.map((e) => ctx.db.get(e.organizerId))),
-      votesByNominee.sumBatch(ctx, namespaces),
-      revenueByEvent.sumBatch(ctx, namespaces),
+      votesByNominee.sumBatch(ctx, allEvents.map((e) => ({ namespace: e._id, bounds: undefined }))),
+      revenueByEvent.sumBatch(ctx, allEvents.map((e) => ({ namespace: e._id, bounds: undefined }))),
     ]);
 
     const enriched = allEvents.map((e, i) => ({
