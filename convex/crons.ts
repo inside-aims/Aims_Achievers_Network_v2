@@ -2,17 +2,7 @@ import { cronJobs } from "convex/server";
 import { internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
-
-
-
-const CONVEX_ENV = process.env.CONVEX_ENV;
-const VALID_ENVS = ["production", "development"] as const;
-if (CONVEX_ENV !== undefined && !(VALID_ENVS as readonly string[]).includes(CONVEX_ENV)) {
-  throw new Error(
-    `Invalid CONVEX_ENV="${CONVEX_ENV}". Expected one of: ${VALID_ENVS.join(", ")} (or leave unset for development).`,
-  );
-}
-const isProd = CONVEX_ENV === "production";
+import { isProd } from "./env";
 // ─── Internal mutation ────────────────────────────────────────────────────────
 
 /**
@@ -50,7 +40,7 @@ export const closeExpiredEvents = internalMutation({
 
 const crons = cronJobs();
 
-// Check every 5 minutes for events that should be auto-closed
+// Check every 10 minutes (prod) / 24 hours (non-prod) for events that should be auto-closed
 crons.interval(
   "auto-close expired events",
   isProd ? { minutes: 10 } : { hours: 24 },

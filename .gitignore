@@ -46,3 +46,5 @@ next-env.d.ts
 
 #key
 /jwt_key.temp
+
+/.claude/settings.local.json

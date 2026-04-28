@@ -4,10 +4,10 @@ import { AdminEvents } from "@/components/features/dashboard/admin/events/admin-
 export const metadata: Metadata = { title: "Events | AIMS Achievers Network" };
 
 interface Props {
-  params: Promise<{ uuid: string }>;
+  params: Promise<{ profileId: string }>;
 }
 
 export default async function AdminEventsPage({ params }: Props) {
-  const { uuid } = await params;
-  return <AdminEvents base={`/admin/${uuid}`} />;
+  const { profileId } = await params;
+  return <AdminEvents base={`/admin/${profileId}`} />;
 }

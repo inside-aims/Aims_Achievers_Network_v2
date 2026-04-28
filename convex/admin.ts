@@ -44,25 +44,20 @@ export const platformOverview = query({
 
     console.log("All events ", allEvents)
 
-    const aggregates = await Promise.all(
-      allEvents.map((e) =>
-        Promise.all([
-          votesByNominee.sum(ctx, { namespace: e._id }),
-          revenueByEvent.sum(ctx, { namespace: e._id }),
-          organizerRevenue.sum(ctx, { namespace: e._id }),
-        ]),
-      ),
-    );
-
-    console.log("Aggregate ", aggregates)
+    const namespaces = allEvents.map((e) => ({ namespace: e._id }));
+    const [voteSums, grossSums, orgRevSums] = await Promise.all([
+      votesByNominee.sumBatch(ctx, namespaces),
+      revenueByEvent.sumBatch(ctx, namespaces),
+      organizerRevenue.sumBatch(ctx, namespaces),
+    ]);
 
     let totalVotes = 0;
     let totalRevenuePesewas = 0;
     let platformCutPesewas = 0;
-    for (const [votes, gross, orgRev] of aggregates) {
-      totalVotes += votes;
-      totalRevenuePesewas += gross;
-      platformCutPesewas += gross - orgRev;
+    for (let i = 0; i < allEvents.length; i++) {
+      totalVotes += voteSums[i];
+      totalRevenuePesewas += grossSums[i];
+      platformCutPesewas += grossSums[i] - orgRevSums[i];
     }
 
     const recentEvents = await Promise.all(
@@ -98,25 +93,23 @@ export const listAllEvents = query({
 
     const allEvents = await ctx.db.query("events").order("desc").take(500);
 
-    const enriched = await Promise.all(
-      allEvents.map(async (e) => {
-        const [org, totalVotes, totalRevenuePesewas] = await Promise.all([
-          ctx.db.get(e.organizerId),
-          votesByNominee.sum(ctx, { namespace: e._id }),
-          revenueByEvent.sum(ctx, { namespace: e._id }),
-        ]);
-        return {
-          _id: e._id,
-          title: e.title,
-          status: e.status,
-          eventDate: e.eventDate,
-          organizerId: e.organizerId,
-          organizerName: org?.displayName ?? "Unknown",
-          totalVotes,
-          totalRevenuePesewas,
-        };
-      }),
-    );
+    const namespaces = allEvents.map((e) => ({ namespace: e._id }));
+    const [orgs, voteSums, revenueSums] = await Promise.all([
+      Promise.all(allEvents.map((e) => ctx.db.get(e.organizerId))),
+      votesByNominee.sumBatch(ctx, namespaces),
+      revenueByEvent.sumBatch(ctx, namespaces),
+    ]);
+
+    const enriched = allEvents.map((e, i) => ({
+      _id: e._id,
+      title: e.title,
+      status: e.status,
+      eventDate: e.eventDate,
+      organizerId: e.organizerId,
+      organizerName: orgs[i]?.displayName ?? "Unknown",
+      totalVotes: voteSums[i],
+      totalRevenuePesewas: revenueSums[i],
+    }));
 
     return enriched;
   },
