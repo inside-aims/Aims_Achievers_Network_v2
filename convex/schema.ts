@@ -32,6 +32,16 @@ export default defineSchema({
     phone: v.optional(v.string()),
     bio: v.optional(v.string()),
     avatarUrl: v.optional(v.string()),
+    defaultCurrency: v.optional(v.string()),       // e.g. "GHS" — pre-fills new events
+    defaultPriceVotePesewas: v.optional(v.number()), // e.g. 100 = GHS 1.00
+    // Payout destination
+    payoutMethod: v.optional(v.string()),          // "momo" | "bank"
+    momoNetwork: v.optional(v.string()),           // "mtn" | "vodafone" | "airteltigo"
+    momoNumber: v.optional(v.string()),
+    momoName: v.optional(v.string()),
+    bankName: v.optional(v.string()),
+    bankAccountNumber: v.optional(v.string()),
+    bankAccountName: v.optional(v.string()),
     role: v.union(
       v.literal("organizer"),
       v.literal("admin"),             // platform-level admin

@@ -1,7 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useQuery, useMutation } from "convex/react"
+import { api } from "@/convex/_generated/api"
 import { Input } from "@/components/ui/input"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Select,
   SelectContent,
@@ -16,36 +19,99 @@ import {
   type PayoutMethod,
 } from "./settings.data"
 import { Field, SaveBar, SectionCard } from "./settings-primitives"
-import { DUMMY_PAYOUT_CONFIG } from "@/components/features/dashboard/admin/settings/admin-settings.data"
 
-const PAYOUT_INITIAL = {
-  method:    "momo" as PayoutMethod,
-  network:   MOMO_NETWORKS[0].value,
-  momoNum:   "",
-  bankName:  "",
-  accNum:    "",
-  accName:   "",
-}
-
+const DEFAULT_METHOD: PayoutMethod = "momo"
+const DEFAULT_NETWORK = MOMO_NETWORKS[0].value
 
 export function BillingTab() {
-  const [method,    setMethod]    = useState<PayoutMethod>(PAYOUT_INITIAL.method)
-  const [network,   setNetwork]   = useState(PAYOUT_INITIAL.network)
-  const [momoNum,   setMomoNum]   = useState(PAYOUT_INITIAL.momoNum)
-  const [bankName,  setBankName]  = useState(PAYOUT_INITIAL.bankName)
-  const [accNum,    setAccNum]    = useState(PAYOUT_INITIAL.accNum)
-  const [accName,   setAccName]   = useState(PAYOUT_INITIAL.accName)
-  const [payoutSaved, setPayoutSaved] = useState(false)
+  const profile       = useQuery(api.organizerProfiles.getCurrent)
+  const updateProfile = useMutation(api.organizerProfiles.update)
 
-  const payoutDirty =
-    method   !== PAYOUT_INITIAL.method   ||
-    network  !== PAYOUT_INITIAL.network  ||
-    momoNum  !== PAYOUT_INITIAL.momoNum  ||
-    bankName !== PAYOUT_INITIAL.bankName ||
-    accNum   !== PAYOUT_INITIAL.accNum   ||
-    accName  !== PAYOUT_INITIAL.accName
+  const [method,   setMethod]   = useState<PayoutMethod>(DEFAULT_METHOD)
+  const [network,  setNetwork]  = useState(DEFAULT_NETWORK)
+  const [momoNum,  setMomoNum]  = useState("")
+  const [momoName, setMomoName] = useState("")
+  const [bankName, setBankName] = useState("")
+  const [accNum,   setAccNum]   = useState("")
+  const [accName,  setAccName]  = useState("")
+  const [saved,    setSaved]    = useState(false)
+  const [saving,   setSaving]   = useState(false)
 
-  function saveMethod() { setPayoutSaved(true); setTimeout(() => setPayoutSaved(false), 2500) }
+  useEffect(() => {
+    if (profile) {
+      setMethod((profile.payoutMethod as PayoutMethod | undefined) ?? DEFAULT_METHOD)
+      setNetwork(profile.momoNetwork ?? DEFAULT_NETWORK)
+      setMomoNum(profile.momoNumber ?? "")
+      setMomoName(profile.momoName ?? "")
+      setBankName(profile.bankName ?? "")
+      setAccNum(profile.bankAccountNumber ?? "")
+      setAccName(profile.bankAccountName ?? "")
+    }
+  }, [profile])
+
+  const dirty =
+    profile !== undefined &&
+    (
+      method   !== ((profile.payoutMethod as PayoutMethod | undefined) ?? DEFAULT_METHOD) ||
+      network  !== (profile.momoNetwork ?? DEFAULT_NETWORK) ||
+      momoNum  !== (profile.momoNumber ?? "") ||
+      momoName !== (profile.momoName ?? "") ||
+      bankName !== (profile.bankName ?? "") ||
+      accNum   !== (profile.bankAccountNumber ?? "") ||
+      accName  !== (profile.bankAccountName ?? "")
+    )
+
+  async function save() {
+    if (!dirty) return
+    setSaving(true)
+    try {
+      await updateProfile({
+        payoutMethod: method,
+        momoNetwork: method === "momo" ? network : undefined,
+        momoNumber: method === "momo" ? momoNum : undefined,
+        momoName: method === "momo" ? momoName : undefined,
+        bankName: method === "bank" ? bankName : undefined,
+        bankAccountNumber: method === "bank" ? accNum : undefined,
+        bankAccountName: method === "bank" ? accName : undefined,
+      })
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2500)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (profile === undefined) {
+    return (
+      <div className="space-y-5">
+        <div className="rounded-2xl border bg-card overflow-hidden">
+          <div className="px-6 py-4 border-b bg-muted/30">
+            <Skeleton className="h-4 w-32 mb-1.5" />
+            <Skeleton className="h-3 w-56" />
+          </div>
+          <div className="px-6 py-5 space-y-5">
+            <div className="grid grid-cols-2 gap-3">
+              <Skeleton className="h-20 rounded-xl" />
+              <Skeleton className="h-20 rounded-xl" />
+            </div>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <Skeleton className="h-9 rounded-md" />
+              <Skeleton className="h-9 rounded-md" />
+            </div>
+          </div>
+        </div>
+        <div className="rounded-2xl border bg-card overflow-hidden">
+          <div className="px-6 py-4 border-b bg-muted/30">
+            <Skeleton className="h-4 w-40 mb-1.5" />
+            <Skeleton className="h-3 w-64" />
+          </div>
+          <div className="px-6 py-5">
+            <Skeleton className="h-9 w-40 rounded-md" />
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-5">
@@ -88,6 +154,15 @@ export function BillingTab() {
                 placeholder="024 000 0000"
               />
             </Field>
+            <div className="sm:col-span-2">
+              <Field label="Account name">
+                <Input
+                  value={momoName}
+                  onChange={(e) => setMomoName(e.target.value)}
+                  placeholder="Name registered on the MoMo account"
+                />
+              </Field>
+            </div>
           </div>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2">
@@ -105,7 +180,7 @@ export function BillingTab() {
           </div>
         )}
 
-        <SaveBar onSave={saveMethod} saved={payoutSaved} disabled={!payoutDirty} />
+        <SaveBar onSave={save} saved={saved} disabled={!dirty || saving} />
       </SectionCard>
 
       <SectionCard
@@ -122,7 +197,7 @@ export function BillingTab() {
                 GHS
               </span>
               <Input
-                value={DUMMY_PAYOUT_CONFIG.globalMinPayout}
+                value="50.00"
                 disabled
                 className="pl-12 bg-muted/50 text-muted-foreground cursor-not-allowed"
                 readOnly

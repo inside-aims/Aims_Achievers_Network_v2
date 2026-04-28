@@ -23,6 +23,15 @@ export const update = mutation({
     phone: v.optional(v.string()),
     bio: v.optional(v.string()),
     avatarUrl: v.optional(v.string()),
+    defaultCurrency: v.optional(v.string()),
+    defaultPriceVotePesewas: v.optional(v.number()),
+    payoutMethod: v.optional(v.string()),
+    momoNetwork: v.optional(v.string()),
+    momoNumber: v.optional(v.string()),
+    momoName: v.optional(v.string()),
+    bankName: v.optional(v.string()),
+    bankAccountNumber: v.optional(v.string()),
+    bankAccountName: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -43,6 +52,15 @@ export const update = mutation({
     if (args.phone !== undefined) patch.phone = args.phone;
     if (args.bio !== undefined) patch.bio = args.bio;
     if (args.avatarUrl !== undefined) patch.avatarUrl = args.avatarUrl;
+    if (args.defaultCurrency !== undefined) patch.defaultCurrency = args.defaultCurrency;
+    if (args.defaultPriceVotePesewas !== undefined) patch.defaultPriceVotePesewas = args.defaultPriceVotePesewas;
+    if (args.payoutMethod !== undefined) patch.payoutMethod = args.payoutMethod;
+    if (args.momoNetwork !== undefined) patch.momoNetwork = args.momoNetwork;
+    if (args.momoNumber !== undefined) patch.momoNumber = args.momoNumber;
+    if (args.momoName !== undefined) patch.momoName = args.momoName;
+    if (args.bankName !== undefined) patch.bankName = args.bankName;
+    if (args.bankAccountNumber !== undefined) patch.bankAccountNumber = args.bankAccountNumber;
+    if (args.bankAccountName !== undefined) patch.bankAccountName = args.bankAccountName;
 
     await ctx.db.patch(profile._id, patch);
   },

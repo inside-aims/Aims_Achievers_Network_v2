@@ -30,7 +30,7 @@ export const analyticsOverview = query({
       events.map(async (event) => {
         const [totalVotes, totalRevenuePesewas, categories, nominees] = await Promise.all([
           votesByNominee.sum(ctx, { namespace: event._id }),
-          revenueByEvent.sum(ctx, { namespace: event._id }),
+          organizerRevenue.sum(ctx, { namespace: event._id }),
           ctx.db
             .query("categories")
             .withIndex("by_event", (q) => q.eq("eventId", event._id))
@@ -153,7 +153,7 @@ export const organizerOverview = query({
       events.map((e) =>
         Promise.all([
           votesByNominee.sum(ctx, { namespace: e._id }),
-          revenueByEvent.sum(ctx, { namespace: e._id }),
+          organizerRevenue.sum(ctx, { namespace: e._id }),
         ]),
       ),
     );
