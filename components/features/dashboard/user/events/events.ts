@@ -34,6 +34,9 @@ export interface RichEventDetail {
   createdAt: string;
   controls: EventControls;
   categories: CategoryDetail[];
+  ticketingEnabled?: boolean;
+  ticketEventId?: string; // links to EVENT_TICKET_INFO key e.g. "fast-awards-2025"
+  eventTime?: string;     // e.g. "7:00 PM"
 }
 
 export interface ComputedStats {
@@ -86,6 +89,9 @@ export const MOCK_EVENT_DETAILS: Record<string, RichEventDetail> = {
     closesDate: "2025-06-08",
     votesThisHour: 340,
     createdAt: "2025-01-10T08:30:00Z",
+    ticketingEnabled: true,
+    ticketEventId: "fast-awards-2025",
+    eventTime: "7:00 PM",
     controls: { showVotes: true, votingOpen: true, publicPage: true, nominationsOpen: true, autoPublishNominations: false },
     categories: [
       {
@@ -146,6 +152,7 @@ export const MOCK_EVENT_DETAILS: Record<string, RichEventDetail> = {
     closesDate: "2025-04-13",
     votesThisHour: 0,
     createdAt: "2024-12-05T11:00:00Z",
+    ticketingEnabled: false,
     controls: { showVotes: true, votingOpen: false, publicPage: true, nominationsOpen: false, autoPublishNominations: false },
     categories: [
       {
@@ -183,6 +190,7 @@ export const MOCK_EVENT_DETAILS: Record<string, RichEventDetail> = {
     closesDate: "2025-07-03",
     votesThisHour: 120,
     createdAt: "2025-02-20T14:15:00Z",
+    ticketingEnabled: false,
     controls: { showVotes: false, votingOpen: true, publicPage: true, nominationsOpen: true, autoPublishNominations: false },
     categories: [
       {
@@ -220,6 +228,9 @@ export const MOCK_EVENT_DETAILS: Record<string, RichEventDetail> = {
     closesDate: "2025-07-29",
     votesThisHour: 0,
     createdAt: "2025-03-18T09:45:00Z",
+    ticketingEnabled: true,
+    ticketEventId: "fbne-awards-2025",
+    eventTime: "6:30 PM",
     controls: { showVotes: false, votingOpen: false, publicPage: false, nominationsOpen: false, autoPublishNominations: false },
     categories: [],
   },

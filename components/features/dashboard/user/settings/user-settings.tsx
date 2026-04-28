@@ -40,7 +40,7 @@ function UserSettingsInner() {
         </p>
       </div>
 
-      <div className="flex gap-1 overflow-x-auto pb-px scrollbar-hide border-b">
+      <div className="flex gap-1 overflow-x-auto pb-px no-scrollbar border-b">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button
             key={id}

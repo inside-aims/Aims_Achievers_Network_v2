@@ -17,6 +17,10 @@ export function DefaultsTab() {
   const [priceVote, setPriceVote] = useState(DEFAULT_EVENT_SETTINGS.priceVote)
   const [saved,     setSaved]     = useState(false)
 
+  const dirty =
+    currency  !== DEFAULT_EVENT_SETTINGS.currency ||
+    priceVote !== DEFAULT_EVENT_SETTINGS.priceVote
+
   function save() { setSaved(true); setTimeout(() => setSaved(false), 2500) }
 
   return (
@@ -58,7 +62,7 @@ export function DefaultsTab() {
         per vote. You can change this on a per-event basis.
       </div>
 
-      <SaveBar onSave={save} saved={saved} />
+      <SaveBar onSave={save} saved={saved} disabled={!dirty} />
     </SectionCard>
   )
 }

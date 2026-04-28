@@ -16,18 +16,36 @@ import {
   type PayoutMethod,
 } from "./settings.data"
 import { Field, SaveBar, SectionCard } from "./settings-primitives"
+import { DUMMY_PAYOUT_CONFIG } from "@/components/features/dashboard/admin/settings/admin-settings.data"
+
+const PAYOUT_INITIAL = {
+  method:    "momo" as PayoutMethod,
+  network:   MOMO_NETWORKS[0].value,
+  momoNum:   "",
+  bankName:  "",
+  accNum:    "",
+  accName:   "",
+}
+
 
 export function BillingTab() {
-  const [method,    setMethod]    = useState<PayoutMethod>("momo")
-  const [network,   setNetwork]   = useState(MOMO_NETWORKS[0].value)
-  const [momoNum,   setMomoNum]   = useState("")
-  const [bankName,  setBankName]  = useState("")
-  const [accNum,    setAccNum]    = useState("")
-  const [accName,   setAccName]   = useState("")
-  const [threshold, setThreshold] = useState("100")
-  const [saved,     setSaved]     = useState(false)
+  const [method,    setMethod]    = useState<PayoutMethod>(PAYOUT_INITIAL.method)
+  const [network,   setNetwork]   = useState(PAYOUT_INITIAL.network)
+  const [momoNum,   setMomoNum]   = useState(PAYOUT_INITIAL.momoNum)
+  const [bankName,  setBankName]  = useState(PAYOUT_INITIAL.bankName)
+  const [accNum,    setAccNum]    = useState(PAYOUT_INITIAL.accNum)
+  const [accName,   setAccName]   = useState(PAYOUT_INITIAL.accName)
+  const [payoutSaved, setPayoutSaved] = useState(false)
 
-  function save() { setSaved(true); setTimeout(() => setSaved(false), 2500) }
+  const payoutDirty =
+    method   !== PAYOUT_INITIAL.method   ||
+    network  !== PAYOUT_INITIAL.network  ||
+    momoNum  !== PAYOUT_INITIAL.momoNum  ||
+    bankName !== PAYOUT_INITIAL.bankName ||
+    accNum   !== PAYOUT_INITIAL.accNum   ||
+    accName  !== PAYOUT_INITIAL.accName
+
+  function saveMethod() { setPayoutSaved(true); setTimeout(() => setPayoutSaved(false), 2500) }
 
   return (
     <div className="space-y-5">
@@ -74,50 +92,40 @@ export function BillingTab() {
         ) : (
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="Bank name">
-              <Input
-                value={bankName}
-                onChange={(e) => setBankName(e.target.value)}
-                placeholder="e.g. GCB Bank"
-              />
+              <Input value={bankName} onChange={(e) => setBankName(e.target.value)} placeholder="e.g. GCB Bank" />
             </Field>
             <Field label="Account number">
-              <Input
-                value={accNum}
-                onChange={(e) => setAccNum(e.target.value)}
-                placeholder="0123456789"
-              />
+              <Input value={accNum} onChange={(e) => setAccNum(e.target.value)} placeholder="0123456789" />
             </Field>
             <div className="sm:col-span-2">
               <Field label="Account name">
-                <Input
-                  value={accName}
-                  onChange={(e) => setAccName(e.target.value)}
-                  placeholder="Name on account"
-                />
+                <Input value={accName} onChange={(e) => setAccName(e.target.value)} placeholder="Name on account" />
               </Field>
             </div>
           </div>
         )}
 
-        <SaveBar onSave={save} saved={saved} />
+        <SaveBar onSave={saveMethod} saved={payoutSaved} disabled={!payoutDirty} />
       </SectionCard>
 
       <SectionCard
         title="Payout threshold"
-        desc="Payouts are processed once your balance meets this amount."
+        desc="The minimum balance required before a payout can be requested. This is set by the platform."
       >
         <div className="max-w-xs">
-          <Field label="Minimum payout (GHS)" hint="Payments below this amount will not be processed.">
+          <Field
+            label="Minimum payout (GHS)"
+            hint="This value is configured by the platform administrator and cannot be changed."
+          >
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium pointer-events-none select-none">
                 GHS
               </span>
               <Input
-                type="number"
-                min="50"
-                value={threshold}
-                onChange={(e) => setThreshold(e.target.value)}
-                className="pl-12"
+                value={DUMMY_PAYOUT_CONFIG.globalMinPayout}
+                disabled
+                className="pl-12 bg-muted/50 text-muted-foreground cursor-not-allowed"
+                readOnly
               />
             </div>
           </Field>

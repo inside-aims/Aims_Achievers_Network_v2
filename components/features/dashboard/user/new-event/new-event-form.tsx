@@ -17,6 +17,7 @@ import { EventScheduleSection } from "./event-schedule-section"
 import { EventCoverSection } from "./event-cover-section"
 import { VotingSetupSection } from "./voting-setup-section"
 import { EventSettingsSection } from "./event-settings-section"
+import { EventTicketingSection } from "./event-ticketing-section"
 import { CategoriesSection } from "./categories-section"
 import {
   newEventSchema,
@@ -127,6 +128,7 @@ export function NewEventForm({ base, initialValues, eventId }: Props) {
                 />
                 <VotingSetupSection  control={form.control} />
                 <EventSettingsSection control={form.control} />
+                <EventTicketingSection control={form.control} errors={errors} />
               </div>
             </div>
 

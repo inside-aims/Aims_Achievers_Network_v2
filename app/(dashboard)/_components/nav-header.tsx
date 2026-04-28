@@ -1,6 +1,7 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { NotificationsBell } from "./notifications-panel";
@@ -17,6 +18,8 @@ const PAGE_LABELS: Record<string, string> = {
   "categories":  "Categories",
   "nominees":    "Nominees",
   "nominations": "Nominations",
+  "tickets":     "Tickets",
+  "scan-codes":  "Scan Codes",
 };
 
 function getPageTitle(pathname: string): string {
@@ -33,12 +36,27 @@ function getPageTitle(pathname: string): string {
 
 export function NavHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const title = getPageTitle(pathname);
+
+  const segments = pathname.split("/").filter(Boolean);
+  const showBack = segments.length >= 4;
 
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-background px-4 sticky top-0 z-20">
       <SidebarTrigger className="-ml-1" />
       <Separator orientation="vertical" className="h-4 mx-1" />
+
+      {showBack && (
+        <button
+          onClick={() => router.back()}
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-background hover:bg-muted transition-colors"
+          aria-label="Go back"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+        </button>
+      )}
+
       <span className="font-semibold text-sm">{title}</span>
 
       <div className="flex-1" />

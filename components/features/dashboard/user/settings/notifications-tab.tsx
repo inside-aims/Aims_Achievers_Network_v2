@@ -12,6 +12,8 @@ export function NotificationsTab() {
   )
   const [saved, setSaved] = useState(false)
 
+  const dirty = NOTIFICATION_PREFS.some(({ key, default: d }) => prefs[key] !== d)
+
   function save() { setSaved(true); setTimeout(() => setSaved(false), 2500) }
 
   return (
@@ -33,7 +35,7 @@ export function NotificationsTab() {
           </div>
         ))}
       </div>
-      <SaveBar onSave={save} saved={saved} />
+      <SaveBar onSave={save} saved={saved} disabled={!dirty} />
     </SectionCard>
   )
 }

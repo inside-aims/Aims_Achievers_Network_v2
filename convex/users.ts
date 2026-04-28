@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { v } from "convex/values";
 import { action, internalAction, internalMutation, internalQuery, query } from "./_generated/server";
 import { api, internal } from "./_generated/api";
@@ -225,7 +226,7 @@ export const createOrganizerAccount = action({
     try {
       await resend.sendEmail(ctx, {
         from: "AAN Platform <noreply@mail.xolace.app>",
-        to: normalizedEmail,
+        to: process.env.CONVEX_ENV === "production" ? normalizedEmail : 'delivered@resend.dev',
         subject: "Your AAN Organizer Account is Ready",
         html: welcomeEmailHtml({
           displayName: args.displayName,
@@ -352,8 +353,8 @@ export const nukeAndReseedAdmin = internalMutation({
   handler: async (ctx) => {
     // Delete authAccount for admin email
     const authAccount = await ctx.db
-      .query("authAccounts" as any)
-      .withIndex("providerAndAccountId" as any, (q: any) =>
+      .query("authAccounts")
+      .withIndex("providerAndAccountId", (q: any) =>
         q.eq("provider", "password").eq("providerAccountId", ADMIN_SEED_EMAIL)
       )
       .unique();

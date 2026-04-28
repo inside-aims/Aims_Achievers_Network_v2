@@ -2,7 +2,7 @@ import { cronJobs } from "convex/server";
 import { internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
-
+import { isProd } from "./env";
 // ─── Internal mutation ────────────────────────────────────────────────────────
 
 /**
@@ -40,10 +40,10 @@ export const closeExpiredEvents = internalMutation({
 
 const crons = cronJobs();
 
-// Check every 5 minutes for events that should be auto-closed
+// Check every 10 minutes (prod) / 24 hours (non-prod) for events that should be auto-closed
 crons.interval(
   "auto-close expired events",
-  { minutes: 5 },
+  isProd ? { minutes: 10 } : { hours: 24 },
   internal.crons.closeExpiredEvents,
   {},
 );
@@ -51,7 +51,7 @@ crons.interval(
 // Prune stale USSD sessions every 15 minutes
 crons.interval(
   "prune expired ussd sessions",
-  { minutes: 15 },
+  isProd ? { minutes: 15 } : { hours: 24 },
   internal.ussd.pruneExpiredSessions,
   {},
 );

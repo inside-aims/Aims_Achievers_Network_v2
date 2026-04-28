@@ -8,6 +8,29 @@ import {
   nomineeVoteCounts,
 } from "./aggregates";
 
+// ─── One-time backfill ─────────────────────────────────────────────────────────
+// Run once after deploying to catch votes inserted before aggregates were wired up:
+//   bunx convex run internal/votes:backfillAggregates
+// export const backfillAggregates = internalMutation({
+//   args: {},
+//   handler: async (ctx) => {
+//     await votesByNominee.clear(ctx);
+//     await revenueByEvent.clear(ctx);
+//     await organizerRevenue.clear(ctx);
+//     await votesByTime.clear(ctx);
+
+//     const allVotes = await ctx.db.query("votes").collect();
+//     for (const vote of allVotes) {
+//       await votesByNominee.insert(ctx, vote);
+//       await revenueByEvent.insert(ctx, vote);
+//       await organizerRevenue.insert(ctx, vote);
+//       await votesByTime.insert(ctx, vote);
+//     }
+
+//     return { backfilled: allVotes.length };
+//   },
+// });
+
 /**
  * Records a confirmed vote after Paystack webhook verification.
  *

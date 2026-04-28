@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { ComingSoon } from "@/components/features/dashboard/shared/coming-soon";
+import { AdminAnalytics } from "@/components/features/dashboard/admin/analytics/admin-analytics";
 
 export const metadata: Metadata = { title: "Analytics | AIMS Achievers Network" };
 
 export default function AdminAnalyticsPage() {
-  return <ComingSoon title="Analytics" />;
+  return <AdminAnalytics />;
 }
