@@ -28,9 +28,8 @@ function formatRevenue(pesewas: number): string {
   return new Intl.NumberFormat("en-GH", {
     style: "currency",
     currency: "GHS",
-    currencyDisplay: "code",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(pesewas / 100);
 }
 
