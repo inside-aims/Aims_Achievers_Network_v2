@@ -27,6 +27,7 @@ import type * as organizerProfiles from "../organizerProfiles.js";
 import type * as outlets from "../outlets.js";
 import type * as resend from "../resend.js";
 import type * as seed from "../seed.js";
+import type * as sms from "../sms.js";
 import type * as users from "../users.js";
 import type * as ussd from "../ussd.js";
 import type * as voting from "../voting.js";
@@ -57,6 +58,7 @@ declare const fullApi: ApiFromModules<{
   outlets: typeof outlets;
   resend: typeof resend;
   seed: typeof seed;
+  sms: typeof sms;
   users: typeof users;
   ussd: typeof ussd;
   voting: typeof voting;
