@@ -30,7 +30,18 @@ export default defineSchema({
     // All new documents must include these — see convex/users.ts.
     email: v.optional(v.string()),
     phone: v.optional(v.string()),
+    bio: v.optional(v.string()),
     avatarUrl: v.optional(v.string()),
+    defaultCurrency: v.optional(v.string()),       // e.g. "GHS" — pre-fills new events
+    defaultPriceVotePesewas: v.optional(v.number()), // e.g. 100 = GHS 1.00
+    // Payout destination
+    payoutMethod: v.optional(v.union(v.literal("momo"), v.literal("bank"))),
+    momoNetwork: v.optional(v.union(v.literal("mtn"), v.literal("vodafone"), v.literal("airteltigo"))),
+    momoNumber: v.optional(v.string()),
+    momoName: v.optional(v.string()),
+    bankName: v.optional(v.string()),
+    bankAccountNumber: v.optional(v.string()),
+    bankAccountName: v.optional(v.string()),
     role: v.union(
       v.literal("organizer"),
       v.literal("admin"),             // platform-level admin

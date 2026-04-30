@@ -21,7 +21,17 @@ export const update = mutation({
   args: {
     displayName: v.optional(v.string()),
     phone: v.optional(v.string()),
+    bio: v.optional(v.string()),
     avatarUrl: v.optional(v.string()),
+    defaultCurrency: v.optional(v.string()),
+    defaultPriceVotePesewas: v.optional(v.number()),
+    payoutMethod: v.optional(v.union(v.literal("momo"), v.literal("bank"))),
+    momoNetwork: v.optional(v.union(v.literal("mtn"), v.literal("vodafone"), v.literal("airteltigo"))),
+    momoNumber: v.optional(v.string()),
+    momoName: v.optional(v.string()),
+    bankName: v.optional(v.string()),
+    bankAccountNumber: v.optional(v.string()),
+    bankAccountName: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -40,7 +50,29 @@ export const update = mutation({
     const patch: Record<string, unknown> = { updatedAt: Date.now() };
     if (args.displayName !== undefined) patch.displayName = args.displayName;
     if (args.phone !== undefined) patch.phone = args.phone;
+    if (args.bio !== undefined) patch.bio = args.bio;
     if (args.avatarUrl !== undefined) patch.avatarUrl = args.avatarUrl;
+    if (args.defaultCurrency !== undefined) patch.defaultCurrency = args.defaultCurrency;
+    if (args.defaultPriceVotePesewas !== undefined) patch.defaultPriceVotePesewas = args.defaultPriceVotePesewas;
+    if (args.payoutMethod !== undefined) {
+      patch.payoutMethod = args.payoutMethod;
+      // Clear the opposite method's fields when switching
+      if (args.payoutMethod === "bank") {
+        patch.momoNetwork = undefined;
+        patch.momoNumber = undefined;
+        patch.momoName = undefined;
+      } else if (args.payoutMethod === "momo") {
+        patch.bankName = undefined;
+        patch.bankAccountNumber = undefined;
+        patch.bankAccountName = undefined;
+      }
+    }
+    if (args.momoNetwork !== undefined) patch.momoNetwork = args.momoNetwork;
+    if (args.momoNumber !== undefined) patch.momoNumber = args.momoNumber;
+    if (args.momoName !== undefined) patch.momoName = args.momoName;
+    if (args.bankName !== undefined) patch.bankName = args.bankName;
+    if (args.bankAccountNumber !== undefined) patch.bankAccountNumber = args.bankAccountNumber;
+    if (args.bankAccountName !== undefined) patch.bankAccountName = args.bankAccountName;
 
     await ctx.db.patch(profile._id, patch);
   },

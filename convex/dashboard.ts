@@ -10,6 +10,127 @@ import {
 } from "./internal/aggregates";
 
 /**
+ * Full analytics overview for the organizer analytics page.
+ * Returns per-event stats (votes, revenue, nominees, categories) plus
+ * cross-event KPIs and top nominees across all events.
+ *
+ * Category breakdowns are intentionally excluded — fetch them on-demand
+ * per selected event via `eventCategoryBreakdown` to avoid an N×M query
+ * explosion (100 events × 100 categories = up to 10,000 DB calls).
+ */
+export const analyticsOverview = query({
+  args: {},
+  handler: async (ctx) => {
+    const profile = await getOrganizerProfileOrNull(ctx);
+    if (!profile) return null;
+
+    const events = await ctx.db
+      .query("events")
+      .withIndex("by_organizer", (q) => q.eq("organizerId", profile._id))
+      .order("desc")
+      .take(100);
+
+    // Single pass: fetch all per-event data together, reusing results for
+    // both the stats table and the top-nominees list.
+    const perEvent = await Promise.all(
+      events.map(async (event) => {
+        const [totalVotes, totalRevenuePesewas, categories, nominees] = await Promise.all([
+          votesByNominee.sum(ctx, { namespace: event._id }),
+          organizerRevenue.sum(ctx, { namespace: event._id }),
+          ctx.db
+            .query("categories")
+            .withIndex("by_event", (q) => q.eq("eventId", event._id))
+            .take(100),
+          ctx.db
+            .query("nominees")
+            .withIndex("by_event_votes", (q) => q.eq("eventId", event._id))
+            .order("desc")
+            .take(200),
+        ]);
+        return { event, totalVotes, totalRevenuePesewas, categories, nominees };
+      }),
+    );
+
+    const eventStats = perEvent.map(
+      ({ event, totalVotes, totalRevenuePesewas, categories, nominees }) => ({
+        _id: event._id,
+        title: event.title,
+        institution: event.institution ?? "",
+        status: event.status,
+        eventDate: event.eventDate ?? null,
+        currency: event.currency ?? "GHS",
+        totalVotes,
+        totalRevenuePesewas,
+        totalCategories: categories.length,
+        totalNominees: nominees.length,
+      }),
+    );
+
+    const topNominees = perEvent
+      .flatMap(({ event, categories, nominees }) => {
+        const categoryMap = new Map(categories.map((c) => [c._id, c.name]));
+        return nominees.slice(0, 20).map((n) => ({
+          _id: n._id,
+          displayName: n.displayName,
+          totalVotes: n.totalVotes,
+          eventTitle: event.title,
+          categoryName: categoryMap.get(n.categoryId) ?? "",
+        }));
+      })
+      .sort((a, b) => b.totalVotes - a.totalVotes)
+      .slice(0, 8);
+
+    return { eventStats, topNominees };
+  },
+});
+
+/**
+ * On-demand category breakdown for a single event.
+ * Fetches categories and all nominees in 2 queries, then groups in-memory.
+ * Call this when the user selects an event in the breakdown selector.
+ */
+export const eventCategoryBreakdown = query({
+  args: { eventId: v.id("events") },
+  handler: async (ctx, args) => {
+    const profile = await getOrganizerProfileOrNull(ctx);
+    if (!profile) return null;
+
+    const event = await ctx.db.get(args.eventId);
+    if (!event || event.organizerId !== profile._id) return null;
+
+    const [categories, nominees] = await Promise.all([
+      ctx.db
+        .query("categories")
+        .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
+        .take(100),
+      ctx.db
+        .query("nominees")
+        .withIndex("by_event_votes", (q) => q.eq("eventId", args.eventId))
+        .order("desc")
+        .take(500),
+    ]);
+
+    const nomineesByCategory = new Map<string, typeof nominees>();
+    for (const n of nominees) {
+      const key = n.categoryId as string;
+      const list = nomineesByCategory.get(key) ?? [];
+      list.push(n);
+      nomineesByCategory.set(key, list);
+    }
+
+    return categories.map((cat) => ({
+      _id: cat._id,
+      name: cat.name,
+      nominees: (nomineesByCategory.get(cat._id as string) ?? []).map((n) => ({
+        _id: n._id,
+        displayName: n.displayName,
+        totalVotes: n.totalVotes,
+      })),
+    }));
+  },
+});
+
+/**
  * Aggregate overview for the organizer's dashboard home page.
  * Returns event counts by status, total votes + revenue across all events,
  * and a trimmed event list for the "My Events" preview card.
@@ -38,7 +159,7 @@ export const organizerOverview = query({
       events.map((e) =>
         Promise.all([
           votesByNominee.sum(ctx, { namespace: e._id }),
-          revenueByEvent.sum(ctx, { namespace: e._id }),
+          organizerRevenue.sum(ctx, { namespace: e._id }),
         ]),
       ),
     );

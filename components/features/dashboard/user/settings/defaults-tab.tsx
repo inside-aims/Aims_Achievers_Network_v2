@@ -1,7 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useQuery, useMutation } from "convex/react"
+import { api } from "@/convex/_generated/api"
 import { Input } from "@/components/ui/input"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Select,
   SelectContent,
@@ -9,19 +12,75 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { toast } from "sonner"
 import { CURRENCIES, DEFAULT_EVENT_SETTINGS } from "./settings.data"
 import { Field, SaveBar, SectionCard } from "./settings-primitives"
 
 export function DefaultsTab() {
+  const profile       = useQuery(api.organizerProfiles.getCurrent)
+  const updateProfile = useMutation(api.organizerProfiles.update)
+
   const [currency,  setCurrency]  = useState(DEFAULT_EVENT_SETTINGS.currency)
   const [priceVote, setPriceVote] = useState(DEFAULT_EVENT_SETTINGS.priceVote)
   const [saved,     setSaved]     = useState(false)
+  const [saving,    setSaving]    = useState(false)
+
+  useEffect(() => {
+    if (profile) {
+      setCurrency(profile.defaultCurrency ?? DEFAULT_EVENT_SETTINGS.currency)
+      const pesewas = profile.defaultPriceVotePesewas
+      setPriceVote(pesewas != null ? (pesewas / 100).toFixed(2) : DEFAULT_EVENT_SETTINGS.priceVote)
+    }
+  }, [profile])
+
+  const parsedPriceVote = parseFloat(priceVote)
+  const isValidPrice = Number.isFinite(parsedPriceVote) && parsedPriceVote >= 0.1
 
   const dirty =
-    currency  !== DEFAULT_EVENT_SETTINGS.currency ||
-    priceVote !== DEFAULT_EVENT_SETTINGS.priceVote
+    profile !== undefined &&
+    (
+      currency  !== (profile?.defaultCurrency ?? DEFAULT_EVENT_SETTINGS.currency) ||
+      priceVote !== (
+        profile?.defaultPriceVotePesewas != null
+          ? (profile.defaultPriceVotePesewas / 100).toFixed(2)
+          : DEFAULT_EVENT_SETTINGS.priceVote
+      )
+    )
 
-  function save() { setSaved(true); setTimeout(() => setSaved(false), 2500) }
+  async function save() {
+    if (!dirty || !isValidPrice) return
+    setSaving(true)
+    try {
+      await updateProfile({
+        defaultCurrency: currency,
+        defaultPriceVotePesewas: Math.round(parsedPriceVote * 100),
+      })
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2500)
+    } catch {
+      toast.error("Failed to save defaults. Please try again.")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (profile === undefined) {
+    return (
+      <div className="rounded-2xl border bg-card overflow-hidden">
+        <div className="px-6 py-4 border-b bg-muted/30">
+          <Skeleton className="h-4 w-32 mb-1.5" />
+          <Skeleton className="h-3 w-56" />
+        </div>
+        <div className="px-6 py-5 space-y-5">
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Skeleton className="h-9 rounded-md" />
+            <Skeleton className="h-9 rounded-md" />
+          </div>
+          <Skeleton className="h-14 rounded-xl" />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <SectionCard
@@ -62,7 +121,7 @@ export function DefaultsTab() {
         per vote. You can change this on a per-event basis.
       </div>
 
-      <SaveBar onSave={save} saved={saved} disabled={!dirty} />
+      <SaveBar onSave={save} saved={saved} disabled={!dirty || !isValidPrice || saving} />
     </SectionCard>
   )
 }

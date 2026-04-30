@@ -245,6 +245,61 @@ export const createOrganizerAccount = action({
 });
 
 /**
+ * Change the current user's password after verifying the current one.
+ * Used by the settings security tab.
+ */
+export const verifyAndChangePassword = action({
+  args: {
+    currentPassword: v.string(),
+    newPassword: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const profile = await ctx.runQuery(api.users.getCurrentUserProfile);
+    if (!profile) throw new Error("Not authenticated or profile not found");
+
+    const email = profile.email;
+    if (!email) throw new Error("Profile is missing email. Please contact your administrator.");
+
+    if (args.newPassword.length < 8) {
+      throw new Error("Password must be at least 8 characters");
+    }
+
+    if (args.newPassword === DEFAULT_ORGANIZER_PASSWORD) {
+      throw new Error("You cannot reuse the default password. Please choose a new password.");
+    }
+
+    // Verify current password via the auth system
+    const result: string | { account: unknown } = await ctx.runMutation("auth:store" as any, {
+      args: {
+        type: "retrieveAccountWithCredentials",
+        provider: "password",
+        account: { id: email, secret: args.currentPassword },
+      },
+    });
+
+    if (result === "InvalidSecret") throw new Error("Current password is incorrect.");
+    if (result === "TooManyFailedAttempts") throw new Error("Too many failed attempts. Please try again later.");
+    if (result === "InvalidAccountId") throw new Error("Account not found. Please contact support.");
+
+    // Update to new password
+    await ctx.runMutation("auth:store" as any, {
+      args: {
+        type: "modifyAccount",
+        provider: "password",
+        account: { id: email, secret: args.newPassword },
+      },
+    });
+
+    // Clear the default-password flag if still set
+    if (profile.isPasswordDefault) {
+      await ctx.runMutation(internal.users._clearPasswordDefault, { profileId: profile._id });
+    }
+
+    return { success: true };
+  },
+});
+
+/**
  * Change the current user's password and clear the isPasswordDefault flag.
  * Must be authenticated. Enforces minimum length of 8 characters.
  */

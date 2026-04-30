@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { TABS, type Tab } from "./settings.data"
 import { ProfileTab } from "./profile-tab"
-import { NotificationsTab } from "./notifications-tab"
 import { BillingTab } from "./billing-tab"
 import { DefaultsTab } from "./defaults-tab"
 import { SecurityTab } from "./security-tab"
@@ -14,11 +13,10 @@ import { SecurityTab } from "./security-tab"
 const VALID_TABS = TABS.map((t) => t.id) as Tab[]
 
 const TAB_CONTENT: Record<Tab, ReactNode> = {
-  profile:       <ProfileTab />,
-  notifications: <NotificationsTab />,
-  billing:       <BillingTab />,
-  defaults:      <DefaultsTab />,
-  security:      <SecurityTab />,
+  profile:  <ProfileTab />,
+  billing:  <BillingTab />,
+  defaults: <DefaultsTab />,
+  security: <SecurityTab />,
 }
 
 function UserSettingsInner() {
@@ -36,7 +34,7 @@ function UserSettingsInner() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Manage your profile, notifications, billing, and security.
+          Manage your profile, billing, and security.
         </p>
       </div>
 

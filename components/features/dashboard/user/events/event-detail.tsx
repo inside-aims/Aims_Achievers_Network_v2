@@ -83,7 +83,7 @@ export function EventDetail({ base, eventId }: Props) {
   const totalVotes      = statsData?.totalVotes ?? 0;
   const totalCategories = statsData?.categoriesCount ?? 0;
   const totalNominees   = categories.reduce((sum, c) => sum + c.nominees.length, 0);
-  const revenueRaw      = (statsData?.grossRevenuePesewas ?? 0) / 100;
+  const revenueRaw      = (statsData?.organizerAmountPesewas ?? 0) / 100;
   const priceGhs        = event.pricePerVotePesewas / 100;
 
   const computedStats: ComputedStats = {
