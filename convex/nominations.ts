@@ -1,7 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { RateLimiter, DAY } from "@convex-dev/rate-limiter";
-import { components } from "./_generated/api";
+import { components, internal } from "./_generated/api";
 import { requireEventOwner, getOrganizerProfileOrNull } from "./helpers";
 
 const rateLimiter = new RateLimiter(components.rateLimiter, {
@@ -136,6 +136,16 @@ export const submit = mutation({
         resolvedNomineeId: nomineeId,
         approvedAt: Date.now(),
       });
+
+      if (nomineeIdentifier) {
+        await ctx.scheduler.runAfter(0, internal.sms.sendNomineeApprovalSms, {
+          phone: nomineeIdentifier,
+          nomineeName: args.nomineeName.trim(),
+          categoryName: category.name,
+          eventName: event.title,
+          shortcode,
+        });
+      }
     }
 
     return submissionId;
@@ -314,6 +324,16 @@ export const approve = mutation({
       approvedAt: Date.now(),
       approvedBy: profile._id,
     });
+
+    if (submission.nomineeIdentifier) {
+      await ctx.scheduler.runAfter(0, internal.sms.sendNomineeApprovalSms, {
+        phone: submission.nomineeIdentifier,
+        nomineeName: args.displayName ?? submission.nomineeName,
+        categoryName: category.name,
+        eventName: event.title,
+        shortcode,
+      });
+    }
 
     return nomineeId;
   },
