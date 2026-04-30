@@ -35,8 +35,8 @@ export default defineSchema({
     defaultCurrency: v.optional(v.string()),       // e.g. "GHS" — pre-fills new events
     defaultPriceVotePesewas: v.optional(v.number()), // e.g. 100 = GHS 1.00
     // Payout destination
-    payoutMethod: v.optional(v.string()),          // "momo" | "bank"
-    momoNetwork: v.optional(v.string()),           // "mtn" | "vodafone" | "airteltigo"
+    payoutMethod: v.optional(v.union(v.literal("momo"), v.literal("bank"))),
+    momoNetwork: v.optional(v.union(v.literal("mtn"), v.literal("vodafone"), v.literal("airteltigo"))),
     momoNumber: v.optional(v.string()),
     momoName: v.optional(v.string()),
     bankName: v.optional(v.string()),

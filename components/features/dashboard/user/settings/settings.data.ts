@@ -35,7 +35,9 @@ export const MOMO_NETWORKS = [
   { value: "mtn",        label: "MTN Mobile Money" },
   { value: "vodafone",   label: "Vodafone Cash"     },
   { value: "airteltigo", label: "AirtelTigo Money"  },
-]
+] as const
+
+export type MomoNetwork = (typeof MOMO_NETWORKS)[number]["value"]
 
 export const CURRENCIES = [
   { value: "GHS", label: "GHS - Ghana Cedi"   },

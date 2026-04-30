@@ -17,18 +17,19 @@ import {
   PAYOUT_METHODS,
   MOMO_NETWORKS,
   type PayoutMethod,
+  type MomoNetwork,
 } from "./settings.data"
 import { Field, SaveBar, SectionCard } from "./settings-primitives"
 
 const DEFAULT_METHOD: PayoutMethod = "momo"
-const DEFAULT_NETWORK = MOMO_NETWORKS[0].value
+const DEFAULT_NETWORK: MomoNetwork = MOMO_NETWORKS[0].value
 
 export function BillingTab() {
   const profile       = useQuery(api.organizerProfiles.getCurrent)
   const updateProfile = useMutation(api.organizerProfiles.update)
 
   const [method,   setMethod]   = useState<PayoutMethod>(DEFAULT_METHOD)
-  const [network,  setNetwork]  = useState(DEFAULT_NETWORK)
+  const [network,  setNetwork]  = useState<MomoNetwork>(DEFAULT_NETWORK)
   const [momoNum,  setMomoNum]  = useState("")
   const [momoName, setMomoName] = useState("")
   const [bankName, setBankName] = useState("")
@@ -39,7 +40,7 @@ export function BillingTab() {
 
   useEffect(() => {
     if (profile) {
-      setMethod((profile.payoutMethod as PayoutMethod | undefined) ?? DEFAULT_METHOD)
+      setMethod(profile.payoutMethod ?? DEFAULT_METHOD)
       setNetwork(profile.momoNetwork ?? DEFAULT_NETWORK)
       setMomoNum(profile.momoNumber ?? "")
       setMomoName(profile.momoName ?? "")
@@ -52,7 +53,7 @@ export function BillingTab() {
   const dirty =
     profile !== undefined &&
     (
-      method   !== ((profile.payoutMethod as PayoutMethod | undefined) ?? DEFAULT_METHOD) ||
+      method   !== (profile.payoutMethod ?? DEFAULT_METHOD) ||
       network  !== (profile.momoNetwork ?? DEFAULT_NETWORK) ||
       momoNum  !== (profile.momoNumber ?? "") ||
       momoName !== (profile.momoName ?? "") ||
@@ -138,7 +139,7 @@ export function BillingTab() {
         {method === "momo" ? (
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="Network">
-              <Select value={network} onValueChange={setNetwork}>
+              <Select value={network} onValueChange={(v) => setNetwork(v as MomoNetwork)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {MOMO_NETWORKS.map((n) => (

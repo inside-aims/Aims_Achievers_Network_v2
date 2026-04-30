@@ -146,15 +146,6 @@ type TopNominee = {
   categoryName: string
 }
 
-type CategoryBreakdown = {
-  eventId: string
-  categories: Array<{
-    _id: string
-    name: string
-    nominees: Array<{ _id: string; displayName: string; totalVotes: number }>
-  }>
-}
-
 // ── Event performance ─────────────────────────────────────────────────────────
 
 type PerfMode = "votes" | "revenue"
@@ -279,18 +270,14 @@ function TopNominees({ nominees }: { nominees: TopNominee[] }) {
 
 // ── Category breakdown ────────────────────────────────────────────────────────
 
-function CategoryBreakdown({
-  events,
-  breakdowns,
-}: {
-  events: EventStat[]
-  breakdowns: CategoryBreakdown[]
-}) {
+function CategoryBreakdown({ events }: { events: EventStat[] }) {
   const eventsWithCategories = events.filter((e) => e.totalCategories > 0)
   const [selectedId, setSelectedId] = useState(eventsWithCategories[0]?._id ?? "")
 
-  const breakdown = breakdowns.find((b) => b.eventId === selectedId)
-  const categories = breakdown?.categories ?? []
+  const categories = useQuery(
+    api.dashboard.eventCategoryBreakdown,
+    selectedId ? { eventId: selectedId as never } : "skip",
+  )
 
   return (
     <Card>
@@ -309,7 +296,13 @@ function CategoryBreakdown({
       </CardHeader>
 
       <CardContent>
-        {categories.length === 0 ? (
+        {categories === undefined ? (
+          <div className="space-y-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className="h-16 w-full" />
+            ))}
+          </div>
+        ) : !categories || categories.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-8">
             No categories for this event yet.
           </p>
@@ -477,7 +470,7 @@ export function UserAnalytics() {
     )
   }
 
-  const { eventStats, topNominees, categoryBreakdowns } = data
+  const { eventStats, topNominees } = data
 
   const totalVotes   = eventStats.reduce((sum, e) => sum + e.totalVotes, 0)
   const totalRevenue = eventStats.reduce((sum, e) => sum + e.totalRevenuePesewas, 0)
@@ -530,8 +523,8 @@ export function UserAnalytics() {
         <TopNominees nominees={topNominees} />
       </div>
 
-      {/* Category breakdown */}
-      <CategoryBreakdown events={eventStats} breakdowns={categoryBreakdowns} />
+      {/* Category breakdown — fetched on-demand per selected event */}
+      <CategoryBreakdown events={eventStats} />
 
       {/* Summary table */}
       <EventSummaryTable events={eventStats} />

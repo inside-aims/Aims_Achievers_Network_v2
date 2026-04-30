@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { toast } from "sonner"
 import { CURRENCIES, DEFAULT_EVENT_SETTINGS } from "./settings.data"
 import { Field, SaveBar, SectionCard } from "./settings-primitives"
 
@@ -32,6 +33,9 @@ export function DefaultsTab() {
     }
   }, [profile])
 
+  const parsedPriceVote = parseFloat(priceVote)
+  const isValidPrice = Number.isFinite(parsedPriceVote) && parsedPriceVote >= 0.1
+
   const dirty =
     profile !== undefined &&
     (
@@ -44,15 +48,17 @@ export function DefaultsTab() {
     )
 
   async function save() {
-    if (!dirty) return
+    if (!dirty || !isValidPrice) return
     setSaving(true)
     try {
       await updateProfile({
         defaultCurrency: currency,
-        defaultPriceVotePesewas: Math.round(parseFloat(priceVote) * 100),
+        defaultPriceVotePesewas: Math.round(parsedPriceVote * 100),
       })
       setSaved(true)
       setTimeout(() => setSaved(false), 2500)
+    } catch {
+      toast.error("Failed to save defaults. Please try again.")
     } finally {
       setSaving(false)
     }
@@ -115,7 +121,7 @@ export function DefaultsTab() {
         per vote. You can change this on a per-event basis.
       </div>
 
-      <SaveBar onSave={save} saved={saved} disabled={!dirty || saving} />
+      <SaveBar onSave={save} saved={saved} disabled={!dirty || !isValidPrice || saving} />
     </SectionCard>
   )
 }

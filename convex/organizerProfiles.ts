@@ -25,8 +25,8 @@ export const update = mutation({
     avatarUrl: v.optional(v.string()),
     defaultCurrency: v.optional(v.string()),
     defaultPriceVotePesewas: v.optional(v.number()),
-    payoutMethod: v.optional(v.string()),
-    momoNetwork: v.optional(v.string()),
+    payoutMethod: v.optional(v.union(v.literal("momo"), v.literal("bank"))),
+    momoNetwork: v.optional(v.union(v.literal("mtn"), v.literal("vodafone"), v.literal("airteltigo"))),
     momoNumber: v.optional(v.string()),
     momoName: v.optional(v.string()),
     bankName: v.optional(v.string()),
@@ -54,7 +54,19 @@ export const update = mutation({
     if (args.avatarUrl !== undefined) patch.avatarUrl = args.avatarUrl;
     if (args.defaultCurrency !== undefined) patch.defaultCurrency = args.defaultCurrency;
     if (args.defaultPriceVotePesewas !== undefined) patch.defaultPriceVotePesewas = args.defaultPriceVotePesewas;
-    if (args.payoutMethod !== undefined) patch.payoutMethod = args.payoutMethod;
+    if (args.payoutMethod !== undefined) {
+      patch.payoutMethod = args.payoutMethod;
+      // Clear the opposite method's fields when switching
+      if (args.payoutMethod === "bank") {
+        patch.momoNetwork = undefined;
+        patch.momoNumber = undefined;
+        patch.momoName = undefined;
+      } else if (args.payoutMethod === "momo") {
+        patch.bankName = undefined;
+        patch.bankAccountNumber = undefined;
+        patch.bankAccountName = undefined;
+      }
+    }
     if (args.momoNetwork !== undefined) patch.momoNetwork = args.momoNetwork;
     if (args.momoNumber !== undefined) patch.momoNumber = args.momoNumber;
     if (args.momoName !== undefined) patch.momoName = args.momoName;

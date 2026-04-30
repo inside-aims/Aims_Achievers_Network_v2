@@ -69,6 +69,8 @@ export function ProfileTab() {
     )
   }
 
+  if (profile === null) return null
+
   return (
     <SectionCard title="Your identity" desc="This is how you appear inside the platform.">
       <div className="flex items-center gap-4 pb-5 mb-5 border-b">
