@@ -62,9 +62,7 @@ const NominationProcess = () => {
   const generatePhotoUploadUrl = useMutation(api.nominations.generatePhotoUploadUrl);
   const submitNomination = useMutation(api.nominations.submit);
 
-  const getInitialStep = () => (eventIdParam && categoryIdParam ? 2 : 1);
-
-  const [currentStep, setCurrentStep]   = useState<number>(getInitialStep());
+  const [currentStep, setCurrentStep]   = useState<number>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData]         = useState<StepFormData>({
     ...emptyForm,
