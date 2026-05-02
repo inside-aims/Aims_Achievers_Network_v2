@@ -21,6 +21,7 @@ type FormSelectProps = {
   placeholder?: string;
   options: Option[];
   required?: boolean;
+  disabled?: boolean;
   onChange: (value: string) => void;
 };
 
@@ -32,6 +33,7 @@ const FormSelect = (
     placeholder = 'Select option',
     options,
     required,
+    disabled,
     onChange,
   }: FormSelectProps) => {
   return (
@@ -41,7 +43,7 @@ const FormSelect = (
         {required && <span className="text-destructive ml-1">*</span>}
       </Label>
 
-      <Select value={value} onValueChange={onChange}>
+      <Select value={value} onValueChange={onChange} disabled={disabled}>
         <SelectTrigger id={id} className="w-full border border-border py-5">
           <SelectValue placeholder={placeholder}/>
         </SelectTrigger>
