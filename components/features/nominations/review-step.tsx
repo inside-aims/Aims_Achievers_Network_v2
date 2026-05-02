@@ -86,7 +86,7 @@ export const ReviewStep = ({ formData, events, categories }: ReviewStepProps) =>
               {formData.nomineePhone}
             </span></div>
             <div><span className="text-muted-foreground">
-              Department: </span>
+              Department / Faculty: </span>
               <span className="font-medium text-foreground">
                 {department?.label ?? formData.nomineeDepartment}
               </span></div>
@@ -97,7 +97,7 @@ export const ReviewStep = ({ formData, events, categories }: ReviewStepProps) =>
               </span>
             </div>
             <div><span className="text-muted-foreground">
-              Program: </span>
+              Programme: </span>
               <span className="font-medium text-foreground">
                 {department?.programs.find(p => p.value === formData.nomineeProgram)?.label ?? formData.nomineeProgram}
               </span>

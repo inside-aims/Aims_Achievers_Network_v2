@@ -6,10 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="48008f26-d1dc-4f7e-b70b-a93096b41883" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/builders/form-select.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/builders/form-select.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/features/nominations/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/nominations/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/nominations/nomination-process.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/nominations/nomination-process.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/nominations/nominator-info-step.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/nominations/nominator-info-step.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/features/nominations/nominee-info-step.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/nominations/nominee-info-step.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/components/features/nominations/review-step.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/nominations/review-step.tsx" afterDir="false" />
     </list>

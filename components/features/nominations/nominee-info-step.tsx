@@ -81,11 +81,11 @@ export const NomineeInfoStep = (
 
         <FormSelect
           id="nomineeProgram"
-          label="Program / Course"
+          label="Programme"
           value={formData.nomineeProgram}
           placeholder={
             formData.nomineeDepartment
-              ? 'Select program / course'
+              ? 'Select programme'
               : 'Select a department / faculty first'
           }
           required
