@@ -1,10 +1,19 @@
 'use client';
 
 import {Award, FileText, User, Users} from "lucide-react";
-import {StepFormData} from "@/components/features/nominations/index";
+import {StepFormData, DEPARTMENTS} from "@/components/features/nominations/index";
 import Image from 'next/image';
+import {SelectOption, RELATIONSHIP_OPTIONS, YEAR_OPTIONS, getLabel} from "@/components/features/nominations/nomination-options";
 
-export const ReviewStep = ({ formData }: { formData: StepFormData }) => {
+interface ReviewStepProps {
+  formData: StepFormData;
+  events: SelectOption[];
+  categories: SelectOption[];
+}
+
+export const ReviewStep = ({ formData, events, categories }: ReviewStepProps) => {
+  const department = DEPARTMENTS.find(d => d.value === formData.nomineeDepartment);
+
   return (
     <div className="space-y-6">
       <div>
@@ -36,7 +45,7 @@ export const ReviewStep = ({ formData }: { formData: StepFormData }) => {
             <div><span className="text-muted-foreground">
               Relationship: </span>
               <span className="font-medium text-foreground">
-                {formData.nominatorRelationship}
+                {getLabel(RELATIONSHIP_OPTIONS, formData.nominatorRelationship)}
               </span></div>
           </div>
         </div>
@@ -50,13 +59,13 @@ export const ReviewStep = ({ formData }: { formData: StepFormData }) => {
             <div><span className="text-muted-foreground">
               Event: </span>
               <span className="font-medium text-foreground">
-                {formData.eventName}
+                {getLabel(events, formData.eventName)}
               </span>
             </div>
             <div><span className="text-muted-foreground">
               Category: </span>
               <span className="font-medium text-foreground">
-                {formData.eventCategory}
+                {getLabel(categories, formData.eventCategory)}
               </span>
             </div>
           </div>
@@ -79,12 +88,18 @@ export const ReviewStep = ({ formData }: { formData: StepFormData }) => {
             <div><span className="text-muted-foreground">
               Department: </span>
               <span className="font-medium text-foreground">
-                {formData.nomineeDepartment}
+                {department?.label ?? formData.nomineeDepartment}
               </span></div>
+            <div><span className="text-muted-foreground">
+              Year / Level: </span>
+              <span className="font-medium text-foreground">
+                {getLabel(YEAR_OPTIONS, formData.nomineeYear)}
+              </span>
+            </div>
             <div><span className="text-muted-foreground">
               Program: </span>
               <span className="font-medium text-foreground">
-              {formData.nomineeProgram}
+                {department?.programs.find(p => p.value === formData.nomineeProgram)?.label ?? formData.nomineeProgram}
               </span>
             </div>
             <div className="col-span-2">
@@ -103,7 +118,6 @@ export const ReviewStep = ({ formData }: { formData: StepFormData }) => {
             </div>
           </div>
         </div>
-
 
         <div className="bg-muted/50 rounded-card p-2 md:p-4 border border-border">
           <h3 className="font-semibold text-foreground mb-3 flex items-center">

@@ -1,13 +1,14 @@
 'use client';
 
-import {StepComponentProps} from '@/components/features/nominations';
+import {DEPARTMENTS, StepComponentProps} from '@/components/features/nominations';
 import FormInput from "@/components/builders/form-input";
 import FormSelect from "@/components/builders/form-select";
+import {YEAR_OPTIONS} from "@/components/features/nominations/nomination-options";
 
-interface NomineeInfoStepProps  extends StepComponentProps {
+interface NomineeInfoStepProps extends StepComponentProps {
   onFileChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-
 }
+
 export const NomineeInfoStep = (
   {
     formData,
@@ -15,6 +16,19 @@ export const NomineeInfoStep = (
     onSelectChange,
     onFileChange
   }: NomineeInfoStepProps) => {
+
+  const departmentOptions = DEPARTMENTS.map(({ label, value }) => ({ label, value }));
+
+  // program select
+  const programOptions =
+    DEPARTMENTS.find(d => d.value === formData.nomineeDepartment)?.programs ?? [];
+
+  const handleDepartmentChange = (value: string) => {
+    onSelectChange?.('nomineeDepartment', value);
+    // Reset program whenever department changes
+    onSelectChange?.('nomineeProgram', '');
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -45,14 +59,14 @@ export const NomineeInfoStep = (
           onChange={onChange}
         />
 
-        <FormInput
+        <FormSelect
           id="nomineeDepartment"
           label="Department / Faculty"
-          name="nomineeDepartment"
           value={formData.nomineeDepartment}
-          placeholder="Engineering"
+          placeholder="Select department / faculty"
           required
-          onChange={onChange}
+          onChange={handleDepartmentChange}
+          options={departmentOptions}
         />
 
         <FormSelect
@@ -61,28 +75,25 @@ export const NomineeInfoStep = (
           value={formData.nomineeYear}
           placeholder="Select year"
           required
-          onChange={(value) =>
-            onSelectChange?.('nomineeYear', value)
-          }
-          options={[
-            {label: 'Year 1', value: '1'},
-            {label: 'Year 2', value: '2'},
-            {label: 'Year 3', value: '3'},
-            {label: 'Year 4', value: '4'},
-            {label: 'Graduate', value: 'graduate'},
-            {label: "Other", value: 'other'}
-          ]}
+          onChange={(value) => onSelectChange?.('nomineeYear', value)}
+          options={YEAR_OPTIONS}
         />
 
-        <FormInput
+        <FormSelect
           id="nomineeProgram"
           label="Program / Course"
-          name="nomineeProgram"
-          required
           value={formData.nomineeProgram}
-          placeholder="BSc Computer Science"
-          onChange={onChange}
+          placeholder={
+            formData.nomineeDepartment
+              ? 'Select program / course'
+              : 'Select a department / faculty first'
+          }
+          required
+          onChange={(value) => onSelectChange?.('nomineeProgram', value)}
+          options={programOptions}
+          disabled={!formData.nomineeDepartment}
         />
+
         <FormInput
           id="nomineePhoto"
           label="Photo/Picture"

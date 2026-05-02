@@ -1,6 +1,7 @@
 import {StepComponentProps} from '@/components/features/nominations';
 import FormInput from "@/components/builders/form-input";
 import FormSelect from "@/components/builders/form-select";
+import {RELATIONSHIP_OPTIONS} from "@/components/features/nominations/nomination-options";
 
 export const NominatorInfoStep = (
   {
@@ -56,13 +57,7 @@ export const NominatorInfoStep = (
           onChange={(value) =>
             onSelectChange?.('nominatorRelationship', value)
           }
-          options={[
-            {label: 'Fellow Student', value: 'peer'},
-            {label: 'Faculty Member', value: 'faculty'},
-            {label: 'Mentor', value: 'mentor'},
-            {label: 'Supervisor', value: 'supervisor'},
-            {label: 'Other', value: 'other'},
-          ]}
+          options={RELATIONSHIP_OPTIONS}
         />
       </div>
     </div>

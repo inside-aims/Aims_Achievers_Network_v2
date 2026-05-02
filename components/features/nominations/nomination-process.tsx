@@ -177,7 +177,7 @@ const NominationProcess = () => {
       );
       case 3: return <NomineeInfoStep formData={formData} onChange={handleInputChange} onSelectChange={handleSelectChange} onFileChange={handleFileChange} />;
       case 4: return <NominationDetailsStep formData={formData} onChange={handleInputChange} />;
-      case 5: return <ReviewStep formData={formData} />;
+      case 5: return <ReviewStep formData={formData} events={activeEventOptions} categories={getCategories()} />;
       default: return null;
     }
   };

@@ -6,15 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="48008f26-d1dc-4f7e-b70b-a93096b41883" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(dashboard)/_components/app-sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(dashboard)/_components/app-sidebar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(dashboard)/admin/[uuid]/analytics/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(dashboard)/admin/[uuid]/analytics/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(dashboard)/admin/[uuid]/events/[eventId]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(dashboard)/admin/[uuid]/events/[eventId]/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(dashboard)/admin/[uuid]/events/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(dashboard)/admin/[uuid]/events/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(dashboard)/admin/[uuid]/organizers/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(dashboard)/admin/[uuid]/organizers/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(dashboard)/admin/[uuid]/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(dashboard)/admin/[uuid]/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/admin/admin-event-detail.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/admin/admin-overview.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/admin/overview/admin-overview.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/settings/billing-tab.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/settings/billing-tab.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/builders/form-select.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/builders/form-select.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/nominations/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/nominations/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/nominations/nomination-process.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/nominations/nomination-process.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/nominations/nominator-info-step.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/nominations/nominator-info-step.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/nominations/nominee-info-step.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/nominations/nominee-info-step.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/nominations/review-step.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/nominations/review-step.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,7 +19,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="461" />
+    <option name="cachedIndexableFilesCount" value="491" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -49,7 +46,7 @@
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feat-events-e-ticketing&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;nomination-fixes&quot;,
     &quot;javascript.preferred.runtime.type.id&quot;: &quot;bun&quot;,
     &quot;js.debugger.nextJs.config.created.client&quot;: &quot;true&quot;,
     &quot;js.debugger.nextJs.config.created.server&quot;: &quot;true&quot;,
@@ -135,6 +132,8 @@
       <workItem from="1776856222865" duration="4775000" />
       <workItem from="1776943811766" duration="1345000" />
       <workItem from="1777017665414" duration="16971000" />
+      <workItem from="1777674953517" duration="2031000" />
+      <workItem from="1777677169808" duration="3030000" />
     </task>
     <servers />
   </component>
