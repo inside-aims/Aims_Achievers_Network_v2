@@ -1,4 +1,4 @@
-import {StepComponentProps} from '@/components/features/nominations';
+import type {StepComponentProps} from '@/components/features/nominations';
 import FormInput from "@/components/builders/form-input";
 import FormSelect from "@/components/builders/form-select";
 import {RELATIONSHIP_OPTIONS} from "@/components/features/nominations/nomination-options";

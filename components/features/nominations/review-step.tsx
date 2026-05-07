@@ -1,7 +1,8 @@
 'use client';
 
 import {Award, FileText, User, Users} from "lucide-react";
-import {StepFormData, DEPARTMENTS} from "@/components/features/nominations/index";
+import type {StepFormData} from "@/components/features/nominations/index";
+import {DEPARTMENTS} from "@/components/features/nominations/departments";
 import Image from 'next/image';
 import {SelectOption, RELATIONSHIP_OPTIONS, YEAR_OPTIONS, getLabel} from "@/components/features/nominations/nomination-options";
 

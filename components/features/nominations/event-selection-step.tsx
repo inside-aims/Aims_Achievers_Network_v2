@@ -1,6 +1,6 @@
 'use client';
 
-import {StepComponentProps} from "@/components/features/nominations/index";
+import type {StepComponentProps} from "@/components/features/nominations/index";
 import FormSelect from "@/components/builders/form-select";
 
 interface EventSelectionStepProps extends StepComponentProps {

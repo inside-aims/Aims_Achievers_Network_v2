@@ -3,7 +3,7 @@
 import { useState, ChangeEvent } from "react";
 import { ChevronRight, ChevronLeft, Award, Users, FileText, CheckCircle, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Step, StepFormData } from "@/components/features/nominations/index";
+import type { Step, StepFormData } from "@/components/features/nominations/index";
 import { NominatorInfoStep } from "@/components/features/nominations/nominator-info-step";
 import { ProgressSteps } from "@/components/features/nominations/progress-steps";
 import { NomineeInfoStep } from "@/components/features/nominations/nominee-info-step";

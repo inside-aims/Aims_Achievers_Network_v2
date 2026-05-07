@@ -1,6 +1,7 @@
 'use client';
 
-import {DEPARTMENTS, StepComponentProps} from '@/components/features/nominations';
+import type {StepComponentProps} from '@/components/features/nominations';
+import {DEPARTMENTS} from '@/components/features/nominations/departments';
 import FormInput from "@/components/builders/form-input";
 import FormSelect from "@/components/builders/form-select";
 import {YEAR_OPTIONS} from "@/components/features/nominations/nomination-options";

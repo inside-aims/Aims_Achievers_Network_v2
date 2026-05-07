@@ -1,6 +1,6 @@
 'use client';
 
-import {StepComponentProps} from '@/components/features/nominations';
+import type {StepComponentProps} from '@/components/features/nominations';
 import FormTextarea from "@/components/builders/form-textarea";
 
 export const NominationDetailsStep = (
