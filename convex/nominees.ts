@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { Doc } from "./_generated/dataModel";
 import { requireEventOwner } from "./helpers";
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
@@ -101,7 +102,7 @@ export const getByShortcode = query({
 
     if (!nominee || !event) return null;
 
-    const category = await ctx.db.get(nominee.categoryId);
+    const category = await ctx.db.get(nominee.categoryId) as Doc<"categories"> | null;
 
     return {
       nomineeId: nominee._id,
