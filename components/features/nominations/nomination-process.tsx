@@ -3,7 +3,7 @@
 import { useState, ChangeEvent } from "react";
 import { ChevronRight, ChevronLeft, Award, Users, FileText, CheckCircle, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Step, StepFormData } from "@/components/features/nominations/index";
+import type { Step, StepFormData } from "@/components/features/nominations/index";
 import { NominatorInfoStep } from "@/components/features/nominations/nominator-info-step";
 import { ProgressSteps } from "@/components/features/nominations/progress-steps";
 import { NomineeInfoStep } from "@/components/features/nominations/nominee-info-step";
@@ -62,9 +62,7 @@ const NominationProcess = () => {
   const generatePhotoUploadUrl = useMutation(api.nominations.generatePhotoUploadUrl);
   const submitNomination = useMutation(api.nominations.submit);
 
-  const getInitialStep = () => (eventIdParam && categoryIdParam ? 2 : 1);
-
-  const [currentStep, setCurrentStep]   = useState<number>(getInitialStep());
+  const [currentStep, setCurrentStep]   = useState<number>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData]         = useState<StepFormData>({
     ...emptyForm,
@@ -177,7 +175,7 @@ const NominationProcess = () => {
       );
       case 3: return <NomineeInfoStep formData={formData} onChange={handleInputChange} onSelectChange={handleSelectChange} onFileChange={handleFileChange} />;
       case 4: return <NominationDetailsStep formData={formData} onChange={handleInputChange} />;
-      case 5: return <ReviewStep formData={formData} />;
+      case 5: return <ReviewStep formData={formData} events={activeEventOptions} categories={getCategories()} />;
       default: return null;
     }
   };

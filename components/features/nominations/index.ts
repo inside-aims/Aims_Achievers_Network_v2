@@ -1,36 +1,38 @@
 import {ChangeEvent} from "react";
 
+export type { Program, Department } from './departments';
+
 export interface Step {
-  number: number;
-  title: string;
-  icon: React.ElementType;
+    number: number;
+    title: string;
+    icon: React.ElementType;
 }
 
 export interface StepFormData {
-  //nominator fields
-  nominatorName: string;
-  nominatorEmail: string;
-  nominatorPhone: string;
-  nominatorRelationship: string;
+    //nominator fields
+    nominatorName: string;
+    nominatorEmail: string;
+    nominatorPhone: string;
+    nominatorRelationship: string;
 
-  //event selection fields
-  eventName: string;
-  eventCategory: string;
+    //event selection fields
+    eventName: string;
+    eventCategory: string;
 
-  //nominee fields
-  nomineeName: string;
-  nomineePhone: string;
-  nomineeDepartment: string;
-  nomineeYear: string;
-  nomineeProgram: string;
-  nomineePhoto: File | null;
+    //nominee fields
+    nomineeName: string;
+    nomineePhone: string;
+    nomineeDepartment: string;
+    nomineeYear: string;
+    nomineeProgram: string;
+    nomineePhoto: File | null;
 
-  nominationReason: string;
-  achievements: string;
+    nominationReason: string;
+    achievements: string;
 }
 
 export interface StepComponentProps {
-  formData: StepFormData;
-  onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  onSelectChange?: (name: keyof StepFormData, value: string) => void;
+    formData: StepFormData;
+    onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+    onSelectChange?: (name: keyof StepFormData, value: string) => void;
 }

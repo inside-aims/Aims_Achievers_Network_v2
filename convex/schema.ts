@@ -152,8 +152,8 @@ export default defineSchema({
 
   // ─────────────────────────────────────────────
   // NOMINEES
-  // shortcode format: {eventCode}-{categoryCode}-{seq}
-  // e.g. XA-BMS-001
+  // shortcode format: {evCode[0:3]}-{catCode}-{seq 2-digit}
+  // e.g. CEA-BCR-01
   // ─────────────────────────────────────────────
   nominees: defineTable({
     eventId: v.id("events"),

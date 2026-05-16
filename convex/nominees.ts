@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { Doc } from "./_generated/dataModel";
 import { requireEventOwner } from "./helpers";
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
@@ -60,9 +61,10 @@ export const getById = query({
 
 /**
  * Look up a nominee by shortcode for USSD voting.
- * Shortcodes are formatted as {eventCode}-{categoryCode}-{seq} (e.g. XA-BMS-001).
- * We parse the event code prefix to find the event, then fetch the nominee.
- * Returns null if the shortcode is not found or the event/nominee is not active.
+ * Format: {evCode[0:3]}-{catCode}-{seq 2-digit} e.g. "CEA-BCC-01", "CEA-BCC2-01".
+ * Range-scans events by the parsed prefix so it works whether the stored
+ * eventCode is already 3 chars ("CEA") or longer ("CEA2").
+ * Returns null if not found or nominee/event is not active.
  */
 export const getByShortcode = query({
   args: { shortcode: v.string() },
@@ -71,25 +73,36 @@ export const getByShortcode = query({
     const dashIndex = upper.indexOf("-");
     if (dashIndex === -1) return null;
 
-    const eventCode = upper.slice(0, dashIndex);
+    const evPrefix = upper.slice(0, dashIndex);
 
-    const event = await ctx.db
+    // Range scan: matches events whose eventCode starts with evPrefix.
+    // e.g. prefix "CEA" matches eventCode "CEA", "CEA2", "CEA2025", etc.
+    const events = await ctx.db
       .query("events")
-      .withIndex("by_eventCode", (q) => q.eq("eventCode", eventCode))
-      .unique();
-
-    if (!event) return null;
-
-    const nominee = await ctx.db
-      .query("nominees")
-      .withIndex("by_shortcode", (q) =>
-        q.eq("eventId", event._id).eq("shortcode", upper),
+      .withIndex("by_eventCode", (q) =>
+        q.gte("eventCode", evPrefix).lt("eventCode", evPrefix + "￿"),
       )
-      .unique();
+      .take(10);
 
-    if (!nominee || nominee.status !== "active") return null;
+    if (events.length === 0) return null;
 
-    const category = await ctx.db.get(nominee.categoryId);
+    let nominee = null;
+    let event = null;
+    for (const ev of events) {
+      const found = await ctx.db
+        .query("nominees")
+        .withIndex("by_shortcode", (q) => q.eq("eventId", ev._id).eq("shortcode", upper))
+        .unique();
+      if (found && found.status === "active") {
+        nominee = found;
+        event = ev;
+        break;
+      }
+    }
+
+    if (!nominee || !event) return null;
+
+    const category = await ctx.db.get(nominee.categoryId) as Doc<"categories"> | null;
 
     return {
       nomineeId: nominee._id,
@@ -128,8 +141,9 @@ export const create = mutation({
     const seq = category.nomineeSequence + 1;
     await ctx.db.patch(args.categoryId, { nomineeSequence: seq });
 
-    // Build shortcode: {eventCode}-{categoryCode}-{seq padded to 3 digits}
-    const shortcode = `${event.eventCode}-${category.categoryCode}-${String(seq).padStart(3, "0")}`;
+    // Build shortcode: {evCode[0:3]}-{catCode}-{seq 2-digit}  e.g. "CEA-BCC-01", "CEA-BCC2-01"
+    // Use full categoryCode (not truncated) — dedup suffix like "BCC2" must be preserved
+    const shortcode = `${event.eventCode.substring(0, 3)}-${category.categoryCode}-${String(seq).padStart(2, "0")}`;
 
     return await ctx.db.insert("nominees", {
       eventId: args.eventId,
