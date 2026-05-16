@@ -21,6 +21,7 @@ import type * as helpers from "../helpers.js";
 import type * as http from "../http.js";
 import type * as internal_aggregates from "../internal/aggregates.js";
 import type * as internal_votes from "../internal/votes.js";
+import type * as migrations from "../migrations.js";
 import type * as nominations from "../nominations.js";
 import type * as nominees from "../nominees.js";
 import type * as organizerProfiles from "../organizerProfiles.js";
@@ -52,6 +53,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   "internal/aggregates": typeof internal_aggregates;
   "internal/votes": typeof internal_votes;
+  migrations: typeof migrations;
   nominations: typeof nominations;
   nominees: typeof nominees;
   organizerProfiles: typeof organizerProfiles;

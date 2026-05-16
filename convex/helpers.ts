@@ -62,16 +62,28 @@ export function slugify(text: string): string {
     .replace(/-+/g, "-");
 }
 
-/** Derives an abbreviation code from a name (e.g. "Best Male Student" → "BMS"). */
+/**
+ * Derives a short code from a name — alphanumeric only, max 3 chars.
+ * Multi-word: first alphanumeric char of each word, symbols/punctuation words skipped.
+ * Single word: strip non-alphanumeric, take first 3 chars.
+ * e.g. "Best Male Student" → "BMS", "Best AI & Robotics Student" → "BAR"
+ */
 export function abbreviate(name: string): string {
   const words = name.trim().split(/\s+/);
-  if (words.length === 1) return name.substring(0, 3).toUpperCase();
-  return words.map((w) => w[0].toUpperCase()).join("");
+  if (words.length === 1) {
+    return name.replace(/[^A-Za-z0-9]/g, "").substring(0, 3).toUpperCase();
+  }
+  return words
+    .map((w) => w[0])
+    .filter((c) => /[A-Za-z0-9]/.test(c))
+    .join("")
+    .toUpperCase()
+    .substring(0, 3);
 }
 
 /**
  * Generates an event code from the title, skipping common filler words.
- * e.g. "Xclusive Awards 2025" → "XA2025" (or "XA" for short titles)
+ * e.g. "Creative Excellence Awards" → "CEA" (max 3 chars)
  */
 export function generateEventCode(title: string): string {
   const SKIP = new Set(["the", "a", "an", "and", "or", "of", "for", "in", "at", "to"]);
@@ -80,7 +92,7 @@ export function generateEventCode(title: string): string {
     .filter((w) => !SKIP.has(w.toLowerCase()))
     .map((w) => w[0].toUpperCase())
     .join("");
-  return code || title.substring(0, 3).toUpperCase();
+  return (code || title.substring(0, 3).toUpperCase()).substring(0, 3);
 }
 
 // ─── Date / time utilities ─────────────────────────────────────────────────────

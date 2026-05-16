@@ -119,7 +119,7 @@ export const submit = mutation({
     if (event.nominationAutoApprove) {
       const seq = category.nomineeSequence + 1;
       await ctx.db.patch(category._id, { nomineeSequence: seq });
-      const shortcode = `${event.eventCode}-${category.categoryCode}-${String(seq).padStart(3, "0")}`;
+      const shortcode = `${event.eventCode.substring(0, 3)}-${category.categoryCode}-${String(seq).padStart(2, "0")}`;
       const nomineeId = await ctx.db.insert("nominees", {
         eventId: event._id,
         categoryId: category._id,
@@ -304,7 +304,7 @@ export const approve = mutation({
 
     const seq = category.nomineeSequence + 1;
     await ctx.db.patch(submission.categoryId, { nomineeSequence: seq });
-    const shortcode = `${event.eventCode}-${category.categoryCode}-${String(seq).padStart(3, "0")}`;
+    const shortcode = `${event.eventCode.substring(0, 3)}-${category.categoryCode}-${String(seq).padStart(2, "0")}`;
 
     const nomineeId = await ctx.db.insert("nominees", {
       eventId: submission.eventId,
