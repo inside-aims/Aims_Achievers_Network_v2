@@ -1,10 +1,15 @@
 import { NextRequest } from "next/server";
+import { validateImageUrl } from "../_validate-url";
 
 export async function GET(request: NextRequest) {
-  const url = request.nextUrl.searchParams.get("url");
-  const filename = request.nextUrl.searchParams.get("filename") ?? "nominee.jpg";
+  let url: string;
+  try {
+    url = validateImageUrl(request.nextUrl.searchParams.get("url"));
+  } catch (e) {
+    return e as Response;
+  }
 
-  if (!url) return new Response("Missing url param", { status: 400 });
+  const filename = request.nextUrl.searchParams.get("filename") ?? "nominee.jpg";
 
   let res: Response;
   try {

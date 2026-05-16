@@ -51,6 +51,9 @@ async function downloadAllAsZip(
     body: JSON.stringify({ nominees, categoryName }),
   });
   if (!res.ok) throw new Error("ZIP generation failed");
+
+  const failedCount = Number(res.headers.get("X-Failed-Count") ?? 0);
+
   const blob = await res.blob();
   const blobUrl = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -58,6 +61,10 @@ async function downloadAllAsZip(
   a.download = `${sanitizeFilename(categoryName)}-nominees.zip`;
   a.click();
   URL.revokeObjectURL(blobUrl);
+
+  if (failedCount > 0) {
+    toast.warning(`${failedCount} image${failedCount === 1 ? "" : "s"} could not be downloaded and were excluded from the ZIP.`);
+  }
 }
 
 // ─── Nominee card ────────────────────────────────────────────────────────────
@@ -158,17 +165,17 @@ function GridSkeleton() {
 export function CategoryNominees({ profileId, eventId, categoryId }: Props) {
   const [zipDownloading, setZipDownloading] = useState(false);
 
-  const category = useQuery(api.categories.getById, {
-    categoryId: categoryId as Id<"categories">,
-  });
-  const nominees = useQuery(api.nominees.listByCategory, {
+  const result = useQuery(api.categories.getWithNomineesForOrganizer, {
+    eventId: eventId as Id<"events">,
     categoryId: categoryId as Id<"categories">,
   });
 
   const backHref = `/user/${profileId}/events/${eventId}`;
-  const isLoading = category === undefined || nominees === undefined;
+  const isLoading = result === undefined;
+  const category = result?.category ?? null;
+  const nominees = result?.nominees ?? [];
 
-  const activeNominees = nominees?.filter((n) => n.status === "active") ?? [];
+  const activeNominees = nominees.filter((n) => n.status === "active");
   const withImages = activeNominees.filter((n) => n.avatarUrl);
 
   async function handleDownloadAll() {
