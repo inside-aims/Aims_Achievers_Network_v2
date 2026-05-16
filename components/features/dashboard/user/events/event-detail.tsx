@@ -138,7 +138,10 @@ export function EventDetail({ base, eventId }: Props) {
       <EventHeader event={richEvent} stats={computedStats} base={base} />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 md:gap-5 items-start">
-        <CategoriesList categories={categories} />
+        <CategoriesList
+          categories={categories}
+          categoriesBase={`${base}/events/${eventId}/categories`}
+        />
 
         <EventSidebar
           stats={computedStats}

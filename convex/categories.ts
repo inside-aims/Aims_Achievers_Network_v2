@@ -5,6 +5,13 @@ import { requireEventOwner, abbreviate } from "./helpers";
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
 
+export const getById = query({
+  args: { categoryId: v.id("categories") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.categoryId);
+  },
+});
+
 /** Lists all categories for an event, ordered by creation time. */
 export const list = query({
   args: { eventId: v.id("events") },
