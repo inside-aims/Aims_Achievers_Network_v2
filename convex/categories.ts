@@ -5,6 +5,42 @@ import { requireEventOwner, abbreviate } from "./helpers";
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
 
+/**
+ * Dashboard-only: returns a category and its nominees only when the caller
+ * owns the event AND the category actually belongs to that event.
+ * Passing a categoryId from a different event always returns null.
+ */
+export const getWithNomineesForOrganizer = query({
+  args: {
+    eventId: v.id("events"),
+    categoryId: v.id("categories"),
+  },
+  handler: async (ctx, args) => {
+    await requireEventOwner(ctx, args.eventId);
+
+    const category = await ctx.db.get(args.categoryId);
+    if (!category || category.eventId !== args.eventId) return null;
+
+    const nominees = await ctx.db
+      .query("nominees")
+      .withIndex("by_category", (q) => q.eq("categoryId", args.categoryId))
+      .order("asc")
+      .take(200);
+
+    return { category, nominees };
+  },
+});
+
+export const getById = query({
+  args: { categoryId: v.id("categories") },
+  handler: async (ctx, args) => {
+    const category = await ctx.db.get(args.categoryId);
+    if (!category) return null;
+    await requireEventOwner(ctx, category.eventId);
+    return category;
+  },
+});
+
 /** Lists all categories for an event, ordered by creation time. */
 export const list = query({
   args: { eventId: v.id("events") },

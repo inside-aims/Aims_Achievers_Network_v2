@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
-import { ComingSoon } from "@/components/features/dashboard/shared/coming-soon";
+import { CategoryNominees } from "@/components/features/dashboard/user/events/category-nominees";
 
-export const metadata: Metadata = { title: "Nominees | AIMS Achievers Network" };
+export const metadata: Metadata = { title: "Nominee Images | AIMS Achievers Network" };
 
-export default function CategoryNomineesPage() {
-  return <ComingSoon title="Nominees" />;
+export default async function CategoryNomineesPage({
+  params,
+}: {
+  params: Promise<{ profileId: string; eventId: string; categoryId: string }>;
+}) {
+  const { profileId, eventId, categoryId } = await params;
+  return <CategoryNominees profileId={profileId} eventId={eventId} categoryId={categoryId} />;
 }

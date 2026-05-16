@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Tag, UserX } from "lucide-react";
+import Link from "next/link";
+import { ChevronDown, ChevronUp, Tag, UserX, Images } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { CategoryDetail, Nominee } from "./events";
 
@@ -114,9 +116,10 @@ interface CategoryRowProps {
   category: CategoryDetail;
   isOpen: boolean;
   onToggle: () => void;
+  categoriesBase?: string;
 }
 
-function CategoryRow({ category, isOpen, onToggle }: CategoryRowProps) {
+function CategoryRow({ category, isOpen, onToggle, categoriesBase }: CategoryRowProps) {
   const sorted = [...category.nominees].sort((a, b) => b.votes - a.votes);
   const total = sorted.reduce((sum, n) => sum + n.votes, 0);
   const max = sorted[0]?.votes ?? 0;
@@ -161,6 +164,20 @@ function CategoryRow({ category, isOpen, onToggle }: CategoryRowProps) {
               ? `${category.nominees.length} ${category.nominees.length === 1 ? "nominee" : "nominees"}`
               : "No nominees"}
           </Badge>
+          {categoriesBase && hasNominees && (
+            <Button
+              asChild
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-[11px] gap-1 text-muted-foreground hover:text-foreground"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Link href={`${categoriesBase}/${category.id}`}>
+                <Images className="size-3.5" />
+                <span className="hidden sm:inline">Images</span>
+              </Link>
+            </Button>
+          )}
           {isOpen ? (
             <ChevronUp className="size-3.5 md:size-4 text-muted-foreground" />
           ) : (
@@ -194,9 +211,10 @@ function CategoryRow({ category, isOpen, onToggle }: CategoryRowProps) {
 
 interface Props {
   categories: CategoryDetail[];
+  categoriesBase?: string;
 }
 
-export function CategoriesList({ categories }: Props) {
+export function CategoriesList({ categories, categoriesBase }: Props) {
   const [openIds, setOpenIds] = useState<Set<string>>(
     () => new Set(categories.slice(0, 2).map((c) => c.id))
   );
@@ -244,6 +262,7 @@ export function CategoriesList({ categories }: Props) {
                 category={cat}
                 isOpen={openIds.has(cat.id)}
                 onToggle={() => toggle(cat.id)}
+                categoriesBase={categoriesBase}
               />
             ))}
           </div>
