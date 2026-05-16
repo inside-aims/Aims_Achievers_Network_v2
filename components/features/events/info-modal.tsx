@@ -29,15 +29,16 @@ const InfoModal = (
     nominee,
     event,
     category,
-    votingNumber = "1977"
+    votingNumber = "*928*322#"
   }: VotingModalProps) => {
 
   const votingSteps = [
-    "Dial *920*401#",
+    "Dial *928*322#",
+    "Select 1 for E-Voting",
     "Enter nominee code: {nomineeCode}",
-    "Enter Number of Votes",
-    "Confirm your vote",
-    "Wait for SMS confirmation"
+    "Confirm the nominee details",
+    "Enter the amount to vote with",
+    "Approve the mobile money prompt",
   ];
 
   const copyToClipboard = (text: string) => {
@@ -102,21 +103,27 @@ const InfoModal = (
               </div>
             </div>
 
+            <div className="mt-2 md:mt-3 rounded-md border border-amber-200 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-950/30 px-3 py-2">
+              <p className="text-xs text-amber-800 dark:text-amber-300">
+                <span className="font-semibold">First-time voters:</span> You may be prompted to enter an OTP sent to your phone. Just follow the instructions on your screen.
+              </p>
+            </div>
+
             <div className="mt-2 md:mt-4 pt-2 md:pt-4 border-t">
               <h5 className="text-xs font-semibold text-muted-foreground mb-1 md:mb-2 uppercase tracking-wide">
                 Nominee Profile
               </h5>
-              <div className="flex items-center justify-between bg-muted px-3 md:px-4  rounded-md">
+              <div className="flex items-center justify-between border border-primary/30 bg-primary/5 px-3 md:px-4 rounded-md">
                 <Link
                   href={`${pathname}/${nominee.nomineeCode}`}
-                  className="text-xs md:text-sm text-primary py-2 hover:underline truncate"
+                  className="text-xs md:text-sm font-semibold text-primary py-2 hover:underline underline-offset-2 truncate"
                 >
                   {pathname}/nominee/{nominee.nomineeCode}
                 </Link>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="flex-shrink-0 h-5 w-5 md:h- md:w-8"
+                  className="flex-shrink-0 h-5 w-5 md:h-8 md:w-8 text-primary"
                   onClick={() => copyToClipboard(`${pathname}/nominee/${nominee?.nomineeCode}`)}
                 >
                   <Copy className="h-3 w-3 md:h-4 md:w-4"/>
