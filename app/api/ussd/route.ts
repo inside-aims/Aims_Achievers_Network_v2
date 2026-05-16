@@ -166,6 +166,10 @@ export async function POST(req: NextRequest) {
 
       // Show tier menu for bulk events, amount prompt for standard
       const eventForMode = await convex.query(api.events.getById, { eventId: session.eventId as Id<"events"> });
+      if (!eventForMode?.votingOpen) {
+        await convex.mutation(api.ussd.deleteSession, { sessionId: sessionID });
+        return reply("Voting is currently closed for this event. Thank you!", false);
+      }
       if (eventForMode?.votingMode === "bulk" && eventForMode.bulkTiers?.length) {
         const menu = buildTierMenu(eventForMode.bulkTiers);
         return reply(`Select vote package:\n${menu}`, true);
