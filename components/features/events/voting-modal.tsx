@@ -28,7 +28,7 @@ interface VotingModalProps {
 type Tab = "online" | "ussd";
 
 const USSD_STEPS = [
-  "Dial *920*401#",
+  "Dial *928*322#",
   "Select 1 for E-Voting",
   "Enter nominee code: {nomineeCode}",
   "Confirm the nominee details",
@@ -320,54 +320,69 @@ const VotingModal = ({ open, setOpen, nominee, votingConfig }: VotingModalProps)
                 }`
               )}
             </Button>
+
+            {/* OTP notice */}
+            <div className="rounded-md border border-amber-200 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-950/30 px-3 py-2">
+              <p className="text-xs text-amber-800 dark:text-amber-300">
+                <span className="font-semibold">First-time voters:</span> Paystack may prompt you to enter a one-time password (OTP) sent to your phone. Simply follow the instructions on your screen to complete the payment.
+              </p>
+            </div>
           </div>
         )}
 
         {/* ── USSD tab ─────────────────────────────────────────────────────── */}
         {activeTab === "ussd" && (
           <div className="space-y-4 pt-1">
-            {/* Nominee code highlight */}
-            <div className="flex items-center justify-between rounded-md border-2 border-primary/20 bg-muted px-4 py-3">
-              <div>
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">Nominee Code</p>
-                <p className="mt-0.5 font-mono text-2xl font-bold text-primary">{nomineeCode}</p>
+            {!votingOpen ? (
+              <div className="rounded-md bg-destructive/10 border border-destructive/20 px-3 py-2 text-sm text-destructive">
+                Voting is currently closed. USSD voting is unavailable at this time.
               </div>
-              <Button variant="ghost" size="icon" className="h-9 w-9" onClick={handleCopyCode}>
-                {copied ? (
-                  <Check className="h-4 w-4 text-primary" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-
-            {/* Steps */}
-            <div className="space-y-2">
-              {USSD_STEPS.map((step, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-                    {i + 1}
+            ) : (
+              <>
+                {/* Nominee code highlight */}
+                <div className="flex items-center justify-between rounded-md border-2 border-primary/20 bg-muted px-4 py-3">
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Nominee Code</p>
+                    <p className="mt-0.5 font-mono text-2xl font-bold text-primary">{nomineeCode}</p>
                   </div>
-                  <div className="flex flex-1 items-start justify-between pt-1">
-                    <p className="text-sm leading-relaxed">
-                      {step.replace("{nomineeCode}", nomineeCode)}
-                    </p>
-                    <CheckCircle2 className="ml-2 mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground/30" />
-                  </div>
+                  <Button variant="ghost" size="icon" className="h-9 w-9" onClick={handleCopyCode}>
+                    {copied ? (
+                      <Check className="h-4 w-4 text-primary" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </Button>
                 </div>
-              ))}
-            </div>
 
-            {/* Info */}
-            <div className="rounded-md border border-border bg-accent px-3 py-2">
-              <p className="text-xs text-accent-foreground text-center">
-                Make sure you have sufficient mobile money balance before voting
-              </p>
-            </div>
+                {/* Steps */}
+                <div className="space-y-2">
+                  {USSD_STEPS.map((step, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                        {i + 1}
+                      </div>
+                      <div className="flex flex-1 items-start justify-between pt-1">
+                        <p className="text-sm leading-relaxed">
+                          {step.replace("{nomineeCode}", nomineeCode)}
+                        </p>
+                        <CheckCircle2 className="ml-2 mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/30" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
 
-            <Button variant="default" className="w-full" onClick={() => handleClose(false)}>
-              Got it!
-            </Button>
+                {/* Info */}
+                <div className="rounded-md border border-border bg-accent px-3 py-2">
+                  <p className="text-xs text-accent-foreground text-center">
+                    Make sure you have sufficient mobile money balance before voting
+                  </p>
+                </div>
+
+                <Button variant="default" className="w-full" onClick={() => handleClose(false)}>
+                  Got it!
+                </Button>
+              </>
+            )}
           </div>
         )}
       </DialogContent>

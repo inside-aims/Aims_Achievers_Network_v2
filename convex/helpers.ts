@@ -95,6 +95,35 @@ export function generateEventCode(title: string): string {
   return (code || title.substring(0, 3).toUpperCase()).substring(0, 3);
 }
 
+// ─── Shortcode generation ─────────────────────────────────────────────────────
+
+const SC_LETTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ"; // no I, O (confusable on keypad)
+const SC_DIGITS  = "23456789";                  // no 0, 1 (confusable)
+
+/**
+ * Generates a 6-char shortcode: 4 random letters + 2 random digits.
+ * Letters first so USSD keypad users finish letter entry before switching to digits.
+ * Retries up to 10 times on global collision.
+ */
+export async function generateShortcode(
+  ctx: MutationCtx,
+): Promise<string> {
+  for (let attempt = 0; attempt < 10; attempt++) {
+    let code = "";
+    for (let i = 0; i < 4; i++) code += SC_LETTERS[Math.floor(Math.random() * SC_LETTERS.length)];
+    for (let i = 0; i < 2; i++) code += SC_DIGITS[Math.floor(Math.random() * SC_DIGITS.length)];
+
+    // Check global uniqueness so USSD lookup by shortcode alone is unambiguous.
+    const existing = await ctx.db
+      .query("nominees")
+      .withIndex("by_shortcode_global", (q) => q.eq("shortcode", code))
+      .unique();
+
+    if (!existing) return code;
+  }
+  throw new Error("Failed to generate a unique shortcode — try again");
+}
+
 // ─── Date / time utilities ─────────────────────────────────────────────────────
 
 /**

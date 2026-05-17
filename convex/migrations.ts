@@ -1,20 +1,16 @@
 import { internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
-import { abbreviate } from "./helpers";
+import { abbreviate, generateShortcode } from "./helpers";
 
 /**
- * Current state when these migrations were written:
- *   - Nominee shortcodes: already rebuilt to new format (e.g. CEA-BCR-01)
- *   - Category codes in DB: still old long values (e.g. BCROTY, BA&RS)
- *   - Nominees: never SMS-notified of their shortcode
+ * Migration history (run in order):
+ *   1. fixCategoryCodes    — sanitized category codes (e.g. BCROTY → BCR)
+ *   2. notifyAllNominees   — SMS'd nominees their shortcode (never actually run)
+ *   3. regenShortcodes     — replaced old EVT-CAT-NN codes with 6-char random codes (XXXXNN)
  *
- * Run in order:
- *   1. npx convex run migrations:fixCategoryCodes
- *   2. npx convex run migrations:notifyAllNominees
- *
- * NOTE: category codes are used as URL segments (/events/[slug]/[categoryCode]).
- * After step 1 those old URLs will 404 — update any shared links.
+ * To run step 3:
+ *   npx convex run migrations:regenShortcodes
  */
 
 // ─── Step 1: Fix category codes in the DB ────────────────────────────────────
@@ -50,6 +46,29 @@ export const fixCategoryCodes = internalMutation({
     }
 
     return { updated, skipped };
+  },
+});
+
+// ─── Step 3: Regenerate shortcodes to 6-char random format ──────────────────
+
+/**
+ * Replaces every nominee's old EVT-CAT-NN shortcode with a new 6-char random
+ * code (4 letters + 2 digits, e.g. "WLZM19"). Safe to run when codes have not
+ * yet been distributed to nominees or voters.
+ */
+export const regenShortcodes = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const nominees = await ctx.db.query("nominees").take(500);
+    let updated = 0;
+
+    for (const nominee of nominees) {
+      const newCode = await generateShortcode(ctx);
+      await ctx.db.patch(nominee._id, { shortcode: newCode });
+      updated++;
+    }
+
+    return { updated };
   },
 });
 

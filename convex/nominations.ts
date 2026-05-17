@@ -2,7 +2,7 @@ import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { RateLimiter, DAY } from "@convex-dev/rate-limiter";
 import { components, internal } from "./_generated/api";
-import { requireEventOwner, getOrganizerProfileOrNull } from "./helpers";
+import { requireEventOwner, getOrganizerProfileOrNull, generateShortcode } from "./helpers";
 
 const rateLimiter = new RateLimiter(components.rateLimiter, {
   // Max 5 nominations from the same email per event per 24-hour window
@@ -117,9 +117,7 @@ export const submit = mutation({
 
     // 7. Auto-approve: skip review queue and create nominee immediately
     if (event.nominationAutoApprove) {
-      const seq = category.nomineeSequence + 1;
-      await ctx.db.patch(category._id, { nomineeSequence: seq });
-      const shortcode = `${event.eventCode.substring(0, 3)}-${category.categoryCode}-${String(seq).padStart(2, "0")}`;
+      const shortcode = await generateShortcode(ctx);
       const nomineeId = await ctx.db.insert("nominees", {
         eventId: event._id,
         categoryId: category._id,
@@ -302,9 +300,7 @@ export const approve = mutation({
     const category = await ctx.db.get(submission.categoryId);
     if (!category) throw new Error("Category not found");
 
-    const seq = category.nomineeSequence + 1;
-    await ctx.db.patch(submission.categoryId, { nomineeSequence: seq });
-    const shortcode = `${event.eventCode.substring(0, 3)}-${category.categoryCode}-${String(seq).padStart(2, "0")}`;
+    const shortcode = await generateShortcode(ctx);
 
     const nomineeId = await ctx.db.insert("nominees", {
       eventId: submission.eventId,

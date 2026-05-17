@@ -152,14 +152,14 @@ export default defineSchema({
 
   // ─────────────────────────────────────────────
   // NOMINEES
-  // shortcode format: {evCode[0:3]}-{catCode}-{seq 2-digit}
-  // e.g. CEA-BCR-01
+  // shortcode format: 4 random letters + 2 random digits, e.g. "ABCD23"
+  // globally unique across all nominees (enforced at write time)
   // ─────────────────────────────────────────────
   nominees: defineTable({
     eventId: v.id("events"),
     categoryId: v.id("categories"),
     displayName: v.string(),
-    shortcode: v.string(),             // e.g. "XA-BMS-001", globally unique per event
+    shortcode: v.string(),             // e.g. "ABCD23", globally unique
     avatarUrl: v.optional(v.string()),
     bio: v.optional(v.string()),
     status: v.union(
@@ -173,6 +173,7 @@ export default defineSchema({
     .index("by_category", ["categoryId"])
     .index("by_event_category", ["eventId", "categoryId"])
     .index("by_shortcode", ["eventId", "shortcode"])
+    .index("by_shortcode_global", ["shortcode"])           // USSD global lookup
     .index("by_event_votes", ["eventId", "totalVotes"])  // leaderboard sort (cross-category)
     .index("by_event_category_votes", ["eventId", "categoryId", "totalVotes"])  // per-category leaderboard
     .index("by_category_status_votes", ["categoryId", "status", "totalVotes"]),
