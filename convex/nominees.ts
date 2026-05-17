@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { Doc } from "./_generated/dataModel";
-import { requireEventOwner } from "./helpers";
+import { requireEventOwner, generateShortcode } from "./helpers";
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
 
@@ -61,7 +61,6 @@ export const getById = query({
 
 /**
  * Look up a nominee by shortcode for USSD voting.
- * Format: {evCode[0:3]}-{catCode}-{seq 2-digit} e.g. "CEA-BCC-01", "CEA-BCC2-01".
  * Range-scans events by the parsed prefix so it works whether the stored
  * eventCode is already 3 chars ("CEA") or longer ("CEA2").
  * Returns null if not found or nominee/event is not active.
@@ -137,13 +136,7 @@ export const create = mutation({
     if (!category) throw new Error("Category not found");
     if (category.eventId !== args.eventId) throw new Error("Category does not belong to this event");
 
-    // Atomically increment the sequence counter on the category
-    const seq = category.nomineeSequence + 1;
-    await ctx.db.patch(args.categoryId, { nomineeSequence: seq });
-
-    // Build shortcode: {evCode[0:3]}-{catCode}-{seq 2-digit}  e.g. "CEA-BCC-01", "CEA-BCC2-01"
-    // Use full categoryCode (not truncated) — dedup suffix like "BCC2" must be preserved
-    const shortcode = `${event.eventCode.substring(0, 3)}-${category.categoryCode}-${String(seq).padStart(2, "0")}`;
+    const shortcode = await generateShortcode(ctx, args.eventId);
 
     return await ctx.db.insert("nominees", {
       eventId: args.eventId,
