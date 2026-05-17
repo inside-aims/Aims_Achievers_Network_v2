@@ -63,7 +63,7 @@ export const regenShortcodes = internalMutation({
     let updated = 0;
 
     for (const nominee of nominees) {
-      const newCode = await generateShortcode(ctx, nominee.eventId);
+      const newCode = await generateShortcode(ctx);
       await ctx.db.patch(nominee._id, { shortcode: newCode });
       updated++;
     }

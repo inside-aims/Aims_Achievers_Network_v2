@@ -115,7 +115,7 @@ const InfoModal = (
               </h5>
               <div className="flex items-center justify-between border border-primary/30 bg-primary/5 px-3 md:px-4 rounded-md">
                 <Link
-                  href={`${pathname}/${nominee.nomineeCode}`}
+                  href={`${pathname}/nominee/${nominee.nomineeCode}`}
                   className="text-xs md:text-sm font-semibold text-primary py-2 hover:underline underline-offset-2 truncate"
                 >
                   {pathname}/nominee/{nominee.nomineeCode}

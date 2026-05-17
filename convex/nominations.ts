@@ -117,7 +117,7 @@ export const submit = mutation({
 
     // 7. Auto-approve: skip review queue and create nominee immediately
     if (event.nominationAutoApprove) {
-      const shortcode = await generateShortcode(ctx, event._id);
+      const shortcode = await generateShortcode(ctx);
       const nomineeId = await ctx.db.insert("nominees", {
         eventId: event._id,
         categoryId: category._id,
@@ -300,7 +300,7 @@ export const approve = mutation({
     const category = await ctx.db.get(submission.categoryId);
     if (!category) throw new Error("Category not found");
 
-    const shortcode = await generateShortcode(ctx, submission.eventId);
+    const shortcode = await generateShortcode(ctx);
 
     const nomineeId = await ctx.db.insert("nominees", {
       eventId: submission.eventId,
