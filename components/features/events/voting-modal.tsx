@@ -105,7 +105,7 @@ const VotingModal = ({ open, setOpen, nominee, votingConfig }: VotingModalProps)
         provider: "paystack",
       });
 
-      const resolvedEmail = email.trim() || `${phone}@voter.aimsnetwork.com`;
+      const resolvedEmail = email.trim() || `${phone}@voter.aimsachieversnetwork.com`;
 
       const res = await fetch("/api/paystack/initialize", {
         method: "POST",
