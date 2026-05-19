@@ -155,6 +155,7 @@ export const getByCodeWithNominees = query({
       pricePerVotePesewas: event.pricePerVotePesewas,
       bulkTiers: event.bulkTiers ?? [],
       votingOpen: event.votingOpen,
+      showVotes: event.showVotes ?? true,
       nominees: nominees.map((n) => ({
         nomineeId: n._id as string,
         nomineeCode: n.shortcode,

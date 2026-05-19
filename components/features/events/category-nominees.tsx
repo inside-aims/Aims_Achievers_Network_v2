@@ -18,7 +18,7 @@ const CategoryNominees = ({ eventId, categoryId }: { eventId: string; categoryId
   const [openInfo, setOpenInfo] = useState<boolean>(false);
   const [selectedNominee, setSelectedNominee] = useState<NomineeProps | null>(null);
 
-  const { category, votingConfig, nominees, loading, error } = useCategoryNominees(eventId, categoryId);
+  const { category, votingConfig, nominees, showVotes, loading, error } = useCategoryNominees(eventId, categoryId);
 
   const handleVoteClick = (nominee: NomineeProps) => {
     setSelectedNominee(nominee);
@@ -94,6 +94,7 @@ const CategoryNominees = ({ eventId, categoryId }: { eventId: string; categoryId
             <NomineeCard
               key={nominee.nomineeId}
               daysLeft={daysLeft}
+              showVotes={showVotes}
               onVoteClick={handleVoteClick}
               onInfoClick={handleInfoClick}
               {...nominee}

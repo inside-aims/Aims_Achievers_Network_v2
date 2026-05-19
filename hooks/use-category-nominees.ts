@@ -40,6 +40,7 @@ export function useCategoryNominees(eventId: string, categoryId: string) {
     category,
     votingConfig,
     nominees: data?.nominees ?? [],
+    showVotes: data?.showVotes ?? true,
     loading: data === undefined,
     error: null,
   };

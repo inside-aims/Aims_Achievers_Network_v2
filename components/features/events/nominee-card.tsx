@@ -8,6 +8,7 @@ import ButtonLink from "@/components/shared/button-link";
 
 type NomineeCardProps = NomineeProps & {
   daysLeft: number;
+  showVotes: boolean;
   onVoteClick: (nominee: NomineeProps) => void;
   onInfoClick: (info: NomineeProps) => void;
 }
@@ -20,6 +21,7 @@ const NomineeCard = (
     description,
     votes,
     daysLeft,
+    showVotes,
     onVoteClick,
     onInfoClick,
   }: NomineeCardProps
@@ -51,10 +53,12 @@ const NomineeCard = (
           Code: {nomineeCode}
         </p>
 
-        <p className="flex gap-2 text-sm text-muted-foreground line-clamp-1">
-          <span><Vote className={"w-4 h-4"}/></span>
-          Votes: {votes}
-        </p>
+        {showVotes && (
+          <p className="flex gap-2 text-sm text-muted-foreground line-clamp-1">
+            <span><Vote className={"w-4 h-4"}/></span>
+            Votes: {votes}
+          </p>
+        )}
 
         <div className={"flex items-center justify-between gap-2 md:gap-4"}>
           <div className={"flex-1"}>
