@@ -1,4 +1,8 @@
-import { ArrowLeft, Ticket } from "lucide-react";
+"use client";
+
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { ArrowLeft, Ticket, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import FeatureNavigationWrapper from "@/components/shared/feature-navigation-wrapper";
@@ -6,11 +10,24 @@ import TicketCard from "./ticket-card";
 import { Ticket as TicketType } from "./index";
 
 interface TicketDetailViewProps {
-  ticket: TicketType | null;
   ticketCode: string;
 }
 
-const TicketDetailView = ({ ticket, ticketCode }: TicketDetailViewProps) => {
+const TicketDetailView = ({ ticketCode }: TicketDetailViewProps) => {
+  const ticket = useQuery(api.tickets.getTicketByCode, { code: ticketCode });
+
+  if (ticket === undefined) {
+    return (
+      <div id="ticket-detail" className="feature">
+        <FeatureNavigationWrapper>
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        </FeatureNavigationWrapper>
+      </div>
+    );
+  }
+
   if (!ticket) {
     return (
       <div id="ticket-detail" className="feature">
@@ -47,7 +64,7 @@ const TicketDetailView = ({ ticket, ticketCode }: TicketDetailViewProps) => {
             </Link>
           </Button>
 
-          <TicketCard ticket={ticket} />
+          <TicketCard ticket={ticket as TicketType} />
 
           <div className="rounded-lg border border-border bg-card p-4 space-y-3">
             <h3 className="text-sm font-bold">How to use your ticket</h3>

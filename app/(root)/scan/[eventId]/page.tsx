@@ -1,10 +1,12 @@
 "use client";
 
 import { use, useState } from "react";
-import { ScanLine, Ticket } from "lucide-react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import { ScanLine, Ticket, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { getEventTicketInfo } from "@/components/features/tickets/mock-data";
 import ScanGate from "@/components/features/tickets/scan-gate";
 import EventScanView from "@/components/features/tickets/event-scan-view";
 
@@ -12,12 +14,18 @@ interface Props {
   params: Promise<{ eventId: string }>;
 }
 
-type ScanMode = "gate" | "scanning";
-
 export default function ScanPage({ params }: Props) {
-  const { eventId } = use(params);
-  const eventInfo = getEventTicketInfo(eventId);
-  const [mode, setMode] = useState<ScanMode>("gate");
+  const { eventId: slug } = use(params);
+  const eventInfo = useQuery(api.tickets.getEventTicketInfoBySlug, { slug });
+  const [scanAccessCodeId, setScanAccessCodeId] = useState<Id<"scanAccessCodes"> | null>(null);
+
+  if (eventInfo === undefined) {
+    return (
+      <div className="flex items-center justify-center min-h-[100dvh]">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   if (!eventInfo) {
     return (
@@ -28,7 +36,7 @@ export default function ScanPage({ params }: Props) {
           </div>
           <h2 className="text-xl font-bold">Event Not Found</h2>
           <p className="text-sm text-muted-foreground">
-            No event matches &quot;{eventId}&quot;. Check the link or contact the event organizer.
+            No event matches &quot;{slug}&quot;. Check the link or contact the event organizer.
           </p>
           <Button asChild variant="outline">
             <Link href="/events" className="gap-2">
@@ -41,23 +49,24 @@ export default function ScanPage({ params }: Props) {
     );
   }
 
-  if (mode === "scanning") {
+  if (scanAccessCodeId) {
     return (
       <EventScanView
-        eventId={eventInfo.eventId}
+        eventId={eventInfo.eventId as Id<"events">}
         eventTitle={eventInfo.eventTitle}
+        scanAccessCodeId={scanAccessCodeId}
       />
     );
   }
 
   return (
     <ScanGate
-      eventId={eventInfo.eventId}
+      eventId={eventInfo.eventId as Id<"events">}
       eventTitle={eventInfo.eventTitle}
       eventDate={eventInfo.eventDate}
       eventTime={eventInfo.eventTime}
       venue={eventInfo.venue}
-      onUnlock={() => setMode("scanning")}
+      onUnlock={setScanAccessCodeId}
     />
   );
 }

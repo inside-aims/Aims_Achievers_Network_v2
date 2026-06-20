@@ -1,21 +1,21 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Search, Mail, Phone, Hash, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LookupMode, Ticket } from "./index";
-import { lookupByEmail, lookupByPhone, lookupByCode } from "./mock-data";
 import TicketCard from "./ticket-card";
 import EmptyState from "@/components/shared/empty-state";
 
 const TicketLookupForm = () => {
   const [mode, setMode] = useState<LookupMode>("email");
   const [inputValue, setInputValue] = useState("");
-  const [results, setResults] = useState<Ticket[] | null>(null);
-  const [searching, setSearching] = useState(false);
+  const [search, setSearch] = useState<{ mode: LookupMode; value: string } | null>(null);
 
   const tabs: { key: LookupMode; label: string; icon: typeof Mail; placeholder: string }[] = [
     { key: "email", label: "Email", icon: Mail, placeholder: "Enter your email address" },
@@ -25,38 +25,52 @@ const TicketLookupForm = () => {
 
   const activeTab = useMemo(() => tabs.find((t) => t.key === mode)!, [mode]);
 
+  const emailResults = useQuery(
+    api.tickets.lookupByEmail,
+    search?.mode === "email" ? { email: search.value } : "skip",
+  );
+  const phoneResults = useQuery(
+    api.tickets.lookupByPhone,
+    search?.mode === "phone" ? { phone: search.value } : "skip",
+  );
+  const codeResult = useQuery(
+    api.tickets.lookupByCode,
+    search?.mode === "code" ? { code: search.value } : "skip",
+  );
+
+  const searching =
+    search !== null &&
+    ((search.mode === "email" && emailResults === undefined) ||
+      (search.mode === "phone" && phoneResults === undefined) ||
+      (search.mode === "code" && codeResult === undefined));
+
+  const results: Ticket[] | null =
+    search === null
+      ? null
+      : search.mode === "email"
+        ? ((emailResults as Ticket[] | undefined) ?? null)
+        : search.mode === "phone"
+          ? ((phoneResults as Ticket[] | undefined) ?? null)
+          : codeResult !== undefined
+            ? codeResult
+              ? [codeResult as Ticket]
+              : []
+            : null;
+
   function handleSearch() {
     if (!inputValue.trim()) return;
-
-    setSearching(true);
-
-    // Simulate network delay
-    setTimeout(() => {
-      let found: Ticket[] = [];
-
-      if (mode === "email") {
-        found = lookupByEmail(inputValue.trim());
-      } else if (mode === "phone") {
-        found = lookupByPhone(inputValue.trim());
-      } else {
-        const ticket = lookupByCode(inputValue.trim());
-        found = ticket ? [ticket] : [];
-      }
-
-      setResults(found);
-      setSearching(false);
-    }, 800);
+    setSearch({ mode, value: inputValue.trim() });
   }
 
   function handleReset() {
     setInputValue("");
-    setResults(null);
+    setSearch(null);
   }
 
   function handleTabChange(newMode: LookupMode) {
     setMode(newMode);
     setInputValue("");
-    setResults(null);
+    setSearch(null);
   }
 
   return (

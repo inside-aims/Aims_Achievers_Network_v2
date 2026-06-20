@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+import { v, ConvexError } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { QueryCtx, MutationCtx } from "./_generated/server";
 import { internal } from "./_generated/api";
@@ -389,6 +389,42 @@ export const addTicketType = mutation({
       isActive: true,
       createdAt: Date.now(),
     });
+  },
+});
+
+/**
+ * Deletes a ticket type. Blocked if any tickets have been sold for this type.
+ * Only the event owner may call this.
+ */
+export const deleteTicketType = mutation({
+  args: { ticketTypeId: v.id("ticketTypes") },
+  handler: async (ctx, args) => {
+    const ticketType = await ctx.db.get(args.ticketTypeId);
+    if (!ticketType) throw new Error("Ticket type not found");
+
+    await requireEventOwner(ctx, ticketType.eventId);
+
+    if (ticketType.quantitySold > 0) {
+      throw new ConvexError("Cannot delete a ticket type that has sold tickets.");
+    }
+
+    // Also guard against pending orders that haven't confirmed yet
+    const pendingOrder = await ctx.db
+      .query("ticketOrders")
+      .withIndex("by_event", (q) => q.eq("eventId", ticketType.eventId))
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("ticketTypeId"), args.ticketTypeId),
+          q.eq(q.field("status"), "pending"),
+        ),
+      )
+      .first();
+
+    if (pendingOrder) {
+      throw new ConvexError("Cannot delete a ticket type with a pending checkout in progress.");
+    }
+
+    await ctx.db.delete(args.ticketTypeId);
   },
 });
 

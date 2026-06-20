@@ -1,17 +1,20 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { Camera, Hash, Search, ScanLine, AlertCircle, Info, CheckCircle, SwitchCamera } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ScanResult } from "./index";
-import { SAMPLE_SCAN_RESULTS, verifyTicketCode } from "./mock-data";
+import { ScanResult, TicketStatus } from "./index";
 import ScanResultPanel from "./scan-result-panel";
 
 type EventScanViewProps = {
-  eventId: string;
+  eventId: Id<"events">;
   eventTitle: string;
+  scanAccessCodeId: Id<"scanAccessCodes">;
 };
 
 type Tab = "camera" | "manual";
@@ -22,7 +25,7 @@ type ScanLogEntry = {
   scannedAt: string;
 };
 
-const EventScanView = ({ eventId, eventTitle }: EventScanViewProps) => {
+const EventScanView = ({ eventId, eventTitle, scanAccessCodeId }: EventScanViewProps) => {
   const [activeTab, setActiveTab] = useState<Tab>("camera");
   const [facingMode, setFacingMode] = useState<"environment" | "user">("environment");
   const [manualCode, setManualCode] = useState("");
@@ -30,16 +33,13 @@ const EventScanView = ({ eventId, eventTitle }: EventScanViewProps) => {
   const [scanCount, setScanCount] = useState(0);
   const [reentryGenerated, setReentryGenerated] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
-  const [usedCodes, setUsedCodes] = useState<Set<string>>(new Set());
   const [scanLog, setScanLog] = useState<ScanLogEntry[]>([]);
-  const [simulateIndex, setSimulateIndex] = useState(0);
+  const [verifying, setVerifying] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const eventSamples = SAMPLE_SCAN_RESULTS.filter(
-    (r) => !r.ticket || r.ticket.eventId === eventId
-  );
+  const verifyTicket = useMutation(api.tickets.verifyTicketCode);
 
   useEffect(() => {
     if (activeTab !== "camera") {
@@ -94,27 +94,60 @@ const EventScanView = ({ eventId, eventTitle }: EventScanViewProps) => {
         ].slice(0, 10)
       );
     }
-    if (result.type === "success" && result.ticket) {
-      setUsedCodes((prev) => new Set([...prev, result.ticket!.ticketCode]));
+  }
+
+  async function handleManualVerify() {
+    if (!manualCode.trim() || verifying) return;
+    setVerifying(true);
+    try {
+      const res = await verifyTicket({
+        eventId,
+        ticketCode: manualCode.trim(),
+        scanAccessCodeId,
+      });
+
+      const scanResult: ScanResult = {
+        type: res.result,
+        message: res.message,
+        scannedAt: res.scannedAt,
+        ticket: res.ticket
+          ? {
+              id: res.ticket.id as string,
+              eventId: eventId as string,
+              eventTitle,
+              eventDate: "",
+              eventTime: "",
+              venue: "",
+              orderId: "",
+              ticketTypeName: res.ticket.ticketTypeName,
+              ticketCode: res.ticket.ticketCode,
+              holderName: res.ticket.holderName,
+              holderEmail: res.ticket.holderEmail,
+              holderPhone: res.ticket.holderPhone,
+              status: res.ticket.status as TicketStatus,
+              themeId: res.ticket.themeId,
+              createdAt: "",
+            }
+          : null,
+      };
+
+      recordResult(scanResult);
+      setManualCode("");
+    } catch {
+      // Show a generic error result so the UI stays consistent
+      recordResult({
+        type: "invalid",
+        message: "Verification failed. Please try again.",
+        scannedAt: new Date().toISOString(),
+        ticket: null,
+      });
+    } finally {
+      setVerifying(false);
     }
-  }
-
-  function handleSimulateScan() {
-    const sample = eventSamples[simulateIndex % eventSamples.length];
-    setSimulateIndex((prev) => prev + 1);
-    const code = sample.ticket?.ticketCode ?? "INVALID-SIM";
-    recordResult(verifyTicketCode(eventId, code, usedCodes));
-  }
-
-  function handleManualVerify() {
-    if (!manualCode.trim()) return;
-    recordResult(verifyTicketCode(eventId, manualCode.trim(), usedCodes));
-    setManualCode("");
   }
 
   function handleGenerateReentry() {
     setReentryGenerated(true);
-    alert("New QR code generated! The old code has been invalidated. In production, this sends a new QR to the attendee's email.");
   }
 
   function handleDismiss() {
@@ -255,16 +288,10 @@ const EventScanView = ({ eventId, eventTitle }: EventScanViewProps) => {
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Button onClick={handleSimulateScan} className="w-full h-11 gap-2" variant="secondary">
-                  <ScanLine className="h-4 w-4" />
-                  Simulate QR Scan
-                </Button>
-                <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
-                  <Info className="h-3 w-3 shrink-0" />
-                  Live QR decoding activates when connected to the database.
-                </p>
-              </div>
+              <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
+                <Info className="h-3 w-3 shrink-0" />
+                Live QR decoding requires a QR scanning library. Use Manual Entry tab for now.
+              </p>
             </div>
           )}
 
@@ -282,30 +309,24 @@ const EventScanView = ({ eventId, eventTitle }: EventScanViewProps) => {
                 <div className="relative flex-1">
                   <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="e.g. FAST-DEMO01"
+                    placeholder="e.g. FAST-A3K9X2"
                     value={manualCode}
                     onChange={(e) => setManualCode(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleManualVerify()}
                     className="pl-9 h-11 font-mono"
                     autoCapitalize="characters"
+                    disabled={verifying}
                   />
                 </div>
                 <Button
                   onClick={handleManualVerify}
-                  disabled={!manualCode.trim()}
+                  disabled={!manualCode.trim() || verifying}
                   className="h-11 gap-1.5 shrink-0"
                 >
                   <Search className="h-4 w-4" />
                   Verify
                 </Button>
               </div>
-
-              <p className="text-xs text-muted-foreground">
-                Demo:{" "}
-                <span className="font-mono text-foreground">FAST-DEMO01</span> (valid) ·{" "}
-                <span className="font-mono text-foreground">FAST-DEMO02</span> (used) ·{" "}
-                <span className="font-mono text-foreground">FBNE-DEMO01</span> (other event)
-              </p>
             </div>
           )}
 
@@ -323,9 +344,9 @@ const EventScanView = ({ eventId, eventTitle }: EventScanViewProps) => {
             <div className="flex items-start gap-3 rounded-xl border border-border bg-card px-4 py-4">
               <CheckCircle className="h-5 w-5 text-primary shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-semibold">New QR code sent</p>
+                <p className="text-sm font-semibold">Re-entry noted</p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  The previous code is now invalid. Only the new code grants entry.
+                  Contact the event organizer to issue a new QR code for this attendee if needed.
                 </p>
               </div>
             </div>

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "convex/react";
+import { ConvexError } from "convex/values";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { toast } from "sonner";
@@ -271,6 +272,9 @@ function TicketingDashboard({
   const generateCode = useMutation(api.tickets.generateScanAccessCode);
   const toggle       = useMutation(api.tickets.toggleScanAccessCode);
   const addType      = useMutation(api.tickets.addTicketType);
+  const deleteType   = useMutation(api.tickets.deleteTicketType);
+
+  const [deletingTypeId, setDeletingTypeId] = useState<string | null>(null);
 
   // Scan code dialog
   const [codeDialogOpen, setCodeDialogOpen] = useState(false);
@@ -332,6 +336,21 @@ function TicketingDashboard({
     setGeneratedCode(null);
   }
 
+  async function handleDeleteType(ticketTypeId: string) {
+    setDeletingTypeId(ticketTypeId);
+    try {
+      await deleteType({ ticketTypeId: ticketTypeId as Id<"ticketTypes"> });
+      toast.success("Ticket type deleted");
+    } catch (err) {
+      const message = err instanceof ConvexError
+        ? (err.data as string)
+        : "Failed to delete ticket type. Please try again.";
+      toast.error(message);
+    } finally {
+      setDeletingTypeId(null);
+    }
+  }
+
   async function handleAddType() {
     const name = typeName.trim();
     if (!name) { toast.error("Name is required"); return; }
@@ -364,6 +383,27 @@ function TicketingDashboard({
 
         {/* ── Overview ── */}
         <TabsContent value="overview" className="mt-4 space-y-4">
+          {/* Total ticket revenue summary */}
+          {ticketInfo && ticketInfo.ticketTypes.length > 0 && (() => {
+            const totalRevenue = ticketInfo.ticketTypes.reduce(
+              (sum, t) => sum + (t.quantitySold * t.pricePesewas) / 100,
+              0,
+            );
+            const totalSold = ticketInfo.ticketTypes.reduce((sum, t) => sum + t.quantitySold, 0);
+            return (
+              <div className="flex items-center justify-between gap-3 rounded-xl bg-primary/5 border border-primary/15 px-4 py-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">Ticket Revenue</p>
+                  <p className="text-lg font-bold tabular-nums">GHS {totalRevenue.toFixed(2)}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-muted-foreground">Tickets Sold</p>
+                  <p className="text-lg font-bold tabular-nums">{totalSold}</p>
+                </div>
+              </div>
+            );
+          })()}
+
           <div className="flex items-center justify-between gap-3">
             <p className="text-sm font-semibold">Ticket Types</p>
             {!readonly && (
@@ -395,9 +435,11 @@ function TicketingDashboard({
             <div className="bg-card border border-border rounded-xl overflow-hidden">
               <div className="divide-y divide-border">
                 {ticketInfo.ticketTypes.map((t) => {
-                  const revenue  = (t.quantitySold * t.pricePesewas) / 100;
-                  const soldOut  = t.quantityTotal !== -1 && t.quantitySold >= t.quantityTotal;
+                  const revenue   = (t.quantitySold * t.pricePesewas) / 100;
+                  const soldOut   = t.quantityTotal !== -1 && t.quantitySold >= t.quantityTotal;
                   const unlimited = t.quantityTotal === -1;
+                  const canDelete = t.quantitySold === 0;
+                  const isDeleting = deletingTypeId === (t.id as string);
                   return (
                     <div key={t.id as string} className="px-4 py-3 space-y-2">
                       <div className="flex items-start justify-between gap-3">
@@ -409,14 +451,31 @@ function TicketingDashboard({
                             </p>
                           )}
                         </div>
-                        <div className="flex flex-col items-end gap-1 shrink-0">
-                          <span className="text-sm font-bold tabular-nums">
-                            GHS {(t.pricePesewas / 100).toFixed(2)}
-                          </span>
-                          {soldOut && (
-                            <Badge variant="secondary" className="text-[10px] h-4 px-1.5">
-                              Sold Out
-                            </Badge>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <div className="flex flex-col items-end gap-1">
+                            <span className="text-sm font-bold tabular-nums">
+                              GHS {(t.pricePesewas / 100).toFixed(2)}
+                            </span>
+                            {soldOut && (
+                              <Badge variant="secondary" className="text-[10px] h-4 px-1.5">
+                                Sold Out
+                              </Badge>
+                            )}
+                          </div>
+                          {!readonly && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="size-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0"
+                              onClick={() => handleDeleteType(t.id as string)}
+                              disabled={!canDelete || isDeleting}
+                              title={canDelete ? "Delete ticket type" : "Cannot delete — tickets have been sold"}
+                            >
+                              {isDeleting
+                                ? <Loader2 className="size-3.5 animate-spin" />
+                                : <Trash2 className="size-3.5" />
+                              }
+                            </Button>
                           )}
                         </div>
                       </div>

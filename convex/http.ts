@@ -39,42 +39,53 @@ http.route({
     try {
       payload = JSON.parse(rawBody);
     } catch {
+      console.error("[webhook] Failed to parse JSON body");
       return new Response("Invalid JSON", { status: 400 });
     }
 
+    console.log(`[webhook] Received event="${payload.event}" reference="${payload.data?.reference}" status="${payload.data?.status}" amount=${payload.data?.amount}`);
+
     // ── 3. Only handle successful charges ─────────────────────────────────
     if (payload.event !== "charge.success") {
-      // Acknowledge other events without processing
+      console.log(`[webhook] Ignoring non-charge event: ${payload.event}`);
       return new Response("OK", { status: 200 });
     }
 
     const { reference, amount, status } = payload.data;
-    console.log("payload ", payload)
     if (status !== "success") {
+      console.log(`[webhook] Charge status is "${status}", skipping`);
       return new Response("OK", { status: 200 });
     }
 
     if (!reference) {
+      console.error("[webhook] Missing reference in payload");
       return new Response("Missing reference", { status: 400 });
     }
+
+    console.log(`[webhook] Processing charge — reference="${reference}" amount=${amount}`);
 
     // ── 4. Route to the correct handler based on reference prefix ─────────
     // Vote references:   AAN-{eventCode}-{hex}
     // Ticket references: TKT-{eventCode}-{hex}
+    const isTicket = reference.startsWith("TKT-");
+    console.log(`[webhook] Routing to ${isTicket ? "ticket" : "vote"} handler`);
+
     try {
-      if (reference.startsWith("TKT-")) {
+      if (isTicket) {
         await ctx.runMutation(internal.internal.tickets.confirmTicketOrderByReference, {
           providerReference: reference,
           grossAmountPesewas: amount,
         });
+        console.log(`[webhook] Ticket order confirmed for reference="${reference}"`);
       } else {
         await ctx.runMutation(internal.internal.votes.recordVote, {
           providerReference: reference,
           grossAmountPesewas: amount,
         });
+        console.log(`[webhook] Vote recorded for reference="${reference}"`);
       }
     } catch (err) {
-      console.error("Paystack webhook handler error:", err);
+      console.error(`[webhook] Handler failed for reference="${reference}":`, err);
       return new Response("Handler failed", { status: 500 });
     }
 
