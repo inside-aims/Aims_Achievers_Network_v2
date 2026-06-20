@@ -12,7 +12,8 @@ import { useEvent } from "@/hooks/use-event";
 import { CategoryCardSkeleton } from "@/components/ui/skeleton";
 import TicketPurchaseSection from "@/components/features/tickets/ticket-purchase-section";
 import TicketPurchaseModal from "@/components/features/tickets/ticket-purchase-modal";
-import { isTicketingEnabled, getEventTicketInfo } from "@/components/features/tickets/mock-data";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { TicketType } from "@/components/features/tickets";
 
 const EventCategories = ({ eventId }: { eventId: string }) => {
@@ -22,7 +23,7 @@ const EventCategories = ({ eventId }: { eventId: string }) => {
   const [ticketModalOpen, setTicketModalOpen] = useState(false);
   const { event, loading, error } = useEvent(eventId);
 
-  const ticketInfo = isTicketingEnabled(eventId) ? getEventTicketInfo(eventId) : undefined;
+  const ticketInfo = useQuery(api.tickets.getEventTicketInfoBySlug, { slug: eventId });
 
   const eventCategories = useMemo(() => {
     if (!event) return [];

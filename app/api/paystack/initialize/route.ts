@@ -4,8 +4,9 @@ interface InitializeBody {
   reference: string;
   amountPesewas: number;
   email: string;
-  phone: string;
-  metadata: Record<string, string>;
+  phone?: string;
+  metadata?: Record<string, string>;
+  callbackPath?: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "Invalid request body" }, { status: 400 });
   }
 
-  const { reference, amountPesewas, email, phone, metadata = {} } = body;
+  const { reference, amountPesewas, email, phone, metadata = {}, callbackPath = "/vote/callback" } = body;
 
   if (!reference || !email) {
     return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
   if (!siteUrl) {
     return NextResponse.json({ message: "Server misconfiguration" }, { status: 500 });
   }
-  const callbackUrl = `${siteUrl}/vote/callback`;
+  const callbackUrl = `${siteUrl}${callbackPath}`;
 
   const paystackRes = await fetch("https://api.paystack.co/transaction/initialize", {
     method: "POST",

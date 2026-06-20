@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Dialog,
@@ -29,6 +32,7 @@ import {
   Mail,
   Phone,
   User,
+  AlertCircle,
 } from "lucide-react";
 import { TicketType, EventTicketInfo } from "./index";
 import { cn } from "@/lib/utils";
@@ -54,6 +58,9 @@ const TicketPurchaseModal = ({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const createTicketOrder = useMutation(api.tickets.createTicketOrder);
 
   if (!selectedType) return null;
 
@@ -70,10 +77,54 @@ const TicketPurchaseModal = ({
     return name.trim().length > 0 && email.trim().length > 0;
   }
 
-  function handlePurchase() {
+  async function handlePurchase() {
     if (!isFormValid()) return;
+    setError(null);
     setStep("loading");
-    setTimeout(() => setStep("success"), 1500);
+
+    try {
+      const result = await createTicketOrder({
+        eventId: ticketInfo.eventId as Id<"events">,
+        ticketTypeId: selectedType!.id as Id<"ticketTypes">,
+        quantity,
+        buyerName: name.trim(),
+        buyerEmail: email.trim(),
+        buyerPhone: phone.trim() || undefined,
+      });
+
+      if (result.isFree) {
+        setStep("success");
+        return;
+      }
+
+      // Paid — initialize Paystack and redirect
+      const res = await fetch("/api/paystack/initialize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reference: result.providerReference,
+          amountPesewas: result.totalPesewas,
+          email: email.trim(),
+          phone: phone.trim() || undefined,
+          callbackPath: "/tickets",
+          metadata: {
+            buyer_name: name.trim(),
+            ticket_type: selectedType!.name,
+            quantity: String(quantity),
+          },
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json.authorization_url) {
+        throw new Error(json.message ?? "Failed to initialize payment");
+      }
+
+      window.location.href = json.authorization_url;
+    } catch (err) {
+      setStep("form");
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    }
   }
 
   function handleClose(val: boolean) {
@@ -85,6 +136,7 @@ const TicketPurchaseModal = ({
       setName("");
       setEmail("");
       setPhone("");
+      setError(null);
     }, 250);
   }
 
@@ -107,6 +159,7 @@ const TicketPurchaseModal = ({
       totalPrice={totalPrice}
       isFree={isFree}
       isFormValid={isFormValid()}
+      error={error}
       onPurchase={handlePurchase}
       onClose={() => handleClose(false)}
     />
@@ -172,6 +225,7 @@ interface PurchaseContentProps {
   totalPrice: number;
   isFree: boolean;
   isFormValid: boolean;
+  error: string | null;
   onPurchase: () => void;
   onClose: () => void;
 }
@@ -191,10 +245,11 @@ function PurchaseContent({
   totalPrice,
   isFree,
   isFormValid,
+  error,
   onPurchase,
   onClose,
 }: PurchaseContentProps) {
-  if (step === "loading") return <LoadingStep />;
+  if (step === "loading") return <LoadingStep isFree={isFree} />;
   if (step === "success") {
     return (
       <SuccessStep
@@ -221,6 +276,7 @@ function PurchaseContent({
     totalPrice={totalPrice}
     isFree={isFree}
     isFormValid={isFormValid}
+    error={error}
     onPurchase={onPurchase}
   />;
 }
@@ -239,6 +295,7 @@ function FormStep({
   totalPrice,
   isFree,
   isFormValid,
+  error,
   onPurchase,
 }: Omit<PurchaseContentProps, "step" | "onClose">) {
   return (
@@ -348,6 +405,13 @@ function FormStep({
         </div>
       </div>
 
+      {error && (
+        <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
+          <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+          <span>{error}</span>
+        </div>
+      )}
+
       <Button className="w-full" onClick={onPurchase} disabled={!isFormValid}>
         {isFree
           ? `Get ${quantity} Free Ticket${quantity > 1 ? "s" : ""}`
@@ -357,11 +421,13 @@ function FormStep({
   );
 }
 
-function LoadingStep() {
+function LoadingStep({ isFree }: { isFree: boolean }) {
   return (
     <div className="flex flex-col items-center justify-center py-14 gap-4">
       <Loader2 className="h-10 w-10 animate-spin text-primary" />
-      <p className="text-sm text-muted-foreground">Processing your order…</p>
+      <p className="text-sm text-muted-foreground">
+        {isFree ? "Confirming your order…" : "Redirecting to payment…"}
+      </p>
     </div>
   );
 }

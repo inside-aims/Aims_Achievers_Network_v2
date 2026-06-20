@@ -124,6 +124,10 @@ export default defineSchema({
     nominationRequiresAuth: v.boolean(),
     nominationAutoApprove: v.optional(v.boolean()), // if true, skip review queue
 
+    // ── Ticketing ───────────────────────────────
+    ticketingEnabled: v.optional(v.boolean()),
+    themeId: v.optional(v.string()),               // e.g. "royal-night"
+
     createdAt: v.number(),
   })
     .index("by_organizer", ["organizerId"])
@@ -360,6 +364,101 @@ export default defineSchema({
     .index("by_sessionId", ["sessionId"])
     .index("by_msisdn_level", ["msisdn", "level"])  // OTP resume lookup
     .index("by_expiry", ["expiresAt"]),              // cron cleanup
+
+
+  // ─────────────────────────────────────────────
+  // TICKETING
+  // ─────────────────────────────────────────────
+
+  ticketTypes: defineTable({
+    eventId: v.id("events"),
+    name: v.string(),
+    description: v.optional(v.string()),
+    pricePesewas: v.number(),             // 0 = free
+    quantityTotal: v.number(),             // -1 = unlimited
+    quantitySold: v.number(),              // denormalized; incremented on confirmation
+    salesStartAt: v.optional(v.number()), // ms timestamp
+    salesEndAt: v.optional(v.number()),   // ms timestamp
+    isActive: v.boolean(),
+    createdAt: v.number(),
+  })
+    .index("by_event", ["eventId"]),
+
+  ticketOrders: defineTable({
+    eventId: v.id("events"),
+    ticketTypeId: v.id("ticketTypes"),
+    quantity: v.number(),
+    totalPesewas: v.number(),
+    buyerName: v.string(),
+    buyerEmail: v.string(),
+    buyerPhone: v.optional(v.string()),
+    providerReference: v.optional(v.string()), // set for paid orders
+    status: v.union(
+      v.literal("pending"),
+      v.literal("confirmed"),
+      v.literal("cancelled"),
+    ),
+    createdAt: v.number(),
+  })
+    .index("by_event", ["eventId"])
+    .index("by_providerReference", ["providerReference"])
+    .index("by_buyerEmail", ["buyerEmail"]),
+
+  tickets: defineTable({
+    eventId: v.id("events"),
+    ticketTypeId: v.id("ticketTypes"),
+    orderId: v.id("ticketOrders"),
+    ticketCode: v.string(),
+    holderName: v.string(),
+    holderEmail: v.string(),
+    holderPhone: v.optional(v.string()),
+    status: v.union(
+      v.literal("valid"),
+      v.literal("used"),
+      v.literal("cancelled"),
+    ),
+    usedAt: v.optional(v.number()),       // ms timestamp
+    themeId: v.optional(v.string()),
+    previousCodes: v.optional(v.array(v.string())),
+    createdAt: v.number(),
+  })
+    .index("by_event", ["eventId"])
+    .index("by_ticketCode", ["ticketCode"])
+    .index("by_holderEmail", ["holderEmail"])
+    .index("by_holderPhone", ["holderPhone"])
+    .index("by_order", ["orderId"]),
+
+  scanAccessCodes: defineTable({
+    eventId: v.id("events"),
+    code: v.string(),
+    staffName: v.string(),
+    staffRole: v.string(),
+    staffPhone: v.optional(v.string()),
+    isActive: v.boolean(),
+    scansCount: v.number(),
+    lastScannedAt: v.optional(v.number()), // ms timestamp
+    createdAt: v.number(),
+  })
+    .index("by_event", ["eventId"])
+    .index("by_code", ["code"]),
+
+  scanEntries: defineTable({
+    eventId: v.id("events"),
+    scanAccessCodeId: v.id("scanAccessCodes"),
+    ticketCode: v.string(),
+    holderName: v.optional(v.string()),
+    ticketTypeName: v.optional(v.string()),
+    result: v.union(
+      v.literal("success"),
+      v.literal("already_used"),
+      v.literal("invalid"),
+      v.literal("cancelled"),
+    ),
+    scannedAt: v.number(),
+  })
+    .index("by_event", ["eventId"])
+    .index("by_scanCode", ["scanAccessCodeId"])
+    .index("by_event_time", ["eventId", "scannedAt"]),
 
 
   // ─────────────────────────────────────────────

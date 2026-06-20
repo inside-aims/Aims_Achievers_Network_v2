@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { EventHeader } from "./event-header";
 import { CategoriesList } from "./categories-list";
 import { EventSidebar } from "./event-sidebar";
+import { EventTicketsSection } from "./event-tickets-section";
 import type { RichEventDetail, ComputedStats, EventControls, CategoryDetail } from "./events";
 import { formatCurrency } from "./events";
 import { toast } from "sonner";
@@ -151,6 +152,11 @@ export function EventDetail({ base, eventId }: Props) {
           onToggle={handleToggle}
         />
       </div>
+
+      <EventTicketsSection
+        eventId={convexId}
+        ticketingEnabled={event.ticketingEnabled ?? false}
+      />
     </div>
   );
 }

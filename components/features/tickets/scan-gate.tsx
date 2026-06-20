@@ -1,40 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { LockKeyhole, Unlock, Hash, CalendarDays, MapPin, Clock, ShieldAlert } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { verifyScanAccess } from "./mock-data";
 import { cn } from "@/lib/utils";
 
 type ScanGateProps = {
-  eventId: string;
+  eventId: Id<"events">;
   eventTitle: string;
   eventDate: string;
   eventTime: string;
   venue: string;
-  onUnlock: () => void;
+  onUnlock: (scanAccessCodeId: Id<"scanAccessCodes">) => void;
 };
 
 const ScanGate = ({ eventId, eventTitle, eventDate, eventTime, venue, onUnlock }: ScanGateProps) => {
   const [code, setCode] = useState("");
+  const [submittedCode, setSubmittedCode] = useState<string | null>(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const accessResult = useQuery(
+    api.tickets.verifyScanAccess,
+    submittedCode ? { eventId, code: submittedCode } : "skip",
+  );
+
+  useEffect(() => {
+    if (submittedCode === null || accessResult === undefined) return;
+    setLoading(false);
+    if (accessResult) {
+      onUnlock(accessResult._id);
+    } else {
+      setError(true);
+      setSubmittedCode(null);
+    }
+  }, [accessResult, submittedCode, onUnlock]);
 
   function handleSubmit() {
     if (!code.trim() || loading) return;
     setLoading(true);
     setError(false);
-
-    setTimeout(() => {
-      const valid = verifyScanAccess(eventId, code);
-      setLoading(false);
-      if (valid) {
-        onUnlock();
-      } else {
-        setError(true);
-      }
-    }, 150);
+    setSubmittedCode(code.trim().toUpperCase());
   }
 
   return (
