@@ -58,16 +58,24 @@ http.route({
       return new Response("Missing reference", { status: 400 });
     }
 
-    // ── 4. Record the vote (idempotent internal mutation) ─────────────────
+    // ── 4. Route to the correct handler based on reference prefix ─────────
+    // Vote references:   AAN-{eventCode}-{hex}
+    // Ticket references: TKT-{eventCode}-{hex}
     try {
-      await ctx.runMutation(internal.internal.votes.recordVote, {
-        providerReference: reference,
-        grossAmountPesewas: amount,
-      });
+      if (reference.startsWith("TKT-")) {
+        await ctx.runMutation(internal.internal.tickets.confirmTicketOrderByReference, {
+          providerReference: reference,
+          grossAmountPesewas: amount,
+        });
+      } else {
+        await ctx.runMutation(internal.internal.votes.recordVote, {
+          providerReference: reference,
+          grossAmountPesewas: amount,
+        });
+      }
     } catch (err) {
-      // Return 500 so Paystack retries — recordVote is idempotent so retries are safe
-      console.error("recordVote error:", err);
-      return new Response("Vote recording failed", { status: 500 });
+      console.error("Paystack webhook handler error:", err);
+      return new Response("Handler failed", { status: 500 });
     }
 
     return new Response("OK", { status: 200 });

@@ -260,6 +260,21 @@ export const createWithCategories = mutation({
     categories: v.array(
       v.object({ name: v.string(), description: v.optional(v.string()) }),
     ),
+    // Ticketing
+    ticketingEnabled: v.optional(v.boolean()),
+    themeId: v.optional(v.string()),
+    ticketTypes: v.optional(
+      v.array(
+        v.object({
+          name: v.string(),
+          description: v.optional(v.string()),
+          pricePesewas: v.number(),
+          quantityTotal: v.number(),
+          salesStartAt: v.optional(v.number()),
+          salesEndAt: v.optional(v.number()),
+        }),
+      ),
+    ),
   },
   handler: async (ctx, args) => {
     const profile = await requireOrganizerProfile(ctx);
@@ -304,10 +319,30 @@ export const createWithCategories = mutation({
       nominationsOpen: args.nominationsOpen ?? false,
       nominationRequiresAuth: false,
       nominationAutoApprove: args.nominationAutoApprove ?? false,
+      ticketingEnabled: args.ticketingEnabled ?? false,
+      themeId: args.themeId,
       createdAt: Date.now(),
     });
 
     const now = Date.now();
+
+    if (args.ticketingEnabled && args.ticketTypes && args.ticketTypes.length > 0) {
+      for (const tt of args.ticketTypes) {
+        await ctx.db.insert("ticketTypes", {
+          eventId,
+          name: tt.name,
+          description: tt.description,
+          pricePesewas: tt.pricePesewas,
+          quantityTotal: tt.quantityTotal,
+          quantitySold: 0,
+          salesStartAt: tt.salesStartAt,
+          salesEndAt: tt.salesEndAt,
+          isActive: true,
+          createdAt: now,
+        });
+      }
+    }
+
     for (const cat of args.categories) {
       const baseCode = abbreviate(cat.name).toUpperCase();
       const categoryCode = await uniqueCategoryCodeForEvent(ctx, eventId, baseCode);
