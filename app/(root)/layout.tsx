@@ -1,7 +1,8 @@
-"use client";
 import Footer from "@/components/layout/Footer";
-import RadavilleNav from "../../components/layout/RadavilleNav";
-import { ReactLenis } from "lenis/react";
+import RadavilleNav from "@/components/layout/RadavilleNav";
+import LenisProvider from "@/components/layout/lenis-provider";
+import XolacePromoRibbon from "@/components/features/xolace/xolace-promo-ribbon";
+import { MobileDownloadBar } from "@/components/features/xolace/mobile-download-bar";
 
 const Layout = ({
   children,
@@ -9,13 +10,15 @@ const Layout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <ReactLenis root>
+    <LenisProvider>
       <div className={"bg-background"}>
+        <XolacePromoRibbon />
         <RadavilleNav />
         <main>{children}</main>
         <Footer />
+        <MobileDownloadBar />
       </div>
-    </ReactLenis>
+    </LenisProvider>
   );
 };
 
