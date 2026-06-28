@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { internalMutation, MutationCtx } from "../_generated/server";
 import { resend } from "../resend";
+import { isProd } from "../env";
 
 function buildTicketConfirmationEmail(opts: {
   buyerName: string;
@@ -183,8 +184,8 @@ export const confirmTicketOrder = internalMutation({
     console.log(`[confirmTicketOrder] Done. quantitySold AFTER=${ticketType.quantitySold + order.quantity} codes=${issuedCodes.join(", ")}`);
 
     await resend.sendEmail(ctx, {
-      from: "AIMS Achievers Network <tickets@aimsachieversnetwork.com>",
-      to: order.buyerEmail,
+      from: "AIMS Achievers Network <tickets@mail.xolace.app>",
+      to: isProd ? order.buyerEmail : "delivered@resend.dev",
       subject: `Your ticket${issuedCodes.length > 1 ? "s" : ""} for ${event.title}`,
       html: buildTicketConfirmationEmail({
         buyerName: order.buyerName,
@@ -296,8 +297,8 @@ export const confirmTicketOrderByReference = internalMutation({
     console.log(`[confirmTicketOrderByReference] Done. quantitySold AFTER=${ticketType.quantitySold + order.quantity} codes=${issuedCodes.join(", ")}`);
 
     await resend.sendEmail(ctx, {
-      from: "AIMS Achievers Network <tickets@aimsachieversnetwork.com>",
-      to: order.buyerEmail,
+      from: "AIMS Achievers Network <tickets@mail.xolace.app>",
+      to: isProd ? order.buyerEmail : "delivered@resend.dev",
       subject: `Your ticket${issuedCodes.length > 1 ? "s" : ""} for ${event.title}`,
       html: buildTicketConfirmationEmail({
         buyerName: order.buyerName,
