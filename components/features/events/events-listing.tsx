@@ -79,7 +79,7 @@ const EventsListing = () => {
 
       {/* Events grid */}
       {!loading && !error && filteredEvents.length > 0 && (
-        <div className="grid gap-4 md:gap-8 sm:grid-cols-1 lg:grid-cols-3">
+        <div className="grid gap-8 sm:grid-cols-1 lg:grid-cols-3">
           {filteredEvents.map((event) => (
             <EventCard key={event.eventId} {...event} />
           ))}

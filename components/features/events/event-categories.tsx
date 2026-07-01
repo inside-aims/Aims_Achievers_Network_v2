@@ -104,7 +104,7 @@ const EventCategories = ({ eventId }: { eventId: string }) => {
       </div>
 
       {eventCategories.length > 0 && (
-        <div className="grid gap-4 md:gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {eventCategories.map((category) => (
             <CategoryCard
               key={category.id}

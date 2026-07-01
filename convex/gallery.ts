@@ -18,6 +18,7 @@ export const listAll = query({
       description: p.description,
       photographer: p.photographer ?? "",
       uploadDate: p.uploadDate,
+      isFeatured: p.isFeatured,
     }));
   },
 });

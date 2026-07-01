@@ -49,18 +49,21 @@ const InfoModal = (
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-3xl p-0 gap-0 max-h-[95vh] overflow-hidden flex flex-col">
+      <DialogContent
+        showCloseButton={false}
+        className="sm:max-w-3xl p-0 gap-0 max-h-[95vh] overflow-hidden flex flex-col"
+      >
 
-        <div className="grid md:grid-cols-2 gap-0 overflow-y-auto">
+        <div className="grid md:grid-cols-2 gap-0 overflow-y-auto min-h-0">
           {/* Left Section - Nominee Info */}
           <div className="bg-primary p-4 md:p-8 flex flex-col items-center justify-center text-center text-primary-foreground">
-            <div className="mb-1 md:mb-2">
-              <h2 className="text-base md:text-lg font-semibold mb-1 uppercase tracking-wide">
+            <div className="w-full mb-1 md:mb-2">
+              <h2 className="w-full break-words text-base md:text-lg font-semibold mb-1 uppercase tracking-wide">
                 {event}
               </h2>
             </div>
 
-            <div className="relative w-24 h-24 md:w-48 md:h-48 rounded-full overflow-hidden mb-2 md:mb-4 border-4 border-primary-foreground/20">
+            <div className="relative w-24 h-24 md:w-48 md:h-48 shrink-0 rounded-full overflow-hidden mb-2 md:mb-4 border-4 border-primary-foreground/20">
               <Image
                 src={nominee.imageUrl}
                 alt={nominee.fullName}
@@ -69,8 +72,8 @@ const InfoModal = (
               />
             </div>
 
-            <h3 className="text-xl md:text-2xl font-bold mb-1 md:mb-2">{nominee.fullName}</h3>
-            <p className="text-sm opacity-90">{category}</p>
+            <h3 className="w-full break-words text-xl md:text-2xl font-bold mb-1 md:mb-2">{nominee.fullName}</h3>
+            <p className="w-full break-words text-sm opacity-90">{category}</p>
           </div>
 
           {/* Right Section - Voting Instructions */}
@@ -113,10 +116,10 @@ const InfoModal = (
               <h5 className="text-xs font-semibold text-muted-foreground mb-1 md:mb-2 uppercase tracking-wide">
                 Nominee Profile
               </h5>
-              <div className="flex items-center justify-between border border-primary/30 bg-primary/5 px-3 md:px-4 rounded-md">
+              <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border border-primary/30 bg-primary/5 px-3 md:px-4 rounded-md">
                 <Link
                   href={`${pathname}/nominee/${nominee.nomineeCode}`}
-                  className="text-xs md:text-sm font-semibold text-primary py-2 hover:underline underline-offset-2 truncate"
+                  className="min-w-0 flex-1 break-all text-xs md:text-sm font-semibold text-primary py-2 hover:underline underline-offset-2"
                 >
                   {pathname}/nominee/{nominee.nomineeCode}
                 </Link>
