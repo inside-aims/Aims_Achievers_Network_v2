@@ -167,13 +167,6 @@ const FeatureGridBento = () => {
       <div className="absolute inset-0 bg-[radial-gradient(var(--border)_1px,transparent_1px)] bg-[size:22px_22px] opacity-40 pointer-events-none" />
 
       <div className="relative z-10">
-        <div className="mb-14 md:mb-16 flex items-center gap-6">
-          <span className="text-xs tracking-[0.25em] font-mono text-muted-foreground shrink-0">
-            HOW IT WORKS
-          </span>
-          <div className="h-px flex-1 bg-border" />
-        </div>
-
         <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light font-serif tracking-tight leading-[1.05] mb-4 max-w-2xl">
           One event, run
           <br />

@@ -19,14 +19,20 @@ const partners = [
 ];
 
 const PartnerItem = ({ name, type }: { name: string; type: string }) => (
-  <div className="flex items-center gap-3 mx-10 sm:mx-14 shrink-0 group cursor-default select-none">
-    <Building2 className="w-4 h-4 text-foreground/15 group-hover:text-secondary transition-colors duration-500 shrink-0" strokeWidth={1.5} />
-    <span className="text-xl sm:text-2xl md:text-3xl font-light font-serif text-foreground/25 group-hover:text-foreground/60 transition-colors duration-500 tracking-tight">
-      {name}
-    </span>
-    <span className="text-[10px] font-mono tracking-[0.2em] text-muted-foreground/30 uppercase mt-1 shrink-0">
-      {type}
-    </span>
+  <div className="mx-2.5 shrink-0 group cursor-default select-none">
+    <div className="flex items-center gap-3 border border-border rounded-lg px-5 py-4 sm:px-6 sm:py-5 bg-background/60 group-hover:border-secondary/40 group-hover:bg-background transition-all duration-500">
+      <span className="w-8 h-8 shrink-0 rounded-full bg-muted flex items-center justify-center group-hover:bg-secondary/10 transition-colors duration-500">
+        <Building2 className="w-3.5 h-3.5 text-muted-foreground group-hover:text-secondary transition-colors duration-500" strokeWidth={1.5} />
+      </span>
+      <div>
+        <div className="text-base sm:text-lg font-light font-serif text-foreground/70 group-hover:text-foreground transition-colors duration-500 tracking-tight leading-tight">
+          {name}
+        </div>
+        <div className="text-[10px] font-mono tracking-[0.2em] text-muted-foreground/40 uppercase mt-0.5">
+          {type}
+        </div>
+      </div>
+    </div>
   </div>
 );
 
@@ -62,7 +68,6 @@ const TrustedPartners = () => {
             {partners.map((partner) => (
               <PartnerItem key={partner.name} {...partner} />
             ))}
-            <span className="mx-10 text-muted-foreground/20 text-2xl select-none font-serif">·</span>
           </ScrollVelocityRow>
         </ScrollVelocityContainer>
 

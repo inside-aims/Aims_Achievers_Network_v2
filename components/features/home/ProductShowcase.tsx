@@ -33,7 +33,7 @@ export default function ProductShowcase() {
             <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/60" />
             <span className="w-2.5 h-2.5 rounded-full bg-green-400/60" />
             <span className="ml-3 text-[11px] font-mono text-muted-foreground/50 truncate">
-              aan.app/events/best-dressed-2025
+              aimsachievers.network/events/best-dressed-2025
             </span>
           </div>
           <div className="p-6 sm:p-8">

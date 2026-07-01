@@ -57,8 +57,6 @@ const TestimonialCard = ({ t }: { t: (typeof testimonials)[number] }) => (
 const Testimonials = () => {
   return (
     <section className="bg-primary text-primary-foreground feature-no py-20 md:py-28 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:52px_52px] pointer-events-none" />
-
       <div className="relative z-10">
         <div className="mb-14 md:mb-16 flex items-center gap-6">
           <span className="text-xs tracking-[0.25em] font-mono text-primary-foreground/30 shrink-0">

@@ -1,9 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
-  ArrowRight,
   Award,
   CalendarCheck,
   QrCode,
@@ -35,8 +33,6 @@ const ValuePropositionSection = () => {
       id="value-prop-section"
       className="bg-primary text-primary-foreground feature-no py-20 md:py-28 relative overflow-hidden"
     >
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:52px_52px] pointer-events-none" />
-
       <div className="relative z-10">
         {/* Label row */}
         <div className="mb-14 md:mb-16 flex items-center gap-6">
@@ -120,23 +116,6 @@ const ValuePropositionSection = () => {
               </p>
             </div>
           </div>
-        </div>
-
-        {/* CTAs */}
-        <div className="flex flex-col sm:flex-row items-start gap-3 mt-10">
-          <Button variant="secondary" size="lg" className="w-full sm:w-auto sm:flex-1 sm:max-w-xs" asChild>
-            <Link href="/events">
-              View Events
-              <ArrowRight className="ml-2 w-4 h-4" />
-            </Link>
-          </Button>
-          <Button
-            size="lg"
-            className="w-full sm:w-auto sm:flex-1 sm:max-w-xs bg-transparent border border-primary-foreground/25 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shadow-none"
-            asChild
-          >
-            <Link href="/how-it-works">See How It Works</Link>
-          </Button>
         </div>
       </div>
     </section>

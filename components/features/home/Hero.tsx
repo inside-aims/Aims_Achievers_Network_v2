@@ -1,56 +1,32 @@
 "use client";
 
 import { motion } from "motion/react";
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  Award,
-  ShieldCheck,
-  Smartphone,
-  Sparkles,
-  Ticket,
-  Vote,
-} from "lucide-react";
+import { Award, Calendar, ShieldCheck, Ticket, Vote } from "lucide-react";
 
 const trustBadges = [
   { icon: ShieldCheck, label: "Bank-grade security" },
   { icon: Vote, label: "Real-time results" },
   { icon: Ticket, label: "Instant e-tickets" },
-  { icon: Smartphone, label: "Works on any device" },
+  { icon: Calendar, label: "Live all year round" },
 ];
 
 export default function Hero() {
   return (
-    <section className="relative w-full min-h-[100svh] bg-primary text-primary-foreground overflow-hidden flex flex-col">
-      {/* Background photo */}
-      <div className="absolute inset-0">
-        <Image
-          fill
-          priority
-          src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&auto=format&fit=crop&q=80"
-          alt=""
-          className="object-cover opacity-25"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/90 via-primary/95 to-primary" />
-      </div>
+    <section className="relative w-full min-h-[90svh] bg-primary text-primary-foreground overflow-hidden flex flex-col">
+      {/* Grid texture — consistent with the rest of the page's dark sections */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:52px_52px] pointer-events-none" />
 
-      {/* Spotlight glow */}
-      <div className="absolute -top-1/4 left-1/2 -translate-x-1/2 w-[80%] aspect-square rounded-full bg-secondary/10 blur-[120px] pointer-events-none" />
-
-      <div className="relative z-10 feature-no flex-1 flex flex-col items-center justify-center text-center py-28 md:py-24">
-        <motion.div
+      <div className="relative z-10 feature-no flex-1 flex flex-col items-center justify-center text-center py-24">
+        <motion.span
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-          className="inline-flex items-center gap-2 border border-primary-foreground/15 bg-primary-foreground/5 px-4 py-2 mb-8"
+          className="text-xs font-mono tracking-[0.25em] uppercase text-secondary mb-8"
         >
-          <Sparkles className="w-3.5 h-3.5 text-secondary" strokeWidth={1.75} />
-          <span className="text-[11px] font-mono tracking-[0.2em] uppercase text-primary-foreground/60">
-            Ghana&apos;s Awards &amp; Ticketing Platform
-          </span>
-        </motion.div>
+          Ghana&apos;s Awards &amp; Ticketing Platform
+        </motion.span>
 
         <motion.h1
           initial={{ opacity: 0, y: 28 }}
@@ -69,8 +45,8 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.4, ease: [0.4, 0, 0.2, 1] }}
           className="mt-8 text-base md:text-lg font-light text-primary-foreground/50 max-w-lg leading-relaxed"
         >
-          One platform for award-show voting and event ticketing — secure, real-time,
-          and built for Ghana&apos;s campuses.
+          One platform for award-show voting and event ticketing — secure,
+          real-time, and built for Ghana.
         </motion.p>
 
         <motion.div
@@ -81,18 +57,7 @@ export default function Hero() {
         >
           <Button size="lg" variant="secondary" asChild>
             <Link href="/events">
-              <Vote className="mr-1.5 w-4 h-4" />
-              Vote Now
-            </Link>
-          </Button>
-          <Button
-            size="lg"
-            className="bg-transparent border border-primary-foreground/25 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shadow-none"
-            asChild
-          >
-            <Link href="/events">
-              <Ticket className="mr-1.5 w-4 h-4" />
-              Get Tickets
+              Explore Events
             </Link>
           </Button>
           <Button
@@ -112,7 +77,7 @@ export default function Hero() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.8 }}
+        transition={{ duration: 0.5, delay: 0.7 }}
         className="relative z-10 border-t border-primary-foreground/10 shrink-0"
       >
         <div className="feature-no py-5 flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
