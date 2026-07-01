@@ -53,14 +53,14 @@ const AimsFooter = () => {
               {/*    Partners*/}
               {/*  </Link>*/}
               {/*</li>*/}
-              <li>
-                <Link 
-                  href="/about" 
-                  className="text-muted-foreground hover:text-foreground transition-colors duration-200"
-                >
-                  About Us
-                </Link>
-              </li>
+              {/*<li>*/}
+              {/*  <Link */}
+              {/*    href="/about" */}
+              {/*    className="text-muted-foreground hover:text-foreground transition-colors duration-200"*/}
+              {/*  >*/}
+              {/*    About Us*/}
+              {/*  </Link>*/}
+              {/*</li>*/}
               <li>
                 <Link 
                   href="/nominations" 
@@ -69,14 +69,14 @@ const AimsFooter = () => {
                   Nominations
                 </Link>
               </li>
-              <li>
-                <Link 
-                  href="/outlets" 
-                  className="text-muted-foreground hover:text-foreground transition-colors duration-200"
-                >
-                  Outlets
-                </Link>
-              </li>
+              {/*<li>*/}
+              {/*  <Link */}
+              {/*    href="/outlets" */}
+              {/*    className="text-muted-foreground hover:text-foreground transition-colors duration-200"*/}
+              {/*  >*/}
+              {/*    Outlets*/}
+              {/*  </Link>*/}
+              {/*</li>*/}
               <li>
                 <Link 
                   href="/contact" 
@@ -94,22 +94,22 @@ const AimsFooter = () => {
               Community & Resources
             </h3>
             <ul className="space-y-3 text-sm">
-              <li>
-                <Link 
-                  href="/become-partner" 
-                  className="text-muted-foreground hover:text-foreground transition-colors duration-200"
-                >
-                  Become a Partner
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/events"
-                  className="text-muted-foreground hover:text-foreground transition-colors duration-200"
-                >
-                  Host an Event
-                </Link>
-              </li>
+              {/*<li>*/}
+              {/*  <Link */}
+              {/*    href="/become-partner" */}
+              {/*    className="text-muted-foreground hover:text-foreground transition-colors duration-200"*/}
+              {/*  >*/}
+              {/*    Become a Partner*/}
+              {/*  </Link>*/}
+              {/*</li>*/}
+              {/*<li>*/}
+              {/*  <Link*/}
+              {/*    href="/events"*/}
+              {/*    className="text-muted-foreground hover:text-foreground transition-colors duration-200"*/}
+              {/*  >*/}
+              {/*    Host an Event*/}
+              {/*  </Link>*/}
+              {/*</li>*/}
               {/*<li>*/}
               {/*  <Link */}
               {/*    href="/ambassadors" */}
