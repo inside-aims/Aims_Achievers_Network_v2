@@ -10,9 +10,12 @@ import Link from "next/link";
 interface TicketPurchaseSectionProps {
   ticketInfo: EventTicketInfo;
   onSelectType: (ticketType: TicketType) => void;
+  daysLeft: number;
 }
 
-const TicketPurchaseSection = ({ ticketInfo, onSelectType }: TicketPurchaseSectionProps) => {
+const TicketPurchaseSection = ({ ticketInfo, onSelectType, daysLeft }: TicketPurchaseSectionProps) => {
+  const isEventEnded = daysLeft === 0;
+
   const totalAvailable = ticketInfo.ticketTypes.reduce((sum, t) => {
     if (t.quantityTotal === -1) return sum + 999;
     return sum + (t.quantityTotal - t.quantitySold);
@@ -56,7 +59,9 @@ const TicketPurchaseSection = ({ ticketInfo, onSelectType }: TicketPurchaseSecti
               </div>
             </div>
 
-            {allSoldOut ? (
+            {isEventEnded ? (
+              <Badge variant="secondary" className="shrink-0">Event Ended</Badge>
+            ) : allSoldOut ? (
               <Badge variant="secondary" className="shrink-0">Sold Out</Badge>
             ) : (
               <Badge className="bg-primary/10 text-primary border-primary/20 shrink-0 gap-1">
@@ -79,6 +84,7 @@ const TicketPurchaseSection = ({ ticketInfo, onSelectType }: TicketPurchaseSecti
               key={ticketType.id}
               ticketType={ticketType}
               onSelect={() => onSelectType(ticketType)}
+              isEventEnded={isEventEnded}
             />
           ))}
         </div>

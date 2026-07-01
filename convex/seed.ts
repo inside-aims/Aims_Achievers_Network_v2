@@ -392,3 +392,140 @@ export const run = internalMutation({
     };
   },
 });
+
+// ─── Ticket-focus demo events ─────────────────────────────────────────────────
+
+// The public listing/detail pages read the event's displayed date range from
+// votingStartsAt/votingEndsAt (used as the general "event window" for display,
+// not just for voting) — a ticket-focus event still needs these set, even
+// though it never opens voting, or getDaysLeft() has nothing to compute from.
+const TICKET_FOCUS_EVENTS_DATA = [
+  {
+    // Far in the future relative to "today" — shows the normal, active state.
+    slug: "rooftop-social-night-2026",
+    eventCode: "RSN",
+    title: "Rooftop Social Night",
+    description:
+      "A ticketed rooftop evening — good music, good views, no voting or categories. Just a great night out.",
+    bannerUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&fit=crop",
+    location: "Koforidua, Ghana",
+    eventDate: new Date("2027-06-01").getTime(),
+    status: "live" as const,
+    ticketTypes: [
+      { name: "Free RSVP", description: "Standing room, first come first served.", pricePesewas: 0, quantityTotal: 50 },
+      { name: "General Admission", description: "Entry + one welcome drink.", pricePesewas: 2000, quantityTotal: 200 },
+      { name: "VIP Table", description: "Reserved table for 4, bottle service included.", pricePesewas: 15000, quantityTotal: 20 },
+    ],
+  },
+  {
+    // Already in the past relative to "today" — shows the ended state
+    // (0 days left, ticket purchase buttons disabled).
+    slug: "sunset-beach-party-2025",
+    eventCode: "SBP",
+    title: "Sunset Beach Party",
+    description:
+      "A ticketed beach party — already wrapped. Kept public to show how a past ticket-only event looks.",
+    bannerUrl: "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1200&fit=crop",
+    location: "Ada, Ghana",
+    eventDate: new Date("2025-12-01").getTime(),
+    status: "closed" as const,
+    ticketTypes: [
+      { name: "General Admission", description: "Entry to the beach party.", pricePesewas: 3000, quantityTotal: 300 },
+      { name: "VIP Cabana", description: "Private cabana for up to 6.", pricePesewas: 25000, quantityTotal: 10 },
+    ],
+  },
+];
+
+/**
+ * Seeds "ticket-focus" events — ticketingEnabled with zero categories, so the
+ * public event-card/detail-page ticket-only rendering has real data to show,
+ * across both the active and already-ended states. Run `seed:run` first
+ * (this reuses that seed's demo organizer).
+ *
+ * Safe to re-run: patches the date/status fields on events that already
+ * exist (so fixes here take effect) without duplicating their ticket types.
+ * Run via: npx convex run seed:seedTicketFocusEvent
+ */
+export const seedTicketFocusEvent = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    // Reuses whichever organizer profile already exists (e.g. from seed:run)
+    // rather than assuming a specific email — which one owns a demo event
+    // doesn't matter here.
+    const organizer = await ctx.db.query("organizerProfiles").first();
+    if (!organizer) {
+      return {
+        status: "missing_organizer",
+        message: "No organizer profile exists yet — run seed:run first, or create one via the dashboard.",
+      };
+    }
+
+    const now = Date.now();
+    const results: { slug: string; action: "created" | "updated" }[] = [];
+
+    for (const def of TICKET_FOCUS_EVENTS_DATA) {
+      const existing = await ctx.db
+        .query("events")
+        .withIndex("by_slug", (q) => q.eq("slug", def.slug))
+        .unique();
+
+      if (existing) {
+        await ctx.db.patch(existing._id, {
+          votingStartsAt: def.eventDate,
+          votingEndsAt: def.eventDate,
+          eventDate: def.eventDate,
+          status: def.status,
+        });
+        results.push({ slug: def.slug, action: "updated" });
+        continue;
+      }
+
+      const eventId = await ctx.db.insert("events", {
+        organizerId: organizer._id,
+        title: def.title,
+        slug: def.slug,
+        eventCode: def.eventCode,
+        description: def.description,
+        bannerUrl: def.bannerUrl,
+        location: def.location,
+        votingStartsAt: def.eventDate,
+        votingEndsAt: def.eventDate,
+        eventDate: def.eventDate,
+        status: def.status,
+
+        // Voting fields are still required by the schema, but this event
+        // never opens voting and creates no categories — see the
+        // "ticket-focus" convention: an event with zero categories renders
+        // as ticket-only on the public pages regardless of these values.
+        votingMode: "standard",
+        pricePerVotePesewas: 100,
+        platformCutPercent: 10,
+        showVotes: false,
+        votingOpen: false,
+        publicPageVisible: true,
+        nominationsOpen: false,
+        nominationRequiresAuth: false,
+
+        ticketingEnabled: true,
+        createdAt: now,
+      });
+
+      for (const tt of def.ticketTypes) {
+        await ctx.db.insert("ticketTypes", {
+          eventId,
+          name: tt.name,
+          description: tt.description,
+          pricePesewas: tt.pricePesewas,
+          quantityTotal: tt.quantityTotal,
+          quantitySold: 0,
+          isActive: true,
+          createdAt: now,
+        });
+      }
+
+      results.push({ slug: def.slug, action: "created" });
+    }
+
+    return { status: "ok", events: results };
+  },
+});

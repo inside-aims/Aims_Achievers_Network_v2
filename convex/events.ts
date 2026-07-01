@@ -73,6 +73,23 @@ export const listPublicWithCategories = query({
         .order("asc")
         .take(100);
 
+      // Ticket-focus events publish with zero categories — surface the
+      // cheapest active ticket type so the listing card can show a price
+      // instead of a "0 Categories" badge.
+      let minTicketPricePesewas: number | undefined;
+      if (event.ticketingEnabled) {
+        const ticketTypes = await ctx.db
+          .query("ticketTypes")
+          .withIndex("by_event", (q) => q.eq("eventId", event._id))
+          .take(20);
+        const activePrices = ticketTypes
+          .filter((tt) => tt.isActive)
+          .map((tt) => tt.pricePesewas);
+        if (activePrices.length > 0) {
+          minTicketPricePesewas = Math.min(...activePrices);
+        }
+      }
+
       result.push({
         eventId: event.slug,
         title: event.title,
@@ -80,6 +97,8 @@ export const listPublicWithCategories = query({
         image: event.bannerUrl ?? "",
         startDate: tsToDate(event.votingStartsAt),
         endDate: tsToDate(event.votingEndsAt),
+        ticketingEnabled: event.ticketingEnabled ?? false,
+        minTicketPricePesewas,
         categories: categories.map((cat) => ({
           id: cat.categoryCode,
           name: cat.name,

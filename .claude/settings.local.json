@@ -57,7 +57,8 @@
       "Bash(curl -s -o /dev/null -w \"BigBuckBunny: %{http_code}\\\\n\" -I \"https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4\")",
       "Bash(curl -s -o /dev/null -w \"ElephantsDream: %{http_code}\\\\n\" -I \"https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4\")",
       "Bash(curl -s -I -L \"https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4\" --max-time 10)",
-      "Bash(curl -s -I -L \"https://www.w3schools.com/html/mov_bbb.mp4\" --max-time 10)"
+      "Bash(curl -s -I -L \"https://www.w3schools.com/html/mov_bbb.mp4\" --max-time 10)",
+      "Read(//c/Users/SOMUAH~1/AppData/Local/Temp/**)"
     ]
   }
 }

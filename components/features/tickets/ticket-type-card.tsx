@@ -8,9 +8,10 @@ import { cn } from "@/lib/utils";
 interface TicketTypeCardProps {
   ticketType: TicketType;
   onSelect: () => void;
+  isEventEnded?: boolean;
 }
 
-const TicketTypeCard = ({ ticketType, onSelect }: TicketTypeCardProps) => {
+const TicketTypeCard = ({ ticketType, onSelect, isEventEnded = false }: TicketTypeCardProps) => {
   const { name, description, pricePesewas, quantityTotal, quantitySold } = ticketType;
 
   const isSoldOut = quantityTotal !== -1 && quantitySold >= quantityTotal;
@@ -22,6 +23,9 @@ const TicketTypeCard = ({ ticketType, onSelect }: TicketTypeCardProps) => {
       ? 0
       : Math.round((quantitySold / quantityTotal) * 100);
 
+  const isDisabled = isEventEnded || isSoldOut;
+  const buttonLabel = isEventEnded ? "Event Ended" : isSoldOut ? "Sold Out" : "Get Ticket";
+
   const priceDisplay =
     pricePesewas === 0 ? "Free" : `GH₵ ${(pricePesewas / 100).toFixed(2)}`;
 
@@ -29,7 +33,7 @@ const TicketTypeCard = ({ ticketType, onSelect }: TicketTypeCardProps) => {
     <div
       className={cn(
         "relative flex items-start gap-4 rounded-lg border pl-5 pr-4 py-4 transition-all",
-        isSoldOut
+        isDisabled
           ? "border-border bg-muted/40 opacity-60"
           : "border-primary/15 bg-card hover:border-primary/40 hover:shadow-sm"
       )}
@@ -37,19 +41,24 @@ const TicketTypeCard = ({ ticketType, onSelect }: TicketTypeCardProps) => {
       <div
         className={cn(
           "absolute left-0 top-3 bottom-3 w-1 rounded-r-full",
-          isSoldOut ? "bg-border" : "bg-primary"
+          isDisabled ? "bg-border" : "bg-primary"
         )}
       />
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <h4 className="text-sm font-bold">{name}</h4>
-          {isSoldOut && (
+          {isEventEnded && (
+            <Badge variant="secondary" className="text-[10px] px-1.5 h-4">
+              Event Ended
+            </Badge>
+          )}
+          {isSoldOut && !isEventEnded && (
             <Badge variant="secondary" className="text-[10px] px-1.5 h-4">
               Sold Out
             </Badge>
           )}
-          {isLowStock && !isSoldOut && (
+          {isLowStock && !isDisabled && (
             <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20 text-[10px] px-1.5 h-4">
               Only {remaining} left
             </Badge>
@@ -78,19 +87,19 @@ const TicketTypeCard = ({ ticketType, onSelect }: TicketTypeCardProps) => {
         <span
           className={cn(
             "text-base font-bold",
-            isSoldOut ? "text-muted-foreground" : "text-primary"
+            isDisabled ? "text-muted-foreground" : "text-primary"
           )}
         >
           {priceDisplay}
         </span>
         <Button
           size="sm"
-          variant={isSoldOut ? "secondary" : "default"}
+          variant={isDisabled ? "secondary" : "default"}
           onClick={onSelect}
-          disabled={isSoldOut}
+          disabled={isDisabled}
           className="h-7 text-xs px-3"
         >
-          {isSoldOut ? "Sold Out" : "Get Ticket"}
+          {buttonLabel}
         </Button>
       </div>
     </div>

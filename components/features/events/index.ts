@@ -34,4 +34,6 @@ export type EventCardProps = {
   startDate: string;
   endDate: string;
   categories: EventCategory[];
+  ticketingEnabled: boolean;
+  minTicketPricePesewas?: number;
 };

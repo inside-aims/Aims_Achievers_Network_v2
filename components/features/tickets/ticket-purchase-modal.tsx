@@ -106,7 +106,7 @@ const TicketPurchaseModal = ({
           amountPesewas: result.totalPesewas,
           email: email.trim(),
           phone: phone.trim() || undefined,
-          callbackPath: "/tickets",
+          callbackPath: "/tickets/confirmation",
           metadata: {
             buyer_name: name.trim(),
             ticket_type: selectedType!.name,

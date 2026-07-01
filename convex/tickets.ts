@@ -99,6 +99,57 @@ export const getEventTicketInfoBySlug = query({
   },
 });
 
+// ─── Order status query ───────────────────────────────────────────────────────
+
+/**
+ * Public, read-only lookup for the post-checkout confirmation page
+ * (`/tickets/confirmation?reference=...`). Reads whatever the payment
+ * webhook has already written to `ticketOrders.status` — it does not call
+ * Paystack or touch payment logic in any way. Because it's a Convex query,
+ * the confirmation page re-renders automatically the moment the webhook
+ * flips the order to "confirmed"; no polling needed on the frontend.
+ *
+ * Payment-side folks: this only *reads* `ticketOrders`/`tickets`. Order
+ * confirmation itself still happens in `internal/tickets.ts`
+ * (`confirmTicketOrder` / `confirmTicketOrderByReference`), which this
+ * function never calls.
+ */
+export const getOrderStatusByReference = query({
+  args: { reference: v.string() },
+  handler: async (ctx, args) => {
+    const order = await ctx.db
+      .query("ticketOrders")
+      .withIndex("by_providerReference", (q) => q.eq("providerReference", args.reference))
+      .unique();
+
+    if (!order) return null;
+
+    const [event, ticketType, issuedTickets] = await Promise.all([
+      ctx.db.get(order.eventId),
+      ctx.db.get(order.ticketTypeId),
+      ctx.db
+        .query("tickets")
+        .withIndex("by_order", (q) => q.eq("orderId", order._id))
+        .take(50),
+    ]);
+
+    return {
+      status: order.status,
+      eventTitle: event?.title ?? "",
+      eventSlug: event?.slug ?? "",
+      ticketTypeName: ticketType?.name ?? "",
+      quantity: order.quantity,
+      totalPesewas: order.totalPesewas,
+      buyerName: order.buyerName,
+      buyerEmail: order.buyerEmail,
+      tickets: issuedTickets.map((t) => ({
+        ticketCode: t.ticketCode,
+        holderName: t.holderName,
+      })),
+    };
+  },
+});
+
 // ─── Ticket lookup queries ────────────────────────────────────────────────────
 
 /** Replaces mock-data.lookupByEmail. Returns tickets with event + type names joined. */
