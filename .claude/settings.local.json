@@ -40,7 +40,18 @@
       "Bash(printf 'N\\\\nN\\\\nN\\\\nN\\\\nN\\\\n')",
       "Bash(yes N)",
       "Bash(grep:*)",
-      "Bash(bunx --bun shadcn@latest add tabs)"
+      "Bash(bunx --bun shadcn@latest add tabs)",
+      "Bash(bunx eslint *)",
+      "PowerShell(bun lint *)",
+      "Skill(run)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(bun dev *)",
+      "Bash(cd \"C:\\\\Users\\\\Work\\\\Aims\\\\Aims_Achievers_Network_v2\")",
+      "Bash(seq 1 20)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/)",
+      "WebFetch(domain:expo.dev)"
     ]
   }
 }
