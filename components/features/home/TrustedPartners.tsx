@@ -5,7 +5,7 @@ import {
   ScrollVelocityContainer,
   ScrollVelocityRow,
 } from "@/components/ui/scroll-based-velocity";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Building2 } from "lucide-react";
 
 const partners = [
   { name: "TechCorp Ghana", type: "Technology" },
@@ -20,6 +20,7 @@ const partners = [
 
 const PartnerItem = ({ name, type }: { name: string; type: string }) => (
   <div className="flex items-center gap-3 mx-10 sm:mx-14 shrink-0 group cursor-default select-none">
+    <Building2 className="w-4 h-4 text-foreground/15 group-hover:text-secondary transition-colors duration-500 shrink-0" strokeWidth={1.5} />
     <span className="text-xl sm:text-2xl md:text-3xl font-light font-serif text-foreground/25 group-hover:text-foreground/60 transition-colors duration-500 tracking-tight">
       {name}
     </span>

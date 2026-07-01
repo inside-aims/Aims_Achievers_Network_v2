@@ -35,8 +35,8 @@ export default function OurEvents() {
       </div>
 
       <p className="text-base font-light text-muted-foreground max-w-xl mb-12 md:mb-16 leading-relaxed">
-        Every event is thoughtfully designed to celebrate excellence from the first nomination to the final moment of recognition.
-        A seamless journey that honors impact, creativity, and distinction.
+        Every event is thoughtfully designed — whether it&apos;s an award show driven by votes or
+        a ticketed night worth showing up for. A seamless journey from the first click to the final moment.
       </p>
 
       {/* Event cards */}

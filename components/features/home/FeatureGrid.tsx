@@ -1,298 +1,220 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { LucideIcon } from "lucide-react";
-import {
-  Shield,
-  Zap,
-  Smartphone,
-  BarChart3,
-  Users,
-  Layers,
-  SlidersHorizontal,
-  CreditCard,
-} from "lucide-react";
+import { motion } from "motion/react";
+import { Ban, CheckCircle2, Rocket } from "lucide-react";
 
-const features = [
+const branches = [
   {
-    icon: Shield,
-    title: "Secure Voting",
-    description:
-      "Advanced encryption and verifiable systems protect every vote with precision. Security and integrity remain at the core of every interaction.",
-    size: "large",
-    stat: "256-bit",
-    statLabel: "Encryption",
+    steps: [
+      { title: "Open voting", meta: "1,204 votes", done: true },
+      { title: "Show leaderboard", meta: "Live now", done: true },
+    ],
   },
   {
-    icon: Zap,
-    title: "Real-Time Results",
-    description:
-      "Monitor outcomes as they evolve through live updates and refined visual insights. Transparency, presented with clarity.",
-    size: "medium",
-    stat: "<1s",
-    statLabel: "Update Time",
+    steps: [
+      { title: "Sell tickets", meta: "842 sold", done: true },
+      { title: "Scan at the door", meta: "612 checked in", done: true },
+    ],
   },
   {
-    icon: Smartphone,
-    title: "Mobile Optimized",
-    description: "A seamless experience across all devices. Participate anytime, from anywhere without compromise.",
-    size: "small",
-  },
-  {
-    icon: BarChart3,
-    title: "Nomination Management",
-    description:
-      "Structured tools for efficient candidate onboarding and profile curation. Designed for clarity, consistency, and ease.",
-    size: "medium",
-    stat: "50+",
-    statLabel: "Metrics",
-  },
-  {
-    icon: Users,
-    title: "Insightful Analytics",
-    description: "Gain meaningful insights into engagement, participation trends, and audience behavior. Data that informs better decisions",
-    size: "small",
-  },
-  {
-    icon: Layers,
-    title: "Category Structuring",
-    description: "Flexible frameworks to define categories and tailor voting criteria. Built to reflect the uniqueness of every event.",
-    size: "small",
-  },
-  {
-    icon: SlidersHorizontal,
-    title: "Administrative Control",
-    description:
-      "A comprehensive dashboard offering precise control over every aspect of your event. Manage with confidence, from start to finish.",
-    size: "medium",
-  },
-  {
-    icon: CreditCard,
-    title: "Integrated Payments",
-    description: "Seamless and secure payment solutions for premium features and event access. Simplified transactions, globally adaptable.",
-    size: "small",
+    steps: [
+      { title: "Accept nominations", meta: "Skipped for this event", done: false },
+    ],
   },
 ];
 
-function Icon({ icon: IconComponent, className }: { icon: LucideIcon; className: string }) {
-  return <IconComponent className={className} strokeWidth={1.5} />;
+function FlowLine({
+  orientation,
+  active = true,
+  className = "",
+}: {
+  orientation: "horizontal" | "vertical";
+  active?: boolean;
+  className?: string;
+}) {
+  const isH = orientation === "horizontal";
+  return (
+    <div
+      className={`relative shrink-0 ${isH ? "h-px" : "w-px"} ${active ? "bg-border" : "bg-border/40"} ${className}`}
+    >
+      {active && (
+        <motion.div
+          className={
+            isH
+              ? "absolute top-1/2 -translate-y-1/2 h-0.5 w-10 rounded-full bg-gradient-to-r from-transparent via-secondary to-transparent"
+              : "absolute left-1/2 -translate-x-1/2 w-0.5 h-10 rounded-full bg-gradient-to-b from-transparent via-secondary to-transparent"
+          }
+          animate={isH ? { left: ["-15%", "115%"] } : { top: ["-15%", "115%"] }}
+          transition={{ duration: 1.4, repeat: Infinity, ease: "linear" }}
+        />
+      )}
+    </div>
+  );
+}
+
+function TriggerCard() {
+  return (
+    <div className="w-full lg:w-64 self-center shrink-0 border border-border rounded-lg bg-card p-6 lg:p-5 shadow-sm">
+      <h3 className="text-lg lg:text-sm font-medium text-foreground mb-5 lg:mb-4">Publish event</h3>
+      <div className="space-y-4 lg:space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-sm lg:text-xs text-muted-foreground shrink-0">Format</span>
+          <span className="text-sm lg:text-xs font-medium border border-border rounded px-3 py-2 lg:px-2.5 lg:py-1.5 bg-background truncate">
+            Awards + Tickets
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-sm lg:text-xs text-muted-foreground shrink-0">Category</span>
+          <span className="text-sm lg:text-xs font-medium border border-border rounded px-3 py-2 lg:px-2.5 lg:py-1.5 bg-background truncate">
+            Best Dressed
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-3 pt-1">
+          <span className="text-sm lg:text-xs text-muted-foreground">Published</span>
+          <span className="w-10 h-6 lg:w-9 lg:h-5 rounded-full bg-foreground flex items-center px-0.5 justify-end shrink-0">
+            <span className="w-5 h-5 lg:w-4 lg:h-4 rounded-full bg-background" />
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function HubNode() {
+  return (
+    <div className="shrink-0 flex items-center gap-2.5 lg:gap-2 border border-border rounded-lg bg-card px-5 py-4 lg:px-4 lg:py-3 shadow-sm">
+      <Rocket className="w-5 h-5 lg:w-4 lg:h-4 text-muted-foreground" strokeWidth={2} />
+      <span className="text-base lg:text-sm font-medium">Go live</span>
+    </div>
+  );
+}
+
+function StatusCard({
+  title,
+  meta,
+  done,
+  fixedWidth,
+}: {
+  title: string;
+  meta: string;
+  done: boolean;
+  fixedWidth?: boolean;
+}) {
+  return (
+    <div
+      className={`${fixedWidth ? "w-44 xl:w-52 shrink-0" : "w-full"} border border-border rounded-lg bg-card px-5 py-4 lg:px-4 lg:py-3 shadow-sm`}
+    >
+      <div className="flex items-center gap-2.5 lg:gap-2 mb-1.5 lg:mb-1">
+        {done ? (
+          <CheckCircle2 className="w-5 h-5 lg:w-4 lg:h-4 text-emerald-600 shrink-0" strokeWidth={2} />
+        ) : (
+          <Ban className="w-5 h-5 lg:w-4 lg:h-4 text-muted-foreground/40 shrink-0" strokeWidth={2} />
+        )}
+        <span className="text-base lg:text-sm font-medium text-foreground truncate">{title}</span>
+      </div>
+      <span className="text-sm lg:text-xs text-muted-foreground pl-7 lg:pl-6">{meta}</span>
+    </div>
+  );
+}
+
+function Branches() {
+  return (
+    <div className="border border-border/40 rounded-xl p-4">
+      <div className="relative flex flex-col gap-6">
+        <div className="absolute left-0 top-14 bottom-14 w-px bg-border" />
+        {branches.map((branch, i) => {
+          const rowDone = branch.steps[0].done;
+          return (
+            <div key={i} className="h-28 flex items-center">
+              <FlowLine orientation="horizontal" active={rowDone} className="w-8" />
+              <StatusCard {...branch.steps[0]} fixedWidth />
+              {branch.steps[1] && (
+                <>
+                  <FlowLine orientation="horizontal" active={rowDone} className="w-8" />
+                  <StatusCard {...branch.steps[1]} fixedWidth />
+                </>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 const FeatureGridBento = () => {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
-  const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
+    const el = sectionRef.current;
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setIsVisible(true);
-      },
-      { threshold: 0.1 }
+      ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
+      { threshold: 0.15 }
     );
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
+    if (el) observer.observe(el);
+    return () => { if (el) observer.unobserve(el); };
   }, []);
-
-  useEffect(() => {
-    if (!isVisible) return;
-    cardsRef.current.forEach((card, index) => {
-      if (!card) return;
-      card.style.opacity = "0";
-      card.style.transform = "translateY(30px)";
-      setTimeout(() => {
-        if (!card) return;
-        card.style.transition =
-          "opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)";
-        card.style.opacity = "1";
-        card.style.transform = "translateY(0)";
-      }, index * 80 + 200);
-    });
-  }, [isVisible]);
-
-  const cardBase =
-    "group relative border border-border/50 hover:border-border/70 bg-background/60 hover:bg-background/70 transition-all duration-500 cursor-pointer";
-
-  const iconSm = "w-10 h-10 sm:w-12 sm:h-12 text-foreground/60 group-hover:text-foreground transition-colors duration-500 mb-4";
-  const iconMd = "w-10 h-10 sm:w-12 sm:h-12 text-foreground/60 group-hover:text-foreground transition-colors duration-500 mb-6";
-  const iconLg = "w-12 h-12 sm:w-16 sm:h-16 text-foreground/60 group-hover:text-foreground transition-colors duration-500 mb-8";
-  const underline = "absolute bottom-0 left-0 w-0 h-px bg-foreground group-hover:w-full transition-all duration-700 ease-out";
 
   return (
     <section
       ref={sectionRef}
-      id="features"
-      className="min-h-screen bg-background text-foreground feature-no py-20 sm:py-24 md:py-32"
+      id="how-it-works"
+      className="relative bg-background text-foreground feature-no py-20 sm:py-24 md:py-28 overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-16 md:mb-20">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light font-serif tracking-tight leading-tight mb-4">
-            Everything you need to run
-            <br />
-            <span className="opacity-60">successful voting events</span>
-          </h2>
+      {/* Dot-grid texture */}
+      <div className="absolute inset-0 bg-[radial-gradient(var(--border)_1px,transparent_1px)] bg-[size:22px_22px] opacity-40 pointer-events-none" />
+
+      <div className="relative z-10">
+        <div className="mb-14 md:mb-16 flex items-center gap-6">
+          <span className="text-xs tracking-[0.25em] font-mono text-muted-foreground shrink-0">
+            HOW IT WORKS
+          </span>
+          <div className="h-px flex-1 bg-border" />
         </div>
 
-        {/* Bento grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 auto-rows-auto gap-4 sm:gap-6">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light font-serif tracking-tight leading-[1.05] mb-4 max-w-2xl">
+          One event, run
+          <br />
+          <span className="opacity-60">automatically.</span>
+        </h2>
+        <p className="text-base font-light text-muted-foreground max-w-md mb-16 md:mb-20">
+          Publish once. Voting, ticket sales, and check-in all run themselves from there.
+        </p>
 
-          {/* Large — Secure Voting (spans 2 cols + 2 rows) */}
-          <div
-            ref={(el) => { cardsRef.current[0] = el; }}
-            className={`${cardBase} sm:col-span-2 lg:row-span-2`}
-          >
-            <div className="h-full flex flex-col justify-between p-8 sm:p-10 min-h-[400px] lg:min-h-[500px]">
-              <div>
-                <Icon icon={features[0].icon} className={iconLg} />
-                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-light font-serif tracking-wide mb-4 leading-tight">
-                  {features[0].title}
-                </h3>
-                <p className="text-base sm:text-lg font-light opacity-70 leading-relaxed mb-8">
-                  {features[0].description}
-                </p>
-              </div>
-              <div className="border-t border-white/10 pt-6">
-                <div className="text-4xl sm:text-5xl font-light mb-2">{features[0].stat}</div>
-                <div className="text-sm tracking-widest opacity-60">{features[0].statLabel}</div>
-              </div>
-            </div>
-            <div className={`${underline} h-0.5`} />
+        {/* Desktop: full-width branching diagram */}
+        <div
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? "translateY(0)" : "translateY(16px)",
+          }}
+          className="hidden lg:flex items-stretch w-full transition-all duration-700 ease-out"
+        >
+          <TriggerCard />
+          <FlowLine orientation="horizontal" className="flex-1 min-w-10 self-center" />
+          <div className="self-center"><HubNode /></div>
+          <FlowLine orientation="horizontal" className="flex-1 min-w-10 self-center" />
+          <Branches />
+        </div>
+
+        {/* Mobile: same branching diagram, stacked vertically, comfortably sized (not full-bleed) */}
+        <div
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? "translateY(0)" : "translateY(16px)",
+          }}
+          className="lg:hidden flex flex-col items-center gap-0 transition-all duration-700 ease-out"
+        >
+          <div className="w-full max-w-sm">
+            <TriggerCard />
           </div>
-
-          {/* Medium — Real-Time Results */}
-          <div
-            ref={(el) => { cardsRef.current[1] = el; }}
-            className={`${cardBase} sm:col-span-2`}
-          >
-            <div className="h-full flex flex-col justify-between p-6 sm:p-8 min-h-[240px]">
-              <div>
-                <Icon icon={features[1].icon} className={iconMd} />
-                <h3 className="text-xl sm:text-2xl font-light font-serif tracking-wide mb-3 leading-tight">
-                  {features[1].title}
-                </h3>
-                <p className="text-sm sm:text-base font-light opacity-70 leading-relaxed">
-                  {features[1].description}
-                </p>
-              </div>
-              <div className="border-t border-border/30 pt-4 mt-6">
-                <div className="text-3xl font-light mb-1">{features[1].stat}</div>
-                <div className="text-xs tracking-widest opacity-60">{features[1].statLabel}</div>
-              </div>
-            </div>
-            <div className={underline} />
+          <FlowLine orientation="vertical" className="h-8" />
+          <HubNode />
+          <FlowLine orientation="vertical" className="h-8" />
+          <div className="w-full max-w-sm ">
+            <Branches />
           </div>
-
-          {/* Small — Mobile-First */}
-          <div
-            ref={(el) => { cardsRef.current[2] = el; }}
-            className={cardBase}
-          >
-            <div className="h-full flex flex-col p-6 min-h-[200px]">
-              <Icon icon={features[2].icon} className={iconSm} />
-              <h3 className="text-lg sm:text-xl font-light font-serif tracking-wide mb-2 leading-tight">
-                {features[2].title}
-              </h3>
-              <p className="text-sm font-light opacity-70 leading-relaxed">
-                {features[2].description}
-              </p>
-            </div>
-            <div className={underline} />
-          </div>
-
-          {/* Small — Nominee Management */}
-          <div
-            ref={(el) => { cardsRef.current[3] = el; }}
-            className={cardBase}
-          >
-            <div className="h-full flex flex-col p-6 min-h-[200px]">
-              <Icon icon={features[4].icon} className={iconSm} />
-              <h3 className="text-lg sm:text-xl font-light font-serif tracking-wide mb-2 leading-tight">
-                {features[4].title}
-              </h3>
-              <p className="text-sm font-light opacity-70 leading-relaxed">
-                {features[4].description}
-              </p>
-            </div>
-            <div className={underline} />
-          </div>
-
-          {/* Medium — Detailed Analytics */}
-          <div
-            ref={(el) => { cardsRef.current[4] = el; }}
-            className={`${cardBase} sm:col-span-2`}
-          >
-            <div className="h-full flex flex-col justify-between p-6 sm:p-8 min-h-60">
-              <div>
-                <Icon icon={features[3].icon} className={iconMd} />
-                <h3 className="text-xl sm:text-2xl font-light font-serif tracking-wide mb-3 leading-tight">
-                  {features[3].title}
-                </h3>
-                <p className="text-sm sm:text-base font-light opacity-70 leading-relaxed">
-                  {features[3].description}
-                </p>
-              </div>
-              <div className="border-t border-border/30 pt-4 mt-6">
-                <div className="text-3xl font-light mb-1">{features[3].stat}</div>
-                <div className="text-xs tracking-widest opacity-60">{features[3].statLabel}</div>
-              </div>
-            </div>
-            <div className={underline} />
-          </div>
-
-          {/* Small — Category Organization */}
-          <div
-            ref={(el) => { cardsRef.current[5] = el; }}
-            className={cardBase}
-          >
-            <div className="h-full flex flex-col p-6 min-h-[200px]">
-              <Icon icon={features[5].icon} className={iconSm} />
-              <h3 className="text-lg sm:text-xl font-light font-serif tracking-wide mb-2 leading-tight">
-                {features[5].title}
-              </h3>
-              <p className="text-sm font-light opacity-70 leading-relaxed">
-                {features[5].description}
-              </p>
-            </div>
-            <div className={underline} />
-          </div>
-
-          {/* Small — Payment Integration */}
-          <div
-            ref={(el) => { cardsRef.current[6] = el; }}
-            className={cardBase}
-          >
-            <div className="h-full flex flex-col p-6 min-h-[200px]">
-              <Icon icon={features[7].icon} className={iconSm} />
-              <h3 className="text-lg sm:text-xl font-light font-serif tracking-wide mb-2 leading-tight">
-                {features[7].title}
-              </h3>
-              <p className="text-sm font-light opacity-70 leading-relaxed">
-                {features[7].description}
-              </p>
-            </div>
-            <div className={underline} />
-          </div>
-
-          {/* Medium — Admin Controls */}
-          <div
-            ref={(el) => { cardsRef.current[7] = el; }}
-            className={`${cardBase} sm:col-span-2`}
-          >
-            <div className="h-full flex flex-col justify-between p-6 sm:p-8 min-h-[240px]">
-              <div>
-                <Icon icon={features[6].icon} className={iconMd} />
-                <h3 className="text-xl sm:text-2xl font-light font-serif tracking-wide mb-3 leading-tight">
-                  {features[6].title}
-                </h3>
-                <p className="text-sm sm:text-base font-light opacity-70 leading-relaxed">
-                  {features[6].description}
-                </p>
-              </div>
-            </div>
-            <div className={underline} />
-          </div>
-
         </div>
       </div>
     </section>
