@@ -479,4 +479,26 @@ export default defineSchema({
     .index("by_eventName", ["eventName"])
     .index("by_category", ["category"])
     .index("by_featured", ["isFeatured"]),
+
+
+  // ─────────────────────────────────────────────
+  // EVENT REQUESTS
+  // "Start an Event" lead capture from the public site.
+  // Organizer accounts are provisioned by admins, not self-served —
+  // this is just the intake queue the team follows up on manually.
+  // ─────────────────────────────────────────────
+  eventRequests: defineTable({
+    name: v.string(),
+    email: v.string(),
+    phone: v.optional(v.string()),
+    message: v.optional(v.string()),
+    status: v.union(
+      v.literal("new"),
+      v.literal("contacted"),
+      v.literal("closed"),
+    ),
+    createdAt: v.number(),
+  })
+    .index("by_status", ["status"])
+    .index("by_email", ["email"]),
 });

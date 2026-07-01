@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import StartEventButton from "@/components/shared/start-event-button";
 import { ArrowRight } from "lucide-react";
 import { useGallery } from "@/hooks/use-gallery";
 
@@ -41,12 +42,10 @@ const ClosingCta = () => {
         </p>
 
         <div className="mt-10 flex flex-wrap gap-3">
-          <Button size="lg" variant="secondary" asChild>
-            <Link href="/become-partner">
-              Start an Event
-              <ArrowRight className="ml-2 w-4 h-4" />
-            </Link>
-          </Button>
+          <StartEventButton size="lg" variant="secondary">
+            Start an Event
+            <ArrowRight className="ml-2 w-4 h-4" />
+          </StartEventButton>
           <Button
             size="lg"
             className="bg-transparent border border-primary-foreground/25 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shadow-none"

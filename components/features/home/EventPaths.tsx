@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import { ArrowRight, Award, CheckCircle2, Ticket, Vote } from "lucide-react";
 import { Safari } from "@/components/ui/safari";
 import { Iphone } from "@/components/ui/iphone";
+import StartEventButton from "@/components/shared/start-event-button";
 
 const paths = [
   {
@@ -222,13 +223,14 @@ export default function EventPaths() {
         <p className="text-sm font-light text-muted-foreground leading-relaxed max-w-md">
           Running an event with both? Add ticketing to any awards event, or vice versa — it&apos;s your call.
         </p>
-        <Link
-          href="/become-partner"
-          className="group flex items-center gap-2 text-sm font-mono tracking-[0.18em] text-muted-foreground hover:text-foreground transition-colors duration-300 shrink-0"
+        <StartEventButton
+          variant="ghost"
+          size="default"
+          className="group h-auto p-0 gap-2 font-mono text-sm tracking-[0.18em] text-muted-foreground hover:text-foreground hover:bg-transparent shrink-0"
         >
           START AN EVENT
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-        </Link>
+        </StartEventButton>
       </div>
     </section>
   );

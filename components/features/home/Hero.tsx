@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import StartEventButton from "@/components/shared/start-event-button";
 import { Award, Calendar, ShieldCheck, Ticket, Vote } from "lucide-react";
 
 const trustBadges = [
@@ -60,16 +61,13 @@ export default function Hero() {
               Explore Events
             </Link>
           </Button>
-          <Button
+          <StartEventButton
             size="lg"
             className="bg-transparent border border-primary-foreground/25 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shadow-none"
-            asChild
           >
-            <Link href="/become-partner">
-              <Award className="mr-1.5 w-4 h-4" />
-              Start an Event
-            </Link>
-          </Button>
+            <Award className="mr-1.5 w-4 h-4" />
+            Start an Event
+          </StartEventButton>
         </motion.div>
       </div>
 
