@@ -58,7 +58,10 @@
       "Bash(curl -s -o /dev/null -w \"ElephantsDream: %{http_code}\\\\n\" -I \"https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4\")",
       "Bash(curl -s -I -L \"https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4\" --max-time 10)",
       "Bash(curl -s -I -L \"https://www.w3schools.com/html/mov_bbb.mp4\" --max-time 10)",
-      "Read(//c/Users/SOMUAH~1/AppData/Local/Temp/**)"
+      "Read(//c/Users/SOMUAH~1/AppData/Local/Temp/**)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" \"https://tough-stork-244.convex.site/.well-known/openid-configuration\")",
+      "Bash(curl -s \"https://tough-stork-244.convex.site/.well-known/openid-configuration\")",
+      "PowerShell(Get-Process *)"
     ]
   }
 }
