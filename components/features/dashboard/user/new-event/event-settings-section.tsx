@@ -16,13 +16,14 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { cn } from "@/lib/utils"
-import { type NewEventFormValues } from "./new-event-schema"
+import { type NewEventFormValues, type EventFormat } from "./new-event-schema"
 
 interface SettingConfig {
   name:        "showVotes" | "publicPage" | "votingOpenByDefault" | "nominationsEnabled" | "autoPublishNominations"
   icon:        LucideIcon
   label:       string
   description: string
+  formats:     EventFormat[]
 }
 
 const SETTINGS: SettingConfig[] = [
@@ -31,39 +32,46 @@ const SETTINGS: SettingConfig[] = [
     icon:        Eye,
     label:       "Show Vote Counts",
     description: "Allow voters to see the live tally for each nominee.",
+    formats:     ["awards"],
   },
   {
     name:        "publicPage",
     icon:        Globe,
     label:       "Public Event Page",
     description: "Create a shareable page so voters can find and vote.",
+    formats:     ["awards", "ticket-only"],
   },
   {
     name:        "votingOpenByDefault",
     icon:        Zap,
     label:       "Open Voting Immediately",
     description: "Start accepting votes as soon as the event is created.",
+    formats:     ["awards"],
   },
   {
     name:        "nominationsEnabled",
     icon:        ClipboardList,
     label:       "Enable Nominations",
     description: "Allow the public to submit nominees for review.",
+    formats:     ["awards"],
   },
   {
     name:        "autoPublishNominations",
     icon:        Rocket,
     label:       "Auto-publish Nominations",
     description: "Submitted nominees go straight to public without review.",
+    formats:     ["awards"],
   },
 ]
 
 interface Props {
   control: Control<NewEventFormValues>
+  eventFormat: EventFormat
 }
 
-export function EventSettingsSection({ control }: Props) {
+export function EventSettingsSection({ control, eventFormat }: Props) {
   const nominationsEnabled = useWatch({ control, name: "nominationsEnabled" })
+  const settings = SETTINGS.filter((s) => s.formats.includes(eventFormat))
 
   return (
     <div className="form-section">
@@ -73,7 +81,7 @@ export function EventSettingsSection({ control }: Props) {
       </div>
 
       <div className="space-y-3">
-        {SETTINGS.map(({ name, icon: Icon, label, description }) => {
+        {settings.map(({ name, icon: Icon, label, description }) => {
           const isAutoPublish = name === "autoPublishNominations"
           const disabled = isAutoPublish && nominationsEnabled !== "yes"
 

@@ -115,9 +115,10 @@ interface Props {
   base:         string;
   activeTab?:   string;
   ticketStats?: TicketHeaderStats;
+  isTicketOnly?: boolean;
 }
 
-export function EventHeader({ event, stats, base, activeTab, ticketStats }: Props) {
+export function EventHeader({ event, stats, base, activeTab, ticketStats, isTicketOnly = false }: Props) {
   const [nomineeDialogOpen, setNomineeDialogOpen] = useState(false);
   const [publishDialogOpen, setPublishDialogOpen] = useState(false);
   const [publishing, setPublishing] = useState(false);
@@ -165,13 +166,14 @@ export function EventHeader({ event, stats, base, activeTab, ticketStats }: Prop
       href:         `${base}/events/${event.id}/edit`,
       disabledWhen: ["closed"],
     },
-    {
+    // Ticket-only events have no categories/nominees to add.
+    ...(isTicketOnly ? [] : [{
       icon:         UserPlus,
       label:        "Add nominee",
       separator:    true,
       disabledWhen: ["closed"],
       onClick:      () => setNomineeDialogOpen(true),
-    },
+    }]),
     {
       icon:      Share2,
       label:     "Share public link",
@@ -363,12 +365,14 @@ export function EventHeader({ event, stats, base, activeTab, ticketStats }: Prop
       </Dialog>
 
       {/* Nominee dialog — rendered outside the card so it portals correctly */}
-      <AddNomineeDialog
-        open={nomineeDialogOpen}
-        onOpenChange={setNomineeDialogOpen}
-        categories={event.categories}
-        eventTitle={event.title}
-      />
+      {!isTicketOnly && (
+        <AddNomineeDialog
+          open={nomineeDialogOpen}
+          onOpenChange={setNomineeDialogOpen}
+          categories={event.categories}
+          eventTitle={event.title}
+        />
+      )}
     </>
   );
 }

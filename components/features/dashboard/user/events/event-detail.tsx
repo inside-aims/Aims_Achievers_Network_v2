@@ -6,7 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { EventHeader } from "./event-header";
+import { EventHeader, type TicketHeaderStats } from "./event-header";
 import { CategoriesList } from "./categories-list";
 import { EventSidebar } from "./event-sidebar";
 import { EventTicketsSection } from "./event-tickets-section";
@@ -48,6 +48,13 @@ export function EventDetail({ base, eventId }: Props) {
   const event       = useQuery(api.events.getByIdForOrganizer, { eventId: convexId });
   const statsData   = useQuery(api.dashboard.eventStats,     { eventId: convexId });
   const leaderboard = useQuery(api.dashboard.leaderboard,    { eventId: convexId });
+
+  // Ticket-only events publish with zero categories — same convention used
+  // on the public event page. Drives which stats/controls/sections show.
+  const isTicketOnly = (leaderboard ?? []).length === 0 && (event?.ticketingEnabled ?? false);
+
+  const ticketInfo = useQuery(api.tickets.getEventTicketInfo, isTicketOnly ? { eventId: convexId } : "skip");
+  const scanCodes  = useQuery(api.tickets.getScanAccessCodes, isTicketOnly ? { eventId: convexId } : "skip");
 
   const updateSettings = useMutation(api.events.updateLiveSettings);
 
@@ -119,6 +126,18 @@ export function EventDetail({ base, eventId }: Props) {
     categories,
   };
 
+  const ticketStats: TicketHeaderStats | undefined = isTicketOnly && ticketInfo
+    ? {
+        sold: ticketInfo.ticketTypes.reduce((sum, t) => sum + t.quantitySold, 0),
+        revenue: formatCurrency(
+          ticketInfo.ticketTypes.reduce((sum, t) => sum + (t.quantitySold * t.pricePesewas) / 100, 0),
+          currency,
+        ),
+        types: ticketInfo.ticketTypes.length,
+        scans: (scanCodes ?? []).reduce((sum, c) => sum + c.scansCount, 0),
+      }
+    : undefined;
+
   // Map EventControls key → updateLiveSettings field name
   const CONTROL_FIELD_MAP: Record<keyof EventControls, string> = {
     showVotes:              "showVotes",
@@ -136,22 +155,40 @@ export function EventDetail({ base, eventId }: Props) {
 
   return (
     <div className="space-y-4 md:space-y-5">
-      <EventHeader event={richEvent} stats={computedStats} base={base} />
+      <EventHeader
+        event={richEvent}
+        stats={computedStats}
+        base={base}
+        isTicketOnly={isTicketOnly}
+        activeTab={isTicketOnly ? "tickets" : undefined}
+        ticketStats={ticketStats}
+      />
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 md:gap-5 items-start">
-        <CategoriesList
-          categories={categories}
-          categoriesBase={`${base}/events/${eventId}/categories`}
-        />
-
+      {isTicketOnly ? (
         <EventSidebar
           stats={computedStats}
           closesDate={richEvent.closesDate}
           createdAt={richEvent.createdAt}
           controls={richEvent.controls}
           onToggle={handleToggle}
+          isTicketOnly
         />
-      </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 md:gap-5 items-start">
+          <CategoriesList
+            categories={categories}
+            categoriesBase={`${base}/events/${eventId}/categories`}
+          />
+
+          <EventSidebar
+            stats={computedStats}
+            closesDate={richEvent.closesDate}
+            createdAt={richEvent.createdAt}
+            controls={richEvent.controls}
+            onToggle={handleToggle}
+          />
+        </div>
+      )}
 
       <EventTicketsSection
         eventId={convexId}

@@ -33,16 +33,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { TICKET_THEMES } from "@/components/features/tickets/ticket-themes";
+import { TicketThemeSelect } from "@/components/features/tickets/ticket-theme-select";
+import {
+  type TicketTypeDraft,
+  emptyTicketTypeDraft,
+  validateTicketTypeDraft,
+  draftToTicketTypePayload,
+  TicketTypeEditor,
+} from "@/components/features/tickets/ticket-type-editor";
 import type { ScanResultType } from "@/components/features/tickets/index";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -97,45 +97,22 @@ export function EventTicketsSection({ eventId, ticketingEnabled, readonly = fals
 
 // ─── Setup panel ──────────────────────────────────────────────────────────────
 
-type TicketRow = { id: string; name: string; price: string; quantity: string };
-
-function newRow(): TicketRow {
-  return { id: String(Date.now() + Math.random()), name: "", price: "20", quantity: "100" };
-}
-
 function SetupPanel({ eventId }: { eventId: Id<"events"> }) {
-  const [rows, setRows] = useState<TicketRow[]>([newRow()]);
+  const [rows, setRows] = useState<TicketTypeDraft[]>([emptyTicketTypeDraft()]);
   const [themeId, setThemeId] = useState("royal-night");
   const [submitting, setSubmitting] = useState(false);
   const setup = useMutation(api.tickets.setupTicketing);
 
-  function addRow() {
-    setRows((r) => [...r, newRow()]);
-  }
-
-  function removeRow(id: string) {
-    if (rows.length > 1) setRows((r) => r.filter((x) => x.id !== id));
-  }
-
-  function updateRow(id: string, field: keyof Omit<TicketRow, "id">, value: string) {
-    setRows((r) => r.map((x) => (x.id === id ? { ...x, [field]: value } : x)));
-  }
-
   async function handleSubmit() {
-    const ticketTypes = rows.map((r) => ({
-      name: r.name.trim(),
-      pricePesewas: Math.round(parseFloat(r.price || "0") * 100),
-      quantityTotal: parseInt(r.quantity || "-1", 10),
-    }));
-
-    if (ticketTypes.some((t) => !t.name)) {
-      toast.error("All ticket types need a name");
+    const firstError = rows.map(validateTicketTypeDraft).find((e) => e !== null);
+    if (firstError) {
+      toast.error(firstError);
       return;
     }
 
     setSubmitting(true);
     try {
-      await setup({ eventId, themeId, ticketTypes });
+      await setup({ eventId, themeId, ticketTypes: rows.map(draftToTicketTypePayload) });
       toast.success("Ticketing enabled!");
     } catch {
       toast.error("Failed to enable ticketing. Please try again.");
@@ -163,89 +140,10 @@ function SetupPanel({ eventId }: { eventId: Id<"events"> }) {
         {/* Theme */}
         <div className="space-y-1.5">
           <Label>Ticket Theme</Label>
-          <Select value={themeId} onValueChange={setThemeId}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {TICKET_THEMES.map((t) => (
-                <SelectItem key={t.id} value={t.id}>
-                  {t.name}
-                  <span className="ml-1.5 text-muted-foreground text-xs">— {t.description}</span>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <TicketThemeSelect value={themeId} onChange={setThemeId} />
         </div>
 
-        {/* Ticket types */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-medium">Ticket Types</p>
-              <p className="text-xs text-muted-foreground">Define price tiers for this event.</p>
-            </div>
-            <Button type="button" variant="outline" size="sm" onClick={addRow} className="shrink-0">
-              <Plus className="size-3.5 mr-1" />
-              Add Type
-            </Button>
-          </div>
-
-          <div className="space-y-2">
-            <div className="hidden md:grid grid-cols-[1fr_8rem_8rem_2.25rem] gap-2 px-1">
-              <p className="text-xs text-muted-foreground font-medium">Name *</p>
-              <p className="text-xs text-muted-foreground font-medium">Price (GHS) *</p>
-              <p className="text-xs text-muted-foreground font-medium">Qty (-1 = ∞)</p>
-              <span />
-            </div>
-
-            {rows.map((row, i) => (
-              <div key={row.id} className="flex items-center gap-2">
-                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary">
-                  {i + 1}
-                </span>
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-[1fr_8rem_8rem] gap-2">
-                  <Input
-                    placeholder="e.g. General Admission"
-                    value={row.name}
-                    onChange={(e) => updateRow(row.id, "name", e.target.value)}
-                  />
-                  <Input
-                    type="number"
-                    min={0}
-                    step={0.01}
-                    placeholder="0.00"
-                    value={row.price}
-                    onChange={(e) => updateRow(row.id, "price", e.target.value)}
-                  />
-                  <Input
-                    type="number"
-                    min={-1}
-                    placeholder="-1"
-                    value={row.quantity}
-                    onChange={(e) => updateRow(row.id, "quantity", e.target.value)}
-                  />
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="size-9 shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                  onClick={() => removeRow(row.id)}
-                  disabled={rows.length === 1}
-                  aria-label="Remove row"
-                >
-                  <Trash2 className="size-3.5" />
-                </Button>
-              </div>
-            ))}
-
-            <p className="text-xs text-muted-foreground px-1">
-              Price in GHS — e.g. <span className="font-mono">10.50</span>. Use{" "}
-              <span className="font-mono">-1</span> for unlimited tickets.
-            </p>
-          </div>
-        </div>
+        <TicketTypeEditor value={rows} onChange={setRows} minRows={1} />
 
         <Button onClick={handleSubmit} disabled={submitting} className="w-full">
           {submitting && <Loader2 className="size-4 mr-2 animate-spin" />}
@@ -287,9 +185,7 @@ function TicketingDashboard({
 
   // Add ticket type dialog
   const [typeDialogOpen, setTypeDialogOpen] = useState(false);
-  const [typeName, setTypeName]             = useState("");
-  const [typePrice, setTypePrice]           = useState("20");
-  const [typeQty, setTypeQty]               = useState("100");
+  const [typeDraft, setTypeDraft]           = useState<TicketTypeDraft>(emptyTicketTypeDraft());
   const [addingType, setAddingType]         = useState(false);
 
   // Group scan entries by access code id for the activity tab
@@ -352,19 +248,16 @@ function TicketingDashboard({
   }
 
   async function handleAddType() {
-    const name = typeName.trim();
-    if (!name) { toast.error("Name is required"); return; }
-    const pricePesewas  = Math.round(parseFloat(typePrice  || "0")  * 100);
-    const quantityTotal = parseInt(typeQty || "-1", 10);
+    const error = validateTicketTypeDraft(typeDraft);
+    if (error) { toast.error(error); return; }
+    const { name, pricePesewas, quantityTotal } = draftToTicketTypePayload(typeDraft);
 
     setAddingType(true);
     try {
       await addType({ eventId, name, pricePesewas, quantityTotal });
       toast.success("Ticket type added");
       setTypeDialogOpen(false);
-      setTypeName("");
-      setTypePrice("20");
-      setTypeQty("100");
+      setTypeDraft(emptyTicketTypeDraft());
     } catch {
       toast.error("Failed to add ticket type");
     } finally {
@@ -818,8 +711,8 @@ function TicketingDashboard({
                 <Input
                   id="type-name"
                   placeholder="e.g. VIP"
-                  value={typeName}
-                  onChange={(e) => setTypeName(e.target.value)}
+                  value={typeDraft.name}
+                  onChange={(e) => setTypeDraft({ ...typeDraft, name: e.target.value })}
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -831,8 +724,8 @@ function TicketingDashboard({
                     min={0}
                     step={0.01}
                     placeholder="0.00"
-                    value={typePrice}
-                    onChange={(e) => setTypePrice(e.target.value)}
+                    value={typeDraft.priceGhs}
+                    onChange={(e) => setTypeDraft({ ...typeDraft, priceGhs: e.target.value })}
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -842,15 +735,15 @@ function TicketingDashboard({
                     type="number"
                     min={-1}
                     placeholder="-1"
-                    value={typeQty}
-                    onChange={(e) => setTypeQty(e.target.value)}
+                    value={typeDraft.quantityTotal}
+                    onChange={(e) => setTypeDraft({ ...typeDraft, quantityTotal: e.target.value })}
                   />
                 </div>
               </div>
               <Button
                 className="w-full"
                 onClick={handleAddType}
-                disabled={!typeName.trim() || addingType}
+                disabled={!typeDraft.name.trim() || addingType}
               >
                 {addingType && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Add Ticket Type
