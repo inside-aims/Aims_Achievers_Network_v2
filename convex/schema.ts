@@ -128,6 +128,57 @@ export default defineSchema({
     ticketingEnabled: v.optional(v.boolean()),
     themeId: v.optional(v.string()),               // e.g. "royal-night"
 
+    // ── Event details (organizer-provided context for ticket buyers) ──
+    agenda: v.optional(
+      v.array(
+        v.object({
+          time: v.string(),
+          title: v.string(),
+          description: v.optional(v.string()),
+        }),
+      ),
+    ),
+    lineup: v.optional(
+      v.array(
+        v.object({
+          name: v.string(),
+          role: v.string(),
+          imageUrl: v.optional(v.string()),
+        }),
+      ),
+    ),
+    dressCode: v.optional(v.string()),
+    ageRestriction: v.optional(v.string()),
+    venueNotes: v.optional(v.string()),
+    refundPolicy: v.optional(v.string()),
+    termsNote: v.optional(v.string()),
+    contactEmail: v.optional(v.string()),
+    contactPhone: v.optional(v.string()),
+    socialLinks: v.optional(
+      v.array(
+        v.object({
+          platform: v.string(),
+          url: v.string(),
+        }),
+      ),
+    ),
+    faqs: v.optional(
+      v.array(
+        v.object({
+          question: v.string(),
+          answer: v.string(),
+        }),
+      ),
+    ),
+    sponsors: v.optional(
+      v.array(
+        v.object({
+          name: v.string(),
+          logoUrl: v.optional(v.string()),
+        }),
+      ),
+    ),
+
     createdAt: v.number(),
   })
     .index("by_organizer", ["organizerId"])

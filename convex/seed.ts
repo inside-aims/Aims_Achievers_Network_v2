@@ -416,6 +416,29 @@ const TICKET_FOCUS_EVENTS_DATA = [
       { name: "General Admission", description: "Entry + one welcome drink.", pricePesewas: 2000, quantityTotal: 200 },
       { name: "VIP Table", description: "Reserved table for 4, bottle service included.", pricePesewas: 15000, quantityTotal: 20 },
     ],
+    agenda: [
+      { time: "18:00", title: "Doors Open", description: "Check-in and welcome drinks." },
+      { time: "19:30", title: "DJ Set Begins" },
+      { time: "22:00", title: "Live Performance" },
+      { time: "00:00", title: "After-party continues" },
+    ],
+    lineup: [
+      { name: "DJ Kwame", role: "Resident DJ" },
+      { name: "The Rooftop Collective", role: "Live Band" },
+    ],
+    dressCode: "Smart casual — no shorts or sandals.",
+    ageRestriction: "18+",
+    venueNotes: "Rooftop access via the east elevator. Limited on-site parking — ride-share recommended.",
+    refundPolicy: "Tickets are non-refundable but transferable up to 24 hours before the event.",
+    termsNote: "Management reserves the right of admission.",
+    contactEmail: "events@aims.internal",
+    contactPhone: "+233241234567",
+    socialLinks: [{ platform: "Instagram", url: "https://instagram.com/aimsachievers" }],
+    faqs: [
+      { question: "Is there parking?", answer: "Limited on-site parking is available; ride-share is recommended." },
+      { question: "Can I bring a plus-one?", answer: "Yes — additional General Admission tickets can be purchased for guests." },
+    ],
+    sponsors: [{ name: "Kofi Beverages" }],
   },
   {
     // Already in the past relative to "today" — shows the ended state
@@ -433,6 +456,28 @@ const TICKET_FOCUS_EVENTS_DATA = [
       { name: "General Admission", description: "Entry to the beach party.", pricePesewas: 3000, quantityTotal: 300 },
       { name: "VIP Cabana", description: "Private cabana for up to 6.", pricePesewas: 25000, quantityTotal: 10 },
     ],
+    agenda: [
+      { time: "15:00", title: "Gates Open", description: "Beach access and welcome drinks." },
+      { time: "17:00", title: "Beach Games" },
+      { time: "18:30", title: "Sunset Live Set" },
+      { time: "21:00", title: "Bonfire & Closing" },
+    ],
+    lineup: [
+      { name: "DJ Ama", role: "Resident DJ" },
+      { name: "Ada Drum Circle", role: "Live Percussion" },
+    ],
+    dressCode: "Beachwear encouraged.",
+    ageRestriction: "All ages welcome",
+    venueNotes: "Beach entrance off the main coastal road. Bring cash for on-site vendors.",
+    refundPolicy: "This event has ended — no further sales or refunds.",
+    termsNote: "Management reserved the right of admission.",
+    contactEmail: "events@aims.internal",
+    contactPhone: "+233241234567",
+    socialLinks: [{ platform: "Instagram", url: "https://instagram.com/aimsachievers" }],
+    faqs: [
+      { question: "Is this event still running?", answer: "No, Sunset Beach Party 2025 has already taken place." },
+    ],
+    sponsors: [{ name: "Ada Coconut Co." }],
   },
 ];
 
@@ -475,6 +520,18 @@ export const seedTicketFocusEvent = internalMutation({
           votingEndsAt: def.eventDate,
           eventDate: def.eventDate,
           status: def.status,
+          agenda: def.agenda,
+          lineup: def.lineup,
+          dressCode: def.dressCode,
+          ageRestriction: def.ageRestriction,
+          venueNotes: def.venueNotes,
+          refundPolicy: def.refundPolicy,
+          termsNote: def.termsNote,
+          contactEmail: def.contactEmail,
+          contactPhone: def.contactPhone,
+          socialLinks: def.socialLinks,
+          faqs: def.faqs,
+          sponsors: def.sponsors,
         });
         results.push({ slug: def.slug, action: "updated" });
         continue;
@@ -507,6 +564,20 @@ export const seedTicketFocusEvent = internalMutation({
         nominationRequiresAuth: false,
 
         ticketingEnabled: true,
+
+        agenda: def.agenda,
+        lineup: def.lineup,
+        dressCode: def.dressCode,
+        ageRestriction: def.ageRestriction,
+        venueNotes: def.venueNotes,
+        refundPolicy: def.refundPolicy,
+        termsNote: def.termsNote,
+        contactEmail: def.contactEmail,
+        contactPhone: def.contactPhone,
+        socialLinks: def.socialLinks,
+        faqs: def.faqs,
+        sponsors: def.sponsors,
+
         createdAt: now,
       });
 

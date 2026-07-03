@@ -148,6 +148,20 @@ export const getBySlugWithCategories = query({
         description: cat.description ?? "",
         votePrice: event.pricePerVotePesewas / 100,
       })),
+      details: {
+        agenda: event.agenda ?? [],
+        lineup: event.lineup ?? [],
+        dressCode: event.dressCode,
+        ageRestriction: event.ageRestriction,
+        venueNotes: event.venueNotes,
+        refundPolicy: event.refundPolicy,
+        termsNote: event.termsNote,
+        contactEmail: event.contactEmail,
+        contactPhone: event.contactPhone,
+        socialLinks: event.socialLinks ?? [],
+        faqs: event.faqs ?? [],
+        sponsors: event.sponsors ?? [],
+      },
     };
   },
 });

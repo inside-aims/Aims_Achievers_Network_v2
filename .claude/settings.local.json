@@ -61,7 +61,15 @@
       "Read(//c/Users/SOMUAH~1/AppData/Local/Temp/**)",
       "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" \"https://tough-stork-244.convex.site/.well-known/openid-configuration\")",
       "Bash(curl -s \"https://tough-stork-244.convex.site/.well-known/openid-configuration\")",
-      "PowerShell(Get-Process *)"
+      "PowerShell(Get-Process *)",
+      "Bash(bunx tsc *)",
+      "Bash(find .claude/skills -maxdepth 2)",
+      "Bash(grep -Hm1 '^description:' .claude/skills/*/SKILL.md)",
+      "Bash(chromium-cli --help)",
+      "Bash(npm view *)",
+      "Bash(curl -sf http://localhost:3000)",
+      "Artifact",
+      "Bash(xargs -I{} sh -c 'echo {}; cat {}')"
     ]
   }
 }
