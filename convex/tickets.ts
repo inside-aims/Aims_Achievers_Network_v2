@@ -4,6 +4,7 @@ import { QueryCtx, MutationCtx } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
 import { requireEventOwner } from "./helpers";
+import { assertValidTicketTypeArgs } from "./ticketValidation";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -388,6 +389,10 @@ export const setupTicketing = mutation({
   handler: async (ctx, args) => {
     await requireEventOwner(ctx, args.eventId);
 
+    for (const tt of args.ticketTypes) {
+      assertValidTicketTypeArgs(tt);
+    }
+
     const patch: Record<string, unknown> = { ticketingEnabled: true };
     if (args.themeId) patch.themeId = args.themeId;
     await ctx.db.patch(args.eventId, patch);
@@ -427,6 +432,11 @@ export const addTicketType = mutation({
     const event = await ctx.db.get(args.eventId);
     if (!event) throw new Error("Event not found");
     if (!event.ticketingEnabled) throw new Error("Ticketing is not enabled for this event");
+
+    assertValidTicketTypeArgs({
+      pricePesewas: args.pricePesewas,
+      quantityTotal: args.quantityTotal,
+    });
 
     return await ctx.db.insert("ticketTypes", {
       eventId: args.eventId,

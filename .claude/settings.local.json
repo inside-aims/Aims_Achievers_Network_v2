@@ -69,7 +69,8 @@
       "Bash(npm view *)",
       "Bash(curl -sf http://localhost:3000)",
       "Artifact",
-      "Bash(xargs -I{} sh -c 'echo {}; cat {}')"
+      "Bash(xargs -I{} sh -c 'echo {}; cat {}')",
+      "Bash(curl -s http://localhost:3000/user/kh71k5bkz77jkakn5y2y5p5dyd89t5g1/new-event)"
     ]
   }
 }

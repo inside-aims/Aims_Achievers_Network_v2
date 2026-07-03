@@ -31,6 +31,7 @@ import type * as outlets from "../outlets.js";
 import type * as resend from "../resend.js";
 import type * as seed from "../seed.js";
 import type * as sms from "../sms.js";
+import type * as ticketValidation from "../ticketValidation.js";
 import type * as tickets from "../tickets.js";
 import type * as users from "../users.js";
 import type * as ussd from "../ussd.js";
@@ -66,6 +67,7 @@ declare const fullApi: ApiFromModules<{
   resend: typeof resend;
   seed: typeof seed;
   sms: typeof sms;
+  ticketValidation: typeof ticketValidation;
   tickets: typeof tickets;
   users: typeof users;
   ussd: typeof ussd;

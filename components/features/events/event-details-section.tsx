@@ -77,13 +77,13 @@ const DetailCard = ({
       className
     )}
   >
-    <div className="flex items-center gap-3 border-b border-border px-4 py-3 md:px-5">
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10">
-        <Icon className="h-4 w-4 text-primary" />
+    <div className="flex items-center gap-2 md:gap-3 border-b border-border px-3 py-2.5 md:px-5 md:py-3">
+      <div className="flex h-7 w-7 md:h-8 md:w-8 shrink-0 items-center justify-center rounded-md bg-primary/10">
+        <Icon className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
       </div>
-      <h3 className="text-sm font-bold">{title}</h3>
+      <h3 className="text-xs md:text-sm font-bold">{title}</h3>
     </div>
-    <div className="p-4 md:p-5">{children}</div>
+    <div className="p-3 md:p-5">{children}</div>
   </div>
 );
 
@@ -137,7 +137,7 @@ const EventDetailsSection = ({ details }: { details: EventDetails }) => {
         <div className="h-px flex-1 bg-border" />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-3 md:gap-4 sm:grid-cols-2">
         {details.agenda.length > 0 && (
           <DetailCard icon={CalendarClock} title="Agenda" className="sm:col-span-2">
             <div>
@@ -154,7 +154,7 @@ const EventDetailsSection = ({ details }: { details: EventDetails }) => {
                       <Badge className="h-5 border-transparent bg-primary/10 font-mono text-[10px] text-primary">
                         {item.time}
                       </Badge>
-                      <p className="text-sm font-semibold">{item.title}</p>
+                      <p className="text-xs md:text-sm font-semibold">{item.title}</p>
                     </div>
                     {item.description && (
                       <p className="mt-1 text-xs text-muted-foreground">{item.description}</p>
@@ -184,8 +184,8 @@ const EventDetailsSection = ({ details }: { details: EventDetails }) => {
                     </span>
                   )}
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{person.name}</p>
-                    <p className="truncate text-xs text-muted-foreground">{person.role}</p>
+                    <p className="truncate text-xs md:text-sm font-medium">{person.name}</p>
+                    <p className="truncate text-[10px] md:text-xs text-muted-foreground">{person.role}</p>
                   </div>
                 </div>
               ))}
@@ -270,7 +270,7 @@ const EventDetailsSection = ({ details }: { details: EventDetails }) => {
 
         {details.faqs.length > 0 && (
           <DetailCard icon={HelpCircle} title="FAQs" className="sm:col-span-2">
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-3 md:gap-4 sm:grid-cols-2">
               {details.faqs.map((faq, i) => (
                 <div key={i} className="flex gap-2.5 text-sm">
                   <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary">
