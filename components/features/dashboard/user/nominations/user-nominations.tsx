@@ -4,6 +4,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { ClipboardList } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
+import { ConvexError } from "convex/values";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { toast } from "sonner";
@@ -55,8 +56,12 @@ export function UserNominations() {
   const reject   = useMutation(api.nominations.reject);
 
   function handleApprove(id: string) {
-    approve({ submissionId: id as Id<"nominationSubmissions"> }).catch(() => {
-      toast.error("Failed to approve nomination. Please try again.");
+    approve({ submissionId: id as Id<"nominationSubmissions"> }).catch((err) => {
+      if (err instanceof ConvexError) {
+        toast.error("Possible duplicate nominee", { description: err.data as string });
+      } else {
+        toast.error("Failed to approve nomination. Please try again.");
+      }
     });
   }
 
