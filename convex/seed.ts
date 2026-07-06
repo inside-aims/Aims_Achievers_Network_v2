@@ -600,3 +600,128 @@ export const seedTicketFocusEvent = internalMutation({
     return { status: "ok", events: results };
   },
 });
+
+// ─── Ticket sales demo data ────────────────────────────────────────────────────
+
+const DEMO_BUYER_NAMES = [
+  "Ama Boateng", "Kwame Owusu", "Efua Mensah", "Kojo Asante", "Abena Darko",
+  "Yaw Appiah", "Akosua Sarpong", "Kwabena Frimpong", "Adjoa Nyarko", "Kwesi Anane",
+  "Nana Yeboah", "Esi Kufuor", "Kwaku Osei", "Afia Amankwah", "Kobby Danso",
+  "Akua Antwi", "Fiifi Baffour", "Abrafi Quansah", "Kweku Gyasi", "Serwaa Adjei",
+];
+
+// Sold counts per ticket-focus event (see TICKET_FOCUS_EVENTS_DATA above),
+// keyed by slug → ticket type name → quantity to mark as sold.
+const TICKET_SALES_DATA: Record<string, Record<string, number>> = {
+  "rooftop-social-night-2026": {
+    "Free RSVP": 12,
+    "General Admission": 28,
+    "VIP Table": 4,
+  },
+  "sunset-beach-party-2025": {
+    "General Admission": 45,
+    "VIP Cabana": 6,
+  },
+};
+
+/**
+ * Seeds confirmed ticket orders + issued tickets for the ticket-focus demo
+ * events, so their quantitySold (and the admin dashboard's ticket stats) show
+ * real, non-zero numbers instead of the 0s seedTicketFocusEvent leaves behind.
+ *
+ * Safe to re-run: skips any ticket type that already has tickets issued.
+ * Run via: npx convex run seed:seedTicketSales (after seed:seedTicketFocusEvent)
+ */
+export const seedTicketSales = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    let buyerIndex = 0;
+    const results: { event: string; ticketType: string; issued: number; action: "seeded" | "skipped" }[] = [];
+
+    for (const [slug, salesByType] of Object.entries(TICKET_SALES_DATA)) {
+      const event = await ctx.db
+        .query("events")
+        .withIndex("by_slug", (q) => q.eq("slug", slug))
+        .unique();
+      if (!event) {
+        results.push({ event: slug, ticketType: "-", issued: 0, action: "skipped" });
+        continue;
+      }
+
+      const ticketTypes = await ctx.db
+        .query("ticketTypes")
+        .withIndex("by_event", (q) => q.eq("eventId", event._id))
+        .take(50);
+
+      // Runs across all ticket types for this event so generated ticket
+      // codes never collide within the same event.
+      let eventSeq = 0;
+
+      for (const [typeName, quantitySold] of Object.entries(salesByType)) {
+        const ticketType = ticketTypes.find((tt) => tt.name === typeName);
+        if (!ticketType) {
+          results.push({ event: slug, ticketType: typeName, issued: 0, action: "skipped" });
+          continue;
+        }
+
+        const existingTicket = await ctx.db
+          .query("tickets")
+          .withIndex("by_event", (q) => q.eq("eventId", event._id))
+          .filter((q) => q.eq(q.field("ticketTypeId"), ticketType._id))
+          .first();
+        if (existingTicket) {
+          results.push({ event: slug, ticketType: typeName, issued: 0, action: "skipped" });
+          continue;
+        }
+
+        const now = Date.now();
+        let issued = 0;
+        while (issued < quantitySold) {
+          const buyer = DEMO_BUYER_NAMES[buyerIndex % DEMO_BUYER_NAMES.length];
+          buyerIndex++;
+          const email = `${buyer.toLowerCase().replace(/\s+/g, ".")}${buyerIndex}@example.com`;
+
+          // Most orders are for 1 ticket, occasionally 2 — capped so we
+          // never issue more than the target quantitySold for this type.
+          const orderQuantity = Math.min(buyerIndex % 3 === 0 ? 2 : 1, quantitySold - issued);
+          const totalPesewas = ticketType.pricePesewas * orderQuantity;
+
+          const orderId = await ctx.db.insert("ticketOrders", {
+            eventId: event._id,
+            ticketTypeId: ticketType._id,
+            quantity: orderQuantity,
+            totalPesewas,
+            buyerName: buyer,
+            buyerEmail: email,
+            providerReference: totalPesewas > 0 ? `TKT-${event.eventCode}-DEMO${eventSeq + 1}` : undefined,
+            status: "confirmed",
+            createdAt: now,
+          });
+
+          for (let i = 0; i < orderQuantity; i++) {
+            eventSeq++;
+            const ticketCode = `${event.eventCode}-DEMO${String(eventSeq).padStart(3, "0")}`;
+            await ctx.db.insert("tickets", {
+              eventId: event._id,
+              ticketTypeId: ticketType._id,
+              orderId,
+              ticketCode,
+              holderName: buyer,
+              holderEmail: email,
+              status: "valid",
+              themeId: event.themeId,
+              createdAt: now,
+            });
+          }
+
+          issued += orderQuantity;
+        }
+
+        await ctx.db.patch(ticketType._id, { quantitySold: ticketType.quantitySold + issued });
+        results.push({ event: slug, ticketType: typeName, issued, action: "seeded" });
+      }
+    }
+
+    return { status: "ok", results };
+  },
+});
