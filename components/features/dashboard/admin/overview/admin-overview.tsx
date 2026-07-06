@@ -2,7 +2,7 @@
 
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { CalendarDays, Users, BarChart3, TrendingUp } from "lucide-react";
+import { CalendarDays, Users, BarChart3, TrendingUp, Ticket } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatCard } from "../../shared/stat-card";
 import { EventRow } from "../../shared/event-row";
@@ -59,6 +59,13 @@ export function AdminOverview({ base }: Props) {
       sub: `of GHS ${(data.totalRevenuePesewas / 100).toLocaleString()} gross`,
       icon: TrendingUp,
       href: `${base}/analytics`,
+    },
+    {
+      label: "Ticket Sales",
+      value: `GHS ${(data.totalTicketRevenuePesewas / 100).toLocaleString()}`,
+      sub: `${data.totalTicketsSold.toLocaleString()} tickets sold`,
+      icon: Ticket,
+      href: `${base}/events`,
     },
   ];
 

@@ -70,7 +70,13 @@
       "Bash(curl -sf http://localhost:3000)",
       "Artifact",
       "Bash(xargs -I{} sh -c 'echo {}; cat {}')",
-      "Bash(curl -s http://localhost:3000/user/kh71k5bkz77jkakn5y2y5p5dyd89t5g1/new-event)"
+      "Bash(curl -s http://localhost:3000/user/kh71k5bkz77jkakn5y2y5p5dyd89t5g1/new-event)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(where chrome.exe)",
+      "Bash(where msedge.exe)",
+      "Read(//c/Program Files/Google/Chrome/Application/**)",
+      "Read(//c/Program Files \\(x86\\)/Microsoft/Edge/Application/**)",
+      "Bash(awk -F'|' '{print $1, $37, $30}')"
     ]
   }
 }

@@ -7,26 +7,13 @@
     <list default="true" id="48008f26-d1dc-4f7e-b70b-a93096b41883" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(dashboard)/user/[profileId]/events/[eventId]/edit/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(dashboard)/user/[profileId]/events/[eventId]/edit/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/events/event-controls.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/events/event-controls.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/events/event-detail.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/events/event-detail.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/events/event-header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/events/event-header.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/events/event-sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/events/event-sidebar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/events/event-tickets-section.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/events/event-tickets-section.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/new-event/event-basics-section.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/new-event/event-basics-section.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/new-event/event-cover-section.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/new-event/event-cover-section.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/new-event/event-schedule-section.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/new-event/event-schedule-section.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/new-event/event-settings-section.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/new-event/event-settings-section.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/new-event/event-ticketing-section.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/new-event/event-ticketing-section.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/new-event/new-event-form.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/new-event/new-event-form.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/new-event/new-event-schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/new-event/new-event-schema.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/new-event/voting-setup-section.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/new-event/voting-setup-section.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/features/events/event-details-section.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/events/event-details-section.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/convex/_generated/api.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/convex/_generated/api.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/convex/events.ts" beforeDir="false" afterPath="$PROJECT_DIR$/convex/events.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/convex/tickets.ts" beforeDir="false" afterPath="$PROJECT_DIR$/convex/tickets.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/date-utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/date-utils.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/utils.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/dashboard/admin/events/admin-event-detail.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/admin/events/admin-event-detail.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/dashboard/admin/events/admin-event-row.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/admin/events/admin-event-row.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/dashboard/admin/events/admin-events.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/admin/events/admin-events.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/dashboard/admin/overview/admin-overview.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/admin/overview/admin-overview.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/convex/admin.ts" beforeDir="false" afterPath="$PROJECT_DIR$/convex/admin.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/convex/seed.ts" beforeDir="false" afterPath="$PROJECT_DIR$/convex/seed.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/convex/users.ts" beforeDir="false" afterPath="$PROJECT_DIR$/convex/users.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,7 +21,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="521" />
+    <option name="cachedIndexableFilesCount" value="530" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -150,7 +137,8 @@
       <workItem from="1777674953517" duration="2031000" />
       <workItem from="1777677169808" duration="3030000" />
       <workItem from="1782997950598" duration="4144000" />
-      <workItem from="1783067681125" duration="17668000" />
+      <workItem from="1783067681125" duration="19390000" />
+      <workItem from="1783340447878" duration="4449000" />
     </task>
     <servers />
   </component>
