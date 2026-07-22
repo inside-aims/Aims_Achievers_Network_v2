@@ -131,10 +131,10 @@ export const getByCodeWithNominees = query({
 
     const nominees = await ctx.db
       .query("nominees")
-      .withIndex("by_category_status_votes", (q) =>
+      .withIndex("by_category_status", (q) =>
         q.eq("categoryId", category._id).eq("status", "active"),
       )
-      .order("desc")
+      .order("asc")
       .take(200);
 
     const tsToDate = (ts?: number) =>

@@ -231,7 +231,8 @@ export default defineSchema({
     .index("by_shortcode_global", ["shortcode"])           // USSD global lookup
     .index("by_event_votes", ["eventId", "totalVotes"])  // leaderboard sort (cross-category)
     .index("by_event_category_votes", ["eventId", "categoryId", "totalVotes"])  // per-category leaderboard
-    .index("by_category_status_votes", ["categoryId", "status", "totalVotes"]),
+    .index("by_category_status_votes", ["categoryId", "status", "totalVotes"])
+    .index("by_category_status", ["categoryId", "status"]),  // voting page order (by creation time)
 
 
   // ─────────────────────────────────────────────
