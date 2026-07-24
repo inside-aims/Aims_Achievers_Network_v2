@@ -97,15 +97,14 @@ const TicketPurchaseModal = ({
         return;
       }
 
-      // Paid — initialize Paystack and redirect
-      const res = await fetch("/api/paystack/initialize", {
+      // Paid — create a Moolre hosted payment link and redirect
+      const res = await fetch("/api/moolre/initiate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           reference: result.providerReference,
           amountPesewas: result.totalPesewas,
           email: email.trim(),
-          phone: phone.trim() || undefined,
           callbackPath: "/tickets/confirmation",
           metadata: {
             buyer_name: name.trim(),
