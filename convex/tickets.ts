@@ -1,10 +1,16 @@
 import { v, ConvexError } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { QueryCtx, MutationCtx } from "./_generated/server";
-import { internal } from "./_generated/api";
+import { components, internal } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
 import { requireEventOwner } from "./helpers";
 import { assertValidTicketTypeArgs } from "./ticketValidation";
+import { RateLimiter, MINUTE } from "@convex-dev/rate-limiter";
+
+const rateLimiter = new RateLimiter(components.rateLimiter, {
+  // Max 5 order attempts per email per 10-minute window
+  ticketOrderCreate: { kind: "fixed window", rate: 5, period: 10 * MINUTE },
+});
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -298,6 +304,11 @@ export const createTicketOrder = mutation({
         throw new Error(`Only ${remaining} ticket(s) remaining for this tier`);
     }
 
+    await rateLimiter.limit(ctx, "ticketOrderCreate", {
+      key: args.buyerEmail.toLowerCase(),
+      throws: true,
+    });
+
     const totalPesewas = ticketType.pricePesewas * args.quantity;
     const isFree = ticketType.pricePesewas === 0;
 
@@ -318,6 +329,7 @@ export const createTicketOrder = mutation({
       buyerEmail: args.buyerEmail.toLowerCase(),
       buyerPhone: args.buyerPhone,
       providerReference,
+      provider: isFree ? undefined : "moolre",
       status: isFree ? "confirmed" : "pending",
       createdAt: Date.now(),
     });

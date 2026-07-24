@@ -21,6 +21,7 @@ import type * as gallery from "../gallery.js";
 import type * as helpers from "../helpers.js";
 import type * as http from "../http.js";
 import type * as internal_aggregates from "../internal/aggregates.js";
+import type * as internal_moolre from "../internal/moolre.js";
 import type * as internal_tickets from "../internal/tickets.js";
 import type * as internal_votes from "../internal/votes.js";
 import type * as migrations from "../migrations.js";
@@ -57,6 +58,7 @@ declare const fullApi: ApiFromModules<{
   helpers: typeof helpers;
   http: typeof http;
   "internal/aggregates": typeof internal_aggregates;
+  "internal/moolre": typeof internal_moolre;
   "internal/tickets": typeof internal_tickets;
   "internal/votes": typeof internal_votes;
   migrations: typeof migrations;

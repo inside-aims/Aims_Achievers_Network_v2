@@ -93,6 +93,58 @@ http.route({
   }),
 });
 
+// ─── Moolre Webhook ───────────────────────────────────────────────────────────
+//
+// Moolre echoes a per-account `secret` inside data (found in the dashboard,
+// same value returned by their account create/update APIs). We compare it
+// against MOOLRE_WEBHOOK_SECRET with a constant-time check before trusting
+// anything in the payload. The actual confirm/fail decision still comes from
+// calling Moolre's own Payment Status API (see internal/moolre.ts) rather
+// than the webhook's own txstatus field — belt and suspenders.
+
+http.route({
+  path: "/webhooks/moolre",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const rawBody = await request.text();
+
+    const expectedSecret = process.env.MOOLRE_WEBHOOK_SECRET;
+    if (!expectedSecret) {
+      console.error("MOOLRE_WEBHOOK_SECRET is not set");
+      return new Response("Server misconfiguration", { status: 500 });
+    }
+
+    let payload: MoolreWebhookPayload;
+    try {
+      payload = JSON.parse(rawBody);
+    } catch {
+      console.error("[moolre webhook] Failed to parse JSON body");
+      return new Response("Invalid JSON", { status: 400 });
+    }
+
+    const providedSecret = payload.data?.secret;
+    if (!providedSecret || !timingSafeEqualString(providedSecret, expectedSecret)) {
+      console.warn("[moolre webhook] Rejected — missing or invalid secret");
+      return new Response("Invalid secret", { status: 401 });
+    }
+
+    const reference = payload.data?.reference;
+    if (!reference || !reference.startsWith("TKT-")) {
+      const redactedData = { ...payload.data };
+      delete redactedData.secret;
+      console.log(`[moolre webhook] Ignoring payload with no recognizable ticket reference — parsed data: ${JSON.stringify(redactedData)}`);
+      return new Response("OK", { status: 200 });
+    }
+
+    console.log(`[moolre webhook] reference="${reference}" — triggering status verification`);
+    await ctx.runAction(internal.internal.moolre.verifyAndConfirmPayment, {
+      externalref: reference,
+    });
+
+    return new Response("OK", { status: 200 });
+  }),
+});
+
 // ─── Resend Webhook ───────────────────────────────────────────────────────────
 
 http.route({
@@ -113,6 +165,21 @@ interface PaystackWebhookPayload {
     reference: string;
     amount: number;     // in pesewas
     status: string;
+    [key: string]: unknown;
+  };
+}
+
+interface MoolreWebhookPayload {
+  status?: number | string;
+  code?: string;
+  message?: string | null;
+  data?: {
+    // Confirmed from a real sandbox payload — the field is `reference`,
+    // not `externalref` as the generic docs example implied.
+    reference: string;
+    secret?: string;
+    txstatus?: number | string;
+    txid?: number | string;
     [key: string]: unknown;
   };
 }
@@ -138,4 +205,21 @@ async function verifyPaystackSignature(
     .join("");
 
   return computed === signature;
+}
+
+// ─── Constant-time string comparison (Moolre webhook secret) ─────────────────
+
+function timingSafeEqualString(a: string, b: string): boolean {
+  const encoder = new TextEncoder();
+  const bytesA = encoder.encode(a);
+  const bytesB = encoder.encode(b);
+
+  // Length mismatch is itself not secret — but still compare a full pass
+  // over the longer buffer so the check takes the same time either way.
+  const length = Math.max(bytesA.length, bytesB.length);
+  let diff = bytesA.length ^ bytesB.length;
+  for (let i = 0; i < length; i++) {
+    diff |= (bytesA[i] ?? 0) ^ (bytesB[i] ?? 0);
+  }
+  return diff === 0;
 }

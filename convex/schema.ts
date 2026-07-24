@@ -445,6 +445,10 @@ export default defineSchema({
     buyerEmail: v.string(),
     buyerPhone: v.optional(v.string()),
     providerReference: v.optional(v.string()), // set for paid orders
+    // Omitted on historical rows = paystack (implicit prior default).
+    provider: v.optional(v.union(v.literal("paystack"), v.literal("moolre"))),
+    moolreTxId: v.optional(v.string()),
+    failureReason: v.optional(v.string()),
     status: v.union(
       v.literal("pending"),
       v.literal("confirmed"),
@@ -455,7 +459,8 @@ export default defineSchema({
     .index("by_event", ["eventId"])
     .index("by_providerReference", ["providerReference"])
     .index("by_buyerEmail", ["buyerEmail"])
-    .index("by_ticketType_status", ["ticketTypeId", "status"]),
+    .index("by_ticketType_status", ["ticketTypeId", "status"])
+    .index("by_status_createdAt", ["status", "createdAt"]),
 
   tickets: defineTable({
     eventId: v.id("events"),

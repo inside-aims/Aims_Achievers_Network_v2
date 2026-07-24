@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { internalMutation, MutationCtx } from "../_generated/server";
+import { internalMutation, internalQuery, MutationCtx } from "../_generated/server";
 import { resend } from "../resend";
 import { isProd } from "../env";
 
@@ -209,6 +209,7 @@ export const confirmTicketOrderByReference = internalMutation({
   args: {
     providerReference: v.string(),
     grossAmountPesewas: v.number(),
+    moolreTxId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     console.log(`[confirmTicketOrderByReference] Looking up order for reference="${args.providerReference}" amount=${args.grossAmountPesewas}`);
@@ -243,7 +244,7 @@ export const confirmTicketOrderByReference = internalMutation({
       .first();
     if (existingTicket) {
       console.warn(`[confirmTicketOrderByReference] Tickets already exist for order, patching status only`);
-      await ctx.db.patch(order._id, { status: "confirmed" });
+      await ctx.db.patch(order._id, { status: "confirmed", moolreTxId: args.moolreTxId ?? order.moolreTxId });
       return;
     }
 
@@ -289,7 +290,7 @@ export const confirmTicketOrderByReference = internalMutation({
       issuedCodes.push(ticketCode);
     }
 
-    await ctx.db.patch(order._id, { status: "confirmed" });
+    await ctx.db.patch(order._id, { status: "confirmed", moolreTxId: args.moolreTxId ?? order.moolreTxId });
     await ctx.db.patch(order.ticketTypeId, {
       quantitySold: ticketType.quantitySold + order.quantity,
     });
@@ -311,5 +312,62 @@ export const confirmTicketOrderByReference = internalMutation({
       }),
     });
     console.log(`[confirmTicketOrderByReference] Confirmation email queued to ${order.buyerEmail}`);
+  },
+});
+
+/**
+ * Called from the Moolre webhook when a USSD payment fails or is declined.
+ * Idempotent — a pending order can only be cancelled once.
+ */
+export const failTicketOrderByReference = internalMutation({
+  args: {
+    providerReference: v.string(),
+    reason: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const order = await ctx.db
+      .query("ticketOrders")
+      .withIndex("by_providerReference", (q) =>
+        q.eq("providerReference", args.providerReference),
+      )
+      .unique();
+
+    if (!order) {
+      console.error(`[failTicketOrderByReference] No order found for reference="${args.providerReference}"`);
+      return;
+    }
+    if (order.status !== "pending") {
+      console.log(`[failTicketOrderByReference] Order status="${order.status}", not pending — skipping`);
+      return;
+    }
+
+    await ctx.db.patch(order._id, {
+      status: "cancelled",
+      failureReason: args.reason,
+    });
+    console.log(`[failTicketOrderByReference] Order cancelled for reference="${args.providerReference}" reason="${args.reason}"`);
+  },
+});
+
+/**
+ * Finds Moolre ticket orders still "pending" within a bounded age window —
+ * old enough that a webhook should have arrived by now, not so old that a
+ * re-check is pointless. Used by the reconciliation cron as a safety net
+ * for missed/delayed webhook deliveries.
+ */
+export const listStalePendingMoolreOrders = internalQuery({
+  args: { minAgeMs: v.number(), maxAgeMs: v.number() },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const candidates = await ctx.db
+      .query("ticketOrders")
+      .withIndex("by_status_createdAt", (q) =>
+        q.eq("status", "pending").gte("createdAt", now - args.maxAgeMs).lte("createdAt", now - args.minAgeMs),
+      )
+      .take(50);
+
+    return candidates
+      .filter((o) => o.provider === "moolre" && o.providerReference)
+      .map((o) => o.providerReference as string);
   },
 });

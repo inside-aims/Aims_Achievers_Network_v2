@@ -56,4 +56,13 @@ crons.interval(
   {},
 );
 
+// Safety net for missed/delayed Moolre webhook deliveries — re-checks
+// stale "pending" ticket orders directly against Moolre's Payment Status API.
+crons.interval(
+  "reconcile pending moolre payments",
+  isProd ? { minutes: 10 } : { hours: 24 },
+  internal.internal.moolre.reconcilePendingPayments,
+  {},
+);
+
 export default crons;
