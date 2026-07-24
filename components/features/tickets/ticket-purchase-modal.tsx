@@ -33,9 +33,17 @@ import {
   Phone,
   User,
   AlertCircle,
+  AlertTriangle,
+  Phone as PhoneIcon,
+  Copy,
+  Check,
 } from "lucide-react";
 import { TicketType, EventTicketInfo } from "./index";
 import { cn } from "@/lib/utils";
+
+// Temporary: our payment provider is experiencing an outage. Flip to false
+// once card/mobile money checkout is confirmed working again.
+const PAYMENT_OUTAGE_ACTIVE = true;
 
 interface TicketPurchaseModalProps {
   open: boolean;
@@ -140,7 +148,11 @@ const TicketPurchaseModal = ({
     }, 250);
   }
 
-  const title = step === "success" ? "Order Confirmed!" : "Get Tickets";
+  const title = PAYMENT_OUTAGE_ACTIVE
+    ? "Ticket Purchases Temporarily Unavailable"
+    : step === "success"
+      ? "Order Confirmed!"
+      : "Get Tickets";
   const description = ticketInfo.eventTitle;
 
   const content = (
@@ -249,6 +261,8 @@ function PurchaseContent({
   onPurchase,
   onClose,
 }: PurchaseContentProps) {
+  if (PAYMENT_OUTAGE_ACTIVE) return <PaymentOutageNotice />;
+
   if (step === "loading") return <LoadingStep isFree={isFree} />;
   if (step === "success") {
     return (
@@ -417,6 +431,107 @@ function FormStep({
           ? `Get ${quantity} Free Ticket${quantity > 1 ? "s" : ""}`
           : `Pay GH₵ ${totalPrice.toFixed(2)}`}
       </Button>
+    </div>
+  );
+}
+
+const OUTAGE_CONTACT_NUMBER = "0555498785";
+
+function PaymentOutageNotice() {
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(OUTAGE_CONTACT_NUMBER);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard API unavailable — silently ignore, number is still visible to copy manually.
+    }
+  }
+
+  return (
+    <div className="space-y-5 pt-1 pb-2">
+      <div className="flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3">
+        <AlertTriangle className="h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
+        <div className="space-y-1">
+          <p className="text-sm font-bold text-amber-700 dark:text-amber-400">
+            Major outage with our payment provider
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            We&apos;re currently unable to process online ticket payments due to
+            an issue beyond our control. Online purchases are temporarily
+            switched off while we work with our provider to resolve it.
+          </p>
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-border bg-muted/40 px-4 py-4 space-y-3">
+        <p className="text-sm font-semibold">
+          To purchase a ticket in the meantime
+        </p>
+        <ol className="space-y-2.5 text-sm text-muted-foreground list-decimal list-inside">
+          <li>
+            Send your payment via Mobile Money to{" "}
+            <span className="font-semibold text-foreground">0555 498 785</span>
+            <br />
+            <span className="text-xs font-semibold text-foreground">
+              (David Ofosu — COMPSSA President)
+            </span>
+          </li>
+          <li>
+            Use the{" "}
+            <span className="font-medium text-foreground">ticket type</span>{" "}
+            and <span className="font-medium text-foreground">quantity</span>{" "}
+            you want to buy as the reference for the transaction.
+          </li>
+          <li>
+            Then send an SMS to the same number with your{" "}
+            <span className="font-medium text-foreground">full name</span>,{" "}
+            <span className="font-medium text-foreground">email</span>, and{" "}
+            <span className="font-medium text-foreground">transaction ID</span>.
+          </li>
+        </ol>
+        <p className="text-xs text-muted-foreground pt-1 border-t border-border">
+          You&apos;ll still receive your ticket details by email shortly
+          after we confirm your payment.
+        </p>
+      </div>
+
+      <div className="flex items-center gap-2.5 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3">
+        <PhoneIcon className="h-4 w-4 text-primary shrink-0" />
+        <a
+          href={`tel:${OUTAGE_CONTACT_NUMBER}`}
+          className="text-sm font-bold text-foreground flex-1"
+        >
+          0555 498 785
+        </a>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="h-7 gap-1.5 text-xs shrink-0"
+          onClick={handleCopy}
+        >
+          {copied ? (
+            <>
+              <Check className="h-3.5 w-3.5" />
+              Copied
+            </>
+          ) : (
+            <>
+              <Copy className="h-3.5 w-3.5" />
+              Copy
+            </>
+          )}
+        </Button>
+      </div>
+
+      <p className="text-xs text-muted-foreground leading-relaxed text-center">
+        We sincerely apologize for the inconvenience this may cause and are
+        working to restore online payments as quickly as possible. Thank you
+        for your patience and understanding.
+      </p>
     </div>
   );
 }
