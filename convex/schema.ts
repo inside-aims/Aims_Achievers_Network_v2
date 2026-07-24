@@ -454,7 +454,8 @@ export default defineSchema({
   })
     .index("by_event", ["eventId"])
     .index("by_providerReference", ["providerReference"])
-    .index("by_buyerEmail", ["buyerEmail"]),
+    .index("by_buyerEmail", ["buyerEmail"])
+    .index("by_ticketType_status", ["ticketTypeId", "status"]),
 
   tickets: defineTable({
     eventId: v.id("events"),

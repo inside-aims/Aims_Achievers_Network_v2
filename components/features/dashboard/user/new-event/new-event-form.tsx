@@ -84,7 +84,7 @@ export function NewEventForm({ base, initialValues, eventId, initialBannerUrl }:
           institution:     values.institution || undefined,
           eventType:       values.eventType    || undefined,
           currency:        values.currency     || undefined,
-          bannerStorageId: values.bannerStorageId || undefined,
+          bannerStorageId: (values.bannerStorageId || undefined) as Id<"_storage"> | undefined,
           location:        values.location,
           eventDate:       eventDateMs,
           votingStartsAt:  isTicketOnly ? eventDateMs : toMs(values.votingOpens),

@@ -64,35 +64,60 @@ export const platformOverview = query({
       suspended: allOrganizers.filter((o) => o.status === "suspended").length,
     };
 
-    const [voteSums, grossSums, orgRevSums, ticketStatsByEvent] = await Promise.all([
+    // ticketStats reads are only meaningful for ticketing-enabled events, so skip
+    // the per-event ticketTypes query for the rest (mirrors listAllEvents below).
+    const ticketingEvents = allEvents.filter((e) => e.ticketingEnabled);
+
+    const [voteSums, grossSums, orgRevSums, ticketStatsList] = await Promise.all([
       votesByNominee.sumBatch(ctx, allEvents.map((e) => ({ namespace: e._id, bounds: undefined }))),
       revenueByEvent.sumBatch(ctx, allEvents.map((e) => ({ namespace: e._id, bounds: undefined }))),
       organizerRevenue.sumBatch(ctx, allEvents.map((e) => ({ namespace: e._id, bounds: undefined }))),
-      Promise.all(allEvents.map((e) => getTicketStats(ctx, e._id))),
+      Promise.all(ticketingEvents.map((e) => getTicketStats(ctx, e._id))),
     ]);
+
+    let totalTicketsSold = 0;
+    let totalTicketRevenuePesewas = 0;
+    for (const stats of ticketStatsList) {
+      totalTicketsSold += stats.ticketsSold;
+      totalTicketRevenuePesewas += stats.ticketRevenuePesewas;
+    }
 
     let totalVotes = 0;
     let totalRevenuePesewas = 0;
     let platformCutPesewas = 0;
-    let totalTicketsSold = 0;
-    let totalTicketRevenuePesewas = 0;
     for (let i = 0; i < allEvents.length; i++) {
       totalVotes += voteSums[i];
       totalRevenuePesewas += grossSums[i];
       platformCutPesewas += grossSums[i] - orgRevSums[i];
-      totalTicketsSold += ticketStatsByEvent[i].ticketsSold;
-      totalTicketRevenuePesewas += ticketStatsByEvent[i].ticketRevenuePesewas;
     }
 
+    const ticketStatsByEvent = new Map(ticketingEvents.map((e, i) => [e._id, ticketStatsList[i]]));
+
     const recentEvents = await Promise.all(
-      allEvents.slice(0, 10).map(async (e) => {
-        const org = await ctx.db.get(e.organizerId);
+      allEvents.slice(0, 10).map(async (e, i) => {
+        const ticketingEnabled = e.ticketingEnabled ?? false;
+        const [org, hasCategories] = await Promise.all([
+          ctx.db.get(e.organizerId),
+          ticketingEnabled
+            ? ctx.db
+                .query("categories")
+                .withIndex("by_event", (q) => q.eq("eventId", e._id))
+                .take(1)
+                .then((cats) => cats.length > 0)
+            : Promise.resolve(false),
+        ]);
+        const ticketStats = ticketStatsByEvent.get(e._id);
         return {
           _id: e._id,
           title: e.title,
           status: e.status,
           organizerName: org?.displayName ?? "Unknown",
           eventDate: e.eventDate,
+          isTicketOnly: ticketingEnabled && !hasCategories,
+          totalVotes: voteSums[i],
+          totalRevenuePesewas: grossSums[i],
+          ticketsSold: ticketStats?.ticketsSold ?? 0,
+          ticketRevenuePesewas: ticketStats?.ticketRevenuePesewas ?? 0,
         };
       }),
     );
@@ -119,24 +144,33 @@ export const listAllEvents = query({
 
     const allEvents = await ctx.db.query("events").order("desc").take(500);
 
-    const [orgs, voteSums, revenueSums, categoriesCounts, ticketStatsByEvent] = await Promise.all([
+    // categoriesCount/ticketStats only affect the output for ticketing-enabled
+    // events (isTicketOnly is forced false otherwise), so skip those per-event
+    // reads for the rest — normally most events on a voting platform.
+    const ticketingEvents = allEvents.filter((e) => e.ticketingEnabled);
+
+    const [orgs, voteSums, revenueSums, hasCategoriesList, ticketStatsList] = await Promise.all([
       Promise.all(allEvents.map((e) => ctx.db.get(e.organizerId))),
       votesByNominee.sumBatch(ctx, allEvents.map((e) => ({ namespace: e._id, bounds: undefined }))),
       revenueByEvent.sumBatch(ctx, allEvents.map((e) => ({ namespace: e._id, bounds: undefined }))),
       Promise.all(
-        allEvents.map((e) =>
+        ticketingEvents.map((e) =>
           ctx.db
             .query("categories")
             .withIndex("by_event", (q) => q.eq("eventId", e._id))
-            .take(100)
-            .then((cats) => cats.length),
+            .take(1) // existence check only — isTicketOnly just needs "any category?"
+            .then((cats) => cats.length > 0),
         ),
       ),
-      Promise.all(allEvents.map((e) => getTicketStats(ctx, e._id))),
+      Promise.all(ticketingEvents.map((e) => getTicketStats(ctx, e._id))),
     ]);
+
+    const hasCategoriesByEvent = new Map(ticketingEvents.map((e, i) => [e._id, hasCategoriesList[i]]));
+    const ticketStatsByEvent = new Map(ticketingEvents.map((e, i) => [e._id, ticketStatsList[i]]));
 
     const enriched = allEvents.map((e, i) => {
       const ticketingEnabled = e.ticketingEnabled ?? false;
+      const ticketStats = ticketStatsByEvent.get(e._id);
       return {
         _id: e._id,
         title: e.title,
@@ -147,9 +181,9 @@ export const listAllEvents = query({
         totalVotes: voteSums[i],
         totalRevenuePesewas: revenueSums[i],
         ticketingEnabled,
-        isTicketOnly: ticketingEnabled && categoriesCounts[i] === 0,
-        ticketsSold: ticketStatsByEvent[i].ticketsSold,
-        ticketRevenuePesewas: ticketStatsByEvent[i].ticketRevenuePesewas,
+        isTicketOnly: ticketingEnabled && !hasCategoriesByEvent.get(e._id),
+        ticketsSold: ticketStats?.ticketsSold ?? 0,
+        ticketRevenuePesewas: ticketStats?.ticketRevenuePesewas ?? 0,
       };
     });
 
@@ -301,9 +335,10 @@ export const adminLeaderboard = query({
       categories.map(async (category) => {
         const nominees = await ctx.db
           .query("nominees")
-          .withIndex("by_event_votes", (q) => q.eq("eventId", args.eventId))
+          .withIndex("by_event_category_votes", (q) =>
+            q.eq("eventId", args.eventId).eq("categoryId", category._id),
+          )
           .order("desc")
-          .filter((q) => q.eq(q.field("categoryId"), category._id))
           .take(50);
 
         return { category, nominees };

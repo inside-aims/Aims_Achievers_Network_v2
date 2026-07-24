@@ -463,7 +463,7 @@ export const updateDetails = mutation({
     eventType: v.optional(v.string()),
     currency: v.optional(v.string()),
     bannerUrl: v.optional(v.string()),
-    bannerStorageId: v.optional(v.string()),
+    bannerStorageId: v.optional(v.id("_storage")),
     location: v.optional(v.string()),
     eventDate: v.optional(v.number()),
     votingStartsAt: v.optional(v.number()),
@@ -475,8 +475,7 @@ export const updateDetails = mutation({
 
     let resolvedBannerUrl = fields.bannerUrl;
     if (!resolvedBannerUrl && bannerStorageId) {
-      resolvedBannerUrl =
-        (await ctx.storage.getUrl(bannerStorageId as Id<"_storage">)) ?? undefined;
+      resolvedBannerUrl = (await ctx.storage.getUrl(bannerStorageId)) ?? undefined;
     }
 
     const patch: Record<string, unknown> = {};

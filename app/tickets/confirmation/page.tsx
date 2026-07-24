@@ -61,7 +61,7 @@ function ConfirmationContent() {
           <>
             <strong>{order.quantity} {order.ticketTypeName}</strong> ticket
             {order.quantity !== 1 ? "s" : ""} for <strong>{order.eventTitle}</strong> confirmed.
-            A copy has been emailed to <strong>{order.buyerEmail}</strong>.
+            A copy has been emailed to <strong>{order.buyerEmailMasked}</strong>.
           </>
         }
         meta={`GHS ${(order.totalPesewas / 100).toFixed(2)} paid`}

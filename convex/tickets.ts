@@ -141,15 +141,21 @@ export const getOrderStatusByReference = query({
       ticketTypeName: ticketType?.name ?? "",
       quantity: order.quantity,
       totalPesewas: order.totalPesewas,
-      buyerName: order.buyerName,
-      buyerEmail: order.buyerEmail,
+      buyerEmailMasked: maskEmail(order.buyerEmail),
       tickets: issuedTickets.map((t) => ({
         ticketCode: t.ticketCode,
-        holderName: t.holderName,
       })),
     };
   },
 });
+
+/** Masks an email for display on the public order-status page, e.g. "jo***@gmail.com". */
+function maskEmail(email: string): string {
+  const [local, domain] = email.split("@");
+  if (!domain) return "***";
+  const visible = local.slice(0, 2);
+  return `${visible}${"*".repeat(Math.max(local.length - visible.length, 3))}@${domain}`;
+}
 
 // ─── Ticket lookup queries ────────────────────────────────────────────────────
 
@@ -472,12 +478,8 @@ export const deleteTicketType = mutation({
     // Also guard against pending orders that haven't confirmed yet
     const pendingOrder = await ctx.db
       .query("ticketOrders")
-      .withIndex("by_event", (q) => q.eq("eventId", ticketType.eventId))
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("ticketTypeId"), args.ticketTypeId),
-          q.eq(q.field("status"), "pending"),
-        ),
+      .withIndex("by_ticketType_status", (q) =>
+        q.eq("ticketTypeId", args.ticketTypeId).eq("status", "pending"),
       )
       .first();
 

@@ -11,6 +11,18 @@ const rateLimiter = new RateLimiter(components.rateLimiter, {
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const HTML_ESCAPES: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+};
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (c) => HTML_ESCAPES[c]);
+}
+
 /**
  * Public "start an event" lead capture — no account required.
  * Organizer accounts are provisioned by admins, so this just queues
@@ -47,9 +59,9 @@ export const submit = mutation({
         to: "hello@aimsachievers.network",
         subject: `New event request from ${name}`,
         html: `
-          <p><strong>${name}</strong> wants to start an event.</p>
-          <p>Email: ${email}${args.phone ? `<br>Phone: ${args.phone}` : ""}</p>
-          ${args.message ? `<p>${args.message}</p>` : ""}
+          <p><strong>${escapeHtml(name)}</strong> wants to start an event.</p>
+          <p>Email: ${escapeHtml(email)}${args.phone ? `<br>Phone: ${escapeHtml(args.phone)}` : ""}</p>
+          ${args.message ? `<p>${escapeHtml(args.message)}</p>` : ""}
         `,
       });
     } catch (err) {

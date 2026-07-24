@@ -1,4 +1,5 @@
 import type { HTMLAttributes } from "react"
+import { cn } from "@/lib/utils"
 
 const PHONE_WIDTH = 433
 const PHONE_HEIGHT = 882
@@ -33,7 +34,7 @@ export function Iphone({
 
   return (
     <div
-      className={`relative inline-block w-full align-middle leading-none ${className}`}
+      className={cn("relative inline-block w-full align-middle leading-none", className)}
       style={{
         aspectRatio: `${PHONE_WIDTH}/${PHONE_HEIGHT}`,
         ...style,

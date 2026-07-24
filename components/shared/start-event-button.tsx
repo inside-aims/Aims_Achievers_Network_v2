@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useMutation } from "convex/react";
+import { ConvexError } from "convex/values";
 import { api } from "@/convex/_generated/api";
 import { type VariantProps } from "class-variance-authority";
 import {
@@ -69,7 +70,11 @@ export default function StartEventButton({
       setStatus("success");
     } catch (err) {
       setStatus("error");
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      setError(
+        err instanceof ConvexError
+          ? String(err.data)
+          : "Something went wrong. Please try again.",
+      );
     }
   }
 

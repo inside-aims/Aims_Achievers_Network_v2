@@ -5,7 +5,7 @@ import { api } from "@/convex/_generated/api";
 import { CalendarDays, Users, BarChart3, TrendingUp, Ticket } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatCard } from "../../shared/stat-card";
-import { EventRow } from "../../shared/event-row";
+import { AdminEventRow } from "../events/admin-event-row";
 import { PageHeader } from "../../shared/page-header";
 
 interface Props {
@@ -96,13 +96,7 @@ export function AdminOverview({ base }: Props) {
         <CardContent className="p-0">
           <div className="divide-y">
             {data.recentEvents.map((e) => (
-              <EventRow
-                key={e._id}
-                title={e.title}
-                sub={e.organizerName}
-                status={e.status}
-                href={`${base}/events/${e._id}`}
-              />
+              <AdminEventRow key={e._id} event={e} base={base} />
             ))}
           </div>
         </CardContent>
