@@ -456,8 +456,11 @@ export const nukeAndReseedAdmin = internalMutation({
         await ctx.db.delete(acct._id);
       }
 
-      // Delete the user record itself
-      await ctx.db.delete(profile.userId);
+      // Delete the user record itself, if it still exists
+      const user = await ctx.db.get(profile.userId);
+      if (user) {
+        await ctx.db.delete(profile.userId);
+      }
     }
 
     return { nuked: true };

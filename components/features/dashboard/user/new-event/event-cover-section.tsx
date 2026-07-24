@@ -9,11 +9,12 @@ import { Button } from "@/components/ui/button"
 
 interface Props {
   onStorageId: (id: string | null) => void
+  initialImageUrl?: string
 }
 
-export function EventCoverSection({ onStorageId }: Props) {
-  const [preview, setPreview]     = useState<string | null>(null)
-  const [fileName, setFileName]   = useState<string | null>(null)
+export function EventCoverSection({ onStorageId, initialImageUrl }: Props) {
+  const [preview, setPreview]     = useState<string | null>(initialImageUrl ?? null)
+  const [fileName, setFileName]   = useState<string | null>(initialImageUrl ? "Current banner" : null)
   const [uploading, setUploading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 

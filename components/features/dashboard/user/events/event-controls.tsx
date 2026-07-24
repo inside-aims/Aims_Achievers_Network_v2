@@ -10,6 +10,8 @@ interface ControlConfig {
   description: string;
 }
 
+// Awards-event controls only — ticket-only events use TicketOnlySettingsBar
+// (event-sidebar.tsx) instead, since they only ever need the publicPage toggle.
 const CONTROL_CONFIG: ControlConfig[] = [
   {
     key: "showVotes",
@@ -49,7 +51,7 @@ interface ToggleProps {
   id: string;
 }
 
-function Toggle({ checked, onChange, id }: ToggleProps) {
+export function Toggle({ checked, onChange, id }: ToggleProps) {
   return (
     <button
       type="button"

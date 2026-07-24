@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, XCircle, Phone, Mail, User, BookOpen, CalendarDays } from "lucide-react";
+import { CheckCircle2, XCircle, Phone, Mail, User, BookOpen, CalendarDays, AlertTriangle } from "lucide-react";
 import type { NominationSubmission } from "./nominations";
 import { StatusPill, NomineeAvatar, InfoRow } from "./nomination-primitives";
 
@@ -69,6 +69,16 @@ export function NominationCard({ sub, onApprove, onReject }: Props) {
           </div>
         </div>
       </div>
+
+      {sub.possibleDuplicate && (
+        <div className="mx-4 mb-3 flex items-start gap-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 px-3 py-2 text-xs text-amber-800 dark:text-amber-300">
+          <AlertTriangle className="size-3.5 shrink-0 mt-0.5" />
+          <span>
+            Possible duplicate — another submission in this category uses the same nominee name.
+            Check before accepting to avoid listing the same person twice.
+          </span>
+        </div>
+      )}
 
       <div className="mx-4 border-t" />
 

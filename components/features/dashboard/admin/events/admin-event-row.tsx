@@ -11,6 +11,9 @@ interface ConvexEvent {
   organizerName: string;
   totalVotes: number;
   totalRevenuePesewas: number;
+  isTicketOnly: boolean;
+  ticketsSold: number;
+  ticketRevenuePesewas: number;
 }
 
 interface Props {
@@ -45,12 +48,25 @@ export function AdminEventRow({ event, base }: Props) {
       </div>
 
       <div className="hidden sm:flex flex-col items-end gap-0.5 shrink-0 text-right">
-        <span className="text-sm font-semibold tabular-nums">
-          {event.totalRevenuePesewas > 0 ? `GHS ${(event.totalRevenuePesewas / 100).toLocaleString()}` : "—"}
-        </span>
-        <span className="text-xs text-muted-foreground tabular-nums">
-          {event.totalVotes > 0 ? `${event.totalVotes.toLocaleString()} votes` : "No votes yet"}
-        </span>
+        {event.isTicketOnly ? (
+          <>
+            <span className="text-sm font-semibold tabular-nums">
+              {event.ticketRevenuePesewas > 0 ? `GHS ${(event.ticketRevenuePesewas / 100).toLocaleString()}` : "—"}
+            </span>
+            <span className="text-xs text-muted-foreground tabular-nums">
+              {event.ticketsSold > 0 ? `${event.ticketsSold.toLocaleString()} tickets sold` : "No tickets sold yet"}
+            </span>
+          </>
+        ) : (
+          <>
+            <span className="text-sm font-semibold tabular-nums">
+              {event.totalRevenuePesewas > 0 ? `GHS ${(event.totalRevenuePesewas / 100).toLocaleString()}` : "—"}
+            </span>
+            <span className="text-xs text-muted-foreground tabular-nums">
+              {event.totalVotes > 0 ? `${event.totalVotes.toLocaleString()} votes` : "No votes yet"}
+            </span>
+          </>
+        )}
       </div>
 
       <StatusBadge status={event.status} />

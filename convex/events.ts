@@ -1,8 +1,9 @@
-import { v } from "convex/values";
+import { v, ConvexError } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { MutationCtx, QueryCtx } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
 import { requireEventOwner, requireOrganizerProfile, getOrganizerProfileOrNull, slugify, generateEventCode, abbreviate } from "./helpers";
+import { assertValidTicketTypeArgs } from "./ticketValidation";
 
 // ─── Public queries ───────────────────────────────────────────────────────────
 
@@ -73,6 +74,23 @@ export const listPublicWithCategories = query({
         .order("asc")
         .take(100);
 
+      // Ticket-focus events publish with zero categories — surface the
+      // cheapest active ticket type so the listing card can show a price
+      // instead of a "0 Categories" badge.
+      let minTicketPricePesewas: number | undefined;
+      if (event.ticketingEnabled) {
+        const ticketTypes = await ctx.db
+          .query("ticketTypes")
+          .withIndex("by_event", (q) => q.eq("eventId", event._id))
+          .take(20);
+        const activePrices = ticketTypes
+          .filter((tt) => tt.isActive)
+          .map((tt) => tt.pricePesewas);
+        if (activePrices.length > 0) {
+          minTicketPricePesewas = Math.min(...activePrices);
+        }
+      }
+
       result.push({
         eventId: event.slug,
         title: event.title,
@@ -80,6 +98,8 @@ export const listPublicWithCategories = query({
         image: event.bannerUrl ?? "",
         startDate: tsToDate(event.votingStartsAt),
         endDate: tsToDate(event.votingEndsAt),
+        ticketingEnabled: event.ticketingEnabled ?? false,
+        minTicketPricePesewas,
         categories: categories.map((cat) => ({
           id: cat.categoryCode,
           name: cat.name,
@@ -129,6 +149,20 @@ export const getBySlugWithCategories = query({
         description: cat.description ?? "",
         votePrice: event.pricePerVotePesewas / 100,
       })),
+      details: {
+        agenda: event.agenda ?? [],
+        lineup: event.lineup ?? [],
+        dressCode: event.dressCode,
+        ageRestriction: event.ageRestriction,
+        venueNotes: event.venueNotes,
+        refundPolicy: event.refundPolicy,
+        termsNote: event.termsNote,
+        contactEmail: event.contactEmail,
+        contactPhone: event.contactPhone,
+        socialLinks: event.socialLinks ?? [],
+        faqs: event.faqs ?? [],
+        sponsors: event.sponsors ?? [],
+      },
     };
   },
 });
@@ -275,9 +309,52 @@ export const createWithCategories = mutation({
         }),
       ),
     ),
+    // Event details
+    agenda: v.optional(
+      v.array(
+        v.object({
+          time: v.string(),
+          title: v.string(),
+          description: v.optional(v.string()),
+        }),
+      ),
+    ),
+    lineup: v.optional(
+      v.array(
+        v.object({
+          name: v.string(),
+          role: v.string(),
+          imageUrl: v.optional(v.string()),
+        }),
+      ),
+    ),
+    dressCode: v.optional(v.string()),
+    ageRestriction: v.optional(v.string()),
+    venueNotes: v.optional(v.string()),
+    refundPolicy: v.optional(v.string()),
+    termsNote: v.optional(v.string()),
+    contactEmail: v.optional(v.string()),
+    contactPhone: v.optional(v.string()),
+    socialLinks: v.optional(
+      v.array(v.object({ platform: v.string(), url: v.string() })),
+    ),
+    faqs: v.optional(
+      v.array(v.object({ question: v.string(), answer: v.string() })),
+    ),
+    sponsors: v.optional(
+      v.array(v.object({ name: v.string(), logoUrl: v.optional(v.string()) })),
+    ),
   },
   handler: async (ctx, args) => {
     const profile = await requireOrganizerProfile(ctx);
+
+    for (const link of args.socialLinks ?? []) assertHttpUrl(link.url);
+    for (const person of args.lineup ?? []) {
+      if (person.imageUrl) assertHttpUrl(person.imageUrl);
+    }
+    for (const sponsor of args.sponsors ?? []) {
+      if (sponsor.logoUrl) assertHttpUrl(sponsor.logoUrl);
+    }
 
     const baseSlug = slugify(args.title);
     const slug = await uniqueSlug(ctx, baseSlug);
@@ -321,12 +398,27 @@ export const createWithCategories = mutation({
       nominationAutoApprove: args.nominationAutoApprove ?? false,
       ticketingEnabled: args.ticketingEnabled ?? false,
       themeId: args.themeId,
+      agenda: args.agenda,
+      lineup: args.lineup,
+      dressCode: args.dressCode,
+      ageRestriction: args.ageRestriction,
+      venueNotes: args.venueNotes,
+      refundPolicy: args.refundPolicy,
+      termsNote: args.termsNote,
+      contactEmail: args.contactEmail,
+      contactPhone: args.contactPhone,
+      socialLinks: args.socialLinks,
+      faqs: args.faqs,
+      sponsors: args.sponsors,
       createdAt: Date.now(),
     });
 
     const now = Date.now();
 
     if (args.ticketingEnabled && args.ticketTypes && args.ticketTypes.length > 0) {
+      for (const tt of args.ticketTypes) {
+        assertValidTicketTypeArgs(tt);
+      }
       for (const tt of args.ticketTypes) {
         await ctx.db.insert("ticketTypes", {
           eventId,
@@ -367,15 +459,91 @@ export const updateDetails = mutation({
     eventId: v.id("events"),
     title: v.optional(v.string()),
     description: v.optional(v.string()),
+    institution: v.optional(v.string()),
+    eventType: v.optional(v.string()),
+    currency: v.optional(v.string()),
     bannerUrl: v.optional(v.string()),
+    bannerStorageId: v.optional(v.id("_storage")),
     location: v.optional(v.string()),
     eventDate: v.optional(v.number()),
     votingStartsAt: v.optional(v.number()),
     votingEndsAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    const { eventId, bannerStorageId, ...fields } = args;
+    await requireEventOwner(ctx, eventId);
+
+    let resolvedBannerUrl = fields.bannerUrl;
+    if (!resolvedBannerUrl && bannerStorageId) {
+      resolvedBannerUrl = (await ctx.storage.getUrl(bannerStorageId)) ?? undefined;
+    }
+
+    const patch: Record<string, unknown> = {};
+    for (const [k, val] of Object.entries({ ...fields, bannerUrl: resolvedBannerUrl })) {
+      if (val !== undefined) patch[k] = val;
+    }
+    if (Object.keys(patch).length === 0) return;
+    await ctx.db.patch(eventId, patch);
+  },
+});
+
+/**
+ * Updates the organizer-authored "event details" content fields (agenda,
+ * lineup, policies, contact, FAQs, sponsors) shown on the public event page.
+ * Kept separate from updateDetails, which covers basic event info — mixing
+ * 12 unrelated content fields into that mutation would blur its purpose.
+ */
+export const updateEventContentDetails = mutation({
+  args: {
+    eventId: v.id("events"),
+    agenda: v.optional(
+      v.array(
+        v.object({
+          time: v.string(),
+          title: v.string(),
+          description: v.optional(v.string()),
+        }),
+      ),
+    ),
+    lineup: v.optional(
+      v.array(
+        v.object({
+          name: v.string(),
+          role: v.string(),
+          imageUrl: v.optional(v.string()),
+        }),
+      ),
+    ),
+    dressCode: v.optional(v.string()),
+    ageRestriction: v.optional(v.string()),
+    venueNotes: v.optional(v.string()),
+    refundPolicy: v.optional(v.string()),
+    termsNote: v.optional(v.string()),
+    contactEmail: v.optional(v.string()),
+    contactPhone: v.optional(v.string()),
+    socialLinks: v.optional(
+      v.array(v.object({ platform: v.string(), url: v.string() })),
+    ),
+    faqs: v.optional(
+      v.array(v.object({ question: v.string(), answer: v.string() })),
+    ),
+    sponsors: v.optional(
+      v.array(v.object({ name: v.string(), logoUrl: v.optional(v.string()) })),
+    ),
+  },
+  handler: async (ctx, args) => {
     const { eventId, ...fields } = args;
     await requireEventOwner(ctx, eventId);
+
+    // These fields are rendered as <a href>/<img src> on the public page —
+    // reject anything that isn't a plain http(s) URL before it's stored.
+    for (const link of fields.socialLinks ?? []) assertHttpUrl(link.url);
+    for (const person of fields.lineup ?? []) {
+      if (person.imageUrl) assertHttpUrl(person.imageUrl);
+    }
+    for (const sponsor of fields.sponsors ?? []) {
+      if (sponsor.logoUrl) assertHttpUrl(sponsor.logoUrl);
+    }
 
     const patch: Record<string, unknown> = {};
     for (const [k, val] of Object.entries(fields)) {
@@ -448,6 +616,20 @@ export const updateStatus = mutation({
 });
 
 // ─── Private helpers ──────────────────────────────────────────────────────────
+
+/** Rejects any URL that isn't plain http(s) — blocks javascript:/data: schemes
+ *  from being stored and later rendered as <a href>/<img src> on the public page. */
+function assertHttpUrl(url: string): void {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    throw new ConvexError(`Invalid URL: ${url}`);
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    throw new ConvexError(`URL must start with http:// or https:// — got: ${url}`);
+  }
+}
 
 async function uniqueSlug(ctx: QueryCtx | MutationCtx, base: string): Promise<string> {
   let slug = base;

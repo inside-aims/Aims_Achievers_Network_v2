@@ -9,6 +9,16 @@ const rateLimiter = new RateLimiter(components.rateLimiter, {
   nominationSubmit: { kind: "fixed window", rate: 5, period: DAY },
 });
 
+/**
+ * Nominee phone numbers are optional and often missing, so name is the only
+ * dependable signal for catching the same person nominated more than once
+ * in a category. Normalized for case/whitespace differences only — not a
+ * fuzzy match, so near-miss spellings still won't be caught.
+ */
+function normalizeName(name: string): string {
+  return name.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
 // ─── Public mutations ─────────────────────────────────────────────────────────
 
 /**
@@ -190,30 +200,47 @@ export const listForOrganizer = query({
           subsByCategory.get(key)!.push(s);
         }
 
-        const categoriesWithSubs = categories.map((cat) => ({
-          id: cat._id as string,
-          name: cat.name,
-          categoryCode: cat.categoryCode,
-          submissions: (subsByCategory.get(cat._id as string) ?? []).map((s) => ({
-            id: s._id as string,
-            categoryId: s.categoryId as string,
-            eventId: s.eventId as string,
-            nomineeName: s.nomineeName,
-            nomineePhone: s.nomineeIdentifier,
-            nomineeDepartment: s.nomineeDepartment,
-            nomineeYear: s.nomineeYear,
-            nomineeProgram: s.nomineeProgram,
-            avatarUrl: s.avatarUrl,
-            nominatorName: s.nominatorName,
-            nominatorEmail: s.nominatorEmail,
-            nominatorPhone: s.nominatorPhone,
-            nominatorRelationship: s.nominatorRelationship,
-            nominationReason: s.nominationReason,
-            achievements: s.achievements,
-            status: s.status,
-            createdAt: new Date(s.createdAt).toISOString(),
-          })),
-        }));
+        const categoriesWithSubs = categories.map((cat) => {
+          const categorySubs = subsByCategory.get(cat._id as string) ?? [];
+
+          // A submission is a possible duplicate if some other non-rejected
+          // submission in the same category shares its (normalized) nominee
+          // name — whether that other one is still pending or was already
+          // approved. Rejected submissions don't count as prior claims.
+          const nameCounts = new Map<string, number>();
+          for (const s of categorySubs) {
+            if (s.status === "rejected") continue;
+            const key = normalizeName(s.nomineeName);
+            nameCounts.set(key, (nameCounts.get(key) ?? 0) + 1);
+          }
+
+          return {
+            id: cat._id as string,
+            name: cat.name,
+            categoryCode: cat.categoryCode,
+            submissions: categorySubs.map((s) => ({
+              id: s._id as string,
+              categoryId: s.categoryId as string,
+              eventId: s.eventId as string,
+              nomineeName: s.nomineeName,
+              nomineePhone: s.nomineeIdentifier,
+              nomineeDepartment: s.nomineeDepartment,
+              nomineeYear: s.nomineeYear,
+              nomineeProgram: s.nomineeProgram,
+              avatarUrl: s.avatarUrl,
+              nominatorName: s.nominatorName,
+              nominatorEmail: s.nominatorEmail,
+              nominatorPhone: s.nominatorPhone,
+              nominatorRelationship: s.nominatorRelationship,
+              nominationReason: s.nominationReason,
+              achievements: s.achievements,
+              status: s.status,
+              createdAt: new Date(s.createdAt).toISOString(),
+              possibleDuplicate:
+                s.status !== "rejected" && (nameCounts.get(normalizeName(s.nomineeName)) ?? 0) > 1,
+            })),
+          };
+        });
 
         return {
           id: event._id as string,
@@ -299,6 +326,24 @@ export const approve = mutation({
 
     const category = await ctx.db.get(submission.categoryId);
     if (!category) throw new Error("Category not found");
+
+    // Name is the only dependable dedup signal (nominee phone is optional and
+    // often missing) — block approving a second nominee for someone who's
+    // already been accepted in this category.
+    const finalName = args.displayName ?? submission.nomineeName;
+    const normalizedFinalName = normalizeName(finalName);
+    const existingNominees = await ctx.db
+      .query("nominees")
+      .withIndex("by_category", (q) => q.eq("categoryId", submission.categoryId))
+      .collect();
+    const alreadyAccepted = existingNominees.some(
+      (n) => normalizeName(n.displayName) === normalizedFinalName,
+    );
+    if (alreadyAccepted) {
+      throw new ConvexError(
+        `"${finalName}" has already been accepted as a nominee in this category. Reject this submission, or edit the name before approving, to avoid a duplicate.`,
+      );
+    }
 
     const shortcode = await generateShortcode(ctx);
 

@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search, TrendingUp, BarChart3, CalendarDays, Users } from "lucide-react";
+import { Search } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "../../shared/page-header";
-import { StatCard } from "../../shared/stat-card";
 import { AdminEventRow } from "./admin-event-row";
 
 type Filter = "all" | "live" | "closed" | "draft";
@@ -34,11 +33,6 @@ export function AdminEvents({ base }: Props) {
     draft:  events?.filter((e) => e.status === "draft").length ?? 0,
   }), [events]);
 
-  const totals = useMemo(() => ({
-    revenue: events?.reduce((s, e) => s + e.totalRevenuePesewas, 0) ?? 0,
-    votes:   events?.reduce((s, e) => s + e.totalVotes, 0) ?? 0,
-  }), [events]);
-
   const filtered = useMemo(() => {
     if (!events) return [];
     return events.filter((e) =>
@@ -53,9 +47,7 @@ export function AdminEvents({ base }: Props) {
     return (
       <div className="space-y-6 animate-pulse">
         <div className="h-8 w-48 bg-muted rounded" />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-28 bg-muted rounded-xl" />)}
-        </div>
+        <div className="h-9 w-full bg-muted rounded-lg" />
         <div className="h-64 bg-muted rounded-xl" />
       </div>
     );
@@ -67,13 +59,6 @@ export function AdminEvents({ base }: Props) {
         title="Events"
         description="All events created on the platform across every organizer."
       />
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <StatCard label="Total Events"  value={counts.all}                                        sub={`${counts.live} live`}             icon={CalendarDays} />
-        <StatCard label="Total Revenue" value={`GHS ${(totals.revenue / 100).toLocaleString()}`}  sub="Gross"                             icon={TrendingUp}   variant="success" />
-        <StatCard label="Total Votes"   value={totals.votes.toLocaleString()}                     sub="All events"                        icon={BarChart3}    variant="info" />
-        <StatCard label="Organizers"    value={new Set(events.map((e) => e.organizerId)).size}     sub="across all events"                 icon={Users}        variant="warning" />
-      </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex gap-1 p-1 bg-muted rounded-lg shrink-0">

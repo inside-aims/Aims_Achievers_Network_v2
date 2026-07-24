@@ -4,6 +4,7 @@ import { QueryCtx, MutationCtx } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
 import { requireEventOwner } from "./helpers";
+import { assertValidTicketTypeArgs } from "./ticketValidation";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -98,6 +99,63 @@ export const getEventTicketInfoBySlug = query({
     };
   },
 });
+
+// ─── Order status query ───────────────────────────────────────────────────────
+
+/**
+ * Public, read-only lookup for the post-checkout confirmation page
+ * (`/tickets/confirmation?reference=...`). Reads whatever the payment
+ * webhook has already written to `ticketOrders.status` — it does not call
+ * Paystack or touch payment logic in any way. Because it's a Convex query,
+ * the confirmation page re-renders automatically the moment the webhook
+ * flips the order to "confirmed"; no polling needed on the frontend.
+ *
+ * Payment-side folks: this only *reads* `ticketOrders`/`tickets`. Order
+ * confirmation itself still happens in `internal/tickets.ts`
+ * (`confirmTicketOrder` / `confirmTicketOrderByReference`), which this
+ * function never calls.
+ */
+export const getOrderStatusByReference = query({
+  args: { reference: v.string() },
+  handler: async (ctx, args) => {
+    const order = await ctx.db
+      .query("ticketOrders")
+      .withIndex("by_providerReference", (q) => q.eq("providerReference", args.reference))
+      .unique();
+
+    if (!order) return null;
+
+    const [event, ticketType, issuedTickets] = await Promise.all([
+      ctx.db.get(order.eventId),
+      ctx.db.get(order.ticketTypeId),
+      ctx.db
+        .query("tickets")
+        .withIndex("by_order", (q) => q.eq("orderId", order._id))
+        .take(50),
+    ]);
+
+    return {
+      status: order.status,
+      eventTitle: event?.title ?? "",
+      eventSlug: event?.slug ?? "",
+      ticketTypeName: ticketType?.name ?? "",
+      quantity: order.quantity,
+      totalPesewas: order.totalPesewas,
+      buyerEmailMasked: maskEmail(order.buyerEmail),
+      tickets: issuedTickets.map((t) => ({
+        ticketCode: t.ticketCode,
+      })),
+    };
+  },
+});
+
+/** Masks an email for display on the public order-status page, e.g. "jo***@gmail.com". */
+function maskEmail(email: string): string {
+  const [local, domain] = email.split("@");
+  if (!domain) return "***";
+  const visible = local.slice(0, 2);
+  return `${visible}${"*".repeat(Math.max(local.length - visible.length, 3))}@${domain}`;
+}
 
 // ─── Ticket lookup queries ────────────────────────────────────────────────────
 
@@ -337,6 +395,10 @@ export const setupTicketing = mutation({
   handler: async (ctx, args) => {
     await requireEventOwner(ctx, args.eventId);
 
+    for (const tt of args.ticketTypes) {
+      assertValidTicketTypeArgs(tt);
+    }
+
     const patch: Record<string, unknown> = { ticketingEnabled: true };
     if (args.themeId) patch.themeId = args.themeId;
     await ctx.db.patch(args.eventId, patch);
@@ -377,6 +439,11 @@ export const addTicketType = mutation({
     if (!event) throw new Error("Event not found");
     if (!event.ticketingEnabled) throw new Error("Ticketing is not enabled for this event");
 
+    assertValidTicketTypeArgs({
+      pricePesewas: args.pricePesewas,
+      quantityTotal: args.quantityTotal,
+    });
+
     return await ctx.db.insert("ticketTypes", {
       eventId: args.eventId,
       name: args.name,
@@ -411,12 +478,8 @@ export const deleteTicketType = mutation({
     // Also guard against pending orders that haven't confirmed yet
     const pendingOrder = await ctx.db
       .query("ticketOrders")
-      .withIndex("by_event", (q) => q.eq("eventId", ticketType.eventId))
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("ticketTypeId"), args.ticketTypeId),
-          q.eq(q.field("status"), "pending"),
-        ),
+      .withIndex("by_ticketType_status", (q) =>
+        q.eq("ticketTypeId", args.ticketTypeId).eq("status", "pending"),
       )
       .first();
 

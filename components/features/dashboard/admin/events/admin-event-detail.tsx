@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BarChart3, Tag, Users, Coins } from "lucide-react";
+import { BarChart3, Tag, Users, Coins, Ticket, ScanLine } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
@@ -10,6 +10,7 @@ import { StatCard } from "../../shared/stat-card";
 import { StatusBadge } from "../../shared/status-badge";
 import { CategoriesList } from "@/components/features/dashboard/user/events/categories-list";
 import type { CategoryDetail } from "@/components/features/dashboard/user/events/events";
+import { AdminTicketTypesList, type AdminTicketType } from "./admin-ticket-types-list";
 
 interface Props {
   base:    string;
@@ -33,6 +34,12 @@ export function AdminEventDetail({ base, eventId }: Props) {
   const data         = useQuery(api.admin.getAdminEventDetail, { eventId: convexId });
   const leaderboard  = useQuery(api.admin.adminLeaderboard,    { eventId: convexId });
 
+  const ticketingEnabled = data?.ticketingEnabled ?? false;
+  const ticketBreakdown = useQuery(
+    api.admin.adminTicketBreakdown,
+    ticketingEnabled ? { eventId: convexId } : "skip",
+  );
+
   if (data === undefined) return <EventDetailSkeleton />;
 
   if (data === null) {
@@ -46,7 +53,11 @@ export function AdminEventDetail({ base, eventId }: Props) {
     );
   }
 
-  const { event, organizerName, categoriesCount, nomineesCount, totalVotes, grossRevenuePesewas, platformFeePesewas } = data;
+  const {
+    event, organizerName, categoriesCount, nomineesCount, totalVotes,
+    grossRevenuePesewas, isTicketOnly,
+    ticketsSold, ticketRevenuePesewas, ticketTypesCount, totalScans,
+  } = data;
 
   const eventDate = event.eventDate
     ? new Date(event.eventDate).toLocaleDateString("en-GH", { day: "numeric", month: "short", year: "numeric" })
@@ -65,6 +76,24 @@ export function AdminEventDetail({ base, eventId }: Props) {
       }))
     : [];
 
+  const ticketTypes: AdminTicketType[] = ticketBreakdown
+    ? ticketBreakdown.map(({ ticketType, tickets }) => ({
+        id:            ticketType._id,
+        name:          ticketType.name,
+        description:   ticketType.description ?? "",
+        pricePesewas:  ticketType.pricePesewas,
+        quantityTotal: ticketType.quantityTotal,
+        quantitySold:  ticketType.quantitySold,
+        tickets: tickets.map((t) => ({
+          id:          t._id,
+          ticketCode:  t.ticketCode,
+          holderName:  t.holderName,
+          holderEmail: t.holderEmail,
+          status:      t.status,
+        })),
+      }))
+    : [];
+
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center gap-3">
@@ -79,15 +108,37 @@ export function AdminEventDetail({ base, eventId }: Props) {
         {eventDate && <span>{eventDate}</span>}
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <StatCard label="Total Votes"  value={totalVotes}                                        sub="across all categories"    icon={BarChart3} />
-        <StatCard label="Revenue"      value={`GHS ${(grossRevenuePesewas / 100).toLocaleString()}`} sub="gross revenue"        icon={Coins}     variant="success" />
-        <StatCard label="Categories"   value={categoriesCount}                                   sub="award categories"          icon={Tag}       variant="info" />
-        <StatCard label="Nominees"     value={nomineesCount}                                     sub="across all categories"     icon={Users}     variant="warning" />
-      </div>
+      {isTicketOnly ? (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <StatCard label="Tickets Sold"  value={ticketsSold}                                            sub="across all ticket types"  icon={Ticket}    />
+          <StatCard label="Ticket Revenue" value={`GHS ${(ticketRevenuePesewas / 100).toLocaleString()}`} sub="gross revenue"             icon={Coins}     variant="success" />
+          <StatCard label="Ticket Types"   value={ticketTypesCount}                                       sub="configured for this event" icon={Tag}       variant="info" />
+          <StatCard label="Total Scans"    value={totalScans}                                             sub="gate check-ins"            icon={ScanLine}  variant="warning" />
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <StatCard label="Total Votes"  value={totalVotes}                                        sub="across all categories"    icon={BarChart3} />
+            <StatCard label="Revenue"      value={`GHS ${(grossRevenuePesewas / 100).toLocaleString()}`} sub="gross revenue"        icon={Coins}     variant="success" />
+            <StatCard label="Categories"   value={categoriesCount}                                   sub="award categories"          icon={Tag}       variant="info" />
+            <StatCard label="Nominees"     value={nomineesCount}                                     sub="across all categories"     icon={Users}     variant="warning" />
+          </div>
+
+          {ticketingEnabled && (
+            <div className="grid grid-cols-2 gap-3">
+              <StatCard label="Tickets Sold"   value={ticketsSold}                                            sub="also sells tickets" icon={Ticket} />
+              <StatCard label="Ticket Revenue" value={`GHS ${(ticketRevenuePesewas / 100).toLocaleString()}`} sub="gross revenue"      icon={Coins}  variant="success" />
+            </div>
+          )}
+        </>
+      )}
 
       {leaderboard !== undefined && categories.length > 0 && (
         <CategoriesList categories={categories} />
+      )}
+
+      {ticketingEnabled && ticketBreakdown !== undefined && (
+        <AdminTicketTypesList ticketTypes={ticketTypes} />
       )}
     </div>
   );

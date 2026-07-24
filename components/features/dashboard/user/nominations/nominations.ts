@@ -27,6 +27,10 @@ export interface NominationSubmission {
 
   status: SubmissionStatus;
   createdAt: string; // ISO string
+
+  // True when another non-rejected submission in the same category shares
+  // this nominee's (normalized) name — a likely duplicate person.
+  possibleDuplicate?: boolean;
 }
 
 export interface NominationCategory {

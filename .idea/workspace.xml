@@ -5,7 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="48008f26-d1dc-4f7e-b70b-a93096b41883" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/components/features/nominations/nomination-process.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/nominations/nomination-process.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/nominations/nomination-card.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/nominations/nomination-card.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/nominations/nominations.ts" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/nominations/nominations.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/features/dashboard/user/nominations/user-nominations.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/features/dashboard/user/nominations/user-nominations.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/convex/nominations.ts" beforeDir="false" afterPath="$PROJECT_DIR$/convex/nominations.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/convex/seed.ts" beforeDir="false" afterPath="$PROJECT_DIR$/convex/seed.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -13,7 +18,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="491" />
+    <option name="cachedIndexableFilesCount" value="530" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -40,7 +45,7 @@
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;nomination-fixes&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feat-landing-redesign-and-ticket-selling&quot;,
     &quot;javascript.preferred.runtime.type.id&quot;: &quot;bun&quot;,
     &quot;js.debugger.nextJs.config.created.client&quot;: &quot;true&quot;,
     &quot;js.debugger.nextJs.config.created.server&quot;: &quot;true&quot;,
@@ -128,6 +133,9 @@
       <workItem from="1777017665414" duration="16971000" />
       <workItem from="1777674953517" duration="2031000" />
       <workItem from="1777677169808" duration="3030000" />
+      <workItem from="1782997950598" duration="4144000" />
+      <workItem from="1783067681125" duration="19390000" />
+      <workItem from="1783340447878" duration="6594000" />
     </task>
     <servers />
   </component>

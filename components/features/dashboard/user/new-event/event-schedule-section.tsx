@@ -9,13 +9,14 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form"
-import { type NewEventFormValues } from "./new-event-schema"
+import { type NewEventFormValues, type EventFormat } from "./new-event-schema"
 
 interface Props {
   control: Control<NewEventFormValues>
+  eventFormat: EventFormat
 }
 
-export function EventScheduleSection({ control }: Props) {
+export function EventScheduleSection({ control, eventFormat }: Props) {
   return (
     <div className="form-section">
       <div>
@@ -71,39 +72,41 @@ export function EventScheduleSection({ control }: Props) {
         )}
       />
 
-      <div className="form-grid-2">
-        <FormField
-          control={control}
-          name="votingOpens"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Voting Opens <span className="text-destructive">*</span>
-              </FormLabel>
-              <FormControl>
-                <Input type="date" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      {eventFormat === "awards" && (
+        <div className="form-grid-2">
+          <FormField
+            control={control}
+            name="votingOpens"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Voting Opens <span className="text-destructive">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={control}
-          name="votingCloses"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Voting Closes <span className="text-destructive">*</span>
-              </FormLabel>
-              <FormControl>
-                <Input type="date" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+          <FormField
+            control={control}
+            name="votingCloses"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Voting Closes <span className="text-destructive">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      )}
 
     </div>
   )

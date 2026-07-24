@@ -17,7 +17,7 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form"
-import { EVENT_TYPES, type NewEventFormValues } from "./new-event-schema"
+import { EVENT_TYPES, CURRENCIES, type NewEventFormValues } from "./new-event-schema"
 
 interface Props {
   control: Control<NewEventFormValues>
@@ -79,24 +79,53 @@ export function EventBasicsSection({ control }: Props) {
         />
       </div>
 
-      <FormField
-        control={control}
-        name="institution"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>
-              Institution / Organisation <span className="text-destructive">*</span>
-            </FormLabel>
-            <FormControl>
-              <Input
-                placeholder="e.g. Koforidua Technical University"
-                {...field}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <div className="form-grid-2">
+        <FormField
+          control={control}
+          name="institution"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Institution / Organisation <span className="text-destructive">*</span>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="e.g. Koforidua Technical University"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="currency"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Currency <span className="text-destructive">*</span>
+              </FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select currency" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {CURRENCIES.map((c) => (
+                    <SelectItem key={c.value} value={c.value}>
+                      {c.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
 
       <FormField
         control={control}

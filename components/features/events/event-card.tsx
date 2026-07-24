@@ -1,7 +1,7 @@
 'use client';
 
 import {Badge} from "@/components/ui/badge";
-import {Clock, Layers, Zap} from "lucide-react";
+import {Clock, Layers, Ticket, Zap} from "lucide-react";
 import Image from "next/image";
 import {EventCardProps} from "@/components/features/events/index";
 import {getDaysLeft} from "@/lib/utils";
@@ -15,9 +15,21 @@ const EventCard = (
     categories,
     image,
     endDate,
+    ticketingEnabled,
+    minTicketPricePesewas,
   }: EventCardProps) => {
 
   const daysLeft = getDaysLeft(endDate);
+
+  // Ticket-focus events publish with zero categories — lead with ticket
+  // pricing instead of a "0 Categories" badge that would look broken.
+  const isTicketOnly = categories.length === 0 && ticketingEnabled;
+  const priceLabel =
+    minTicketPricePesewas === undefined
+      ? "Tickets available"
+      : minTicketPricePesewas === 0
+        ? "Free entry"
+        : `From GH₵ ${(minTicketPricePesewas / 100).toFixed(2)}`;
 
   return (
     <div className="group rounded-card border border-primary/10 bg-card overflow-hidden  hover:shadow-lg">
@@ -54,8 +66,17 @@ const EventCard = (
 
         <div className="flex items-center justify-between gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1 border border-primary/10 p-1 rounded-card">
-            <Layers className="h-3.5 w-3.5"/>
-            {categories.length} Categories
+            {isTicketOnly ? (
+              <>
+                <Ticket className="h-3.5 w-3.5"/>
+                {priceLabel}
+              </>
+            ) : (
+              <>
+                <Layers className="h-3.5 w-3.5"/>
+                {categories.length} Categories
+              </>
+            )}
           </span>
 
           <span className="flex items-center gap-1 border border-primary/10 p-1 rounded-card bg-card">
@@ -64,7 +85,7 @@ const EventCard = (
           </span>
         </div>
 
-        <ButtonLink href={`/events/${eventId}`} label={"View Categories"}/>
+        <ButtonLink href={`/events/${eventId}`} label={isTicketOnly ? "Get Tickets" : "View Categories"}/>
       </div>
     </div>
   );

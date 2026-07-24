@@ -392,3 +392,336 @@ export const run = internalMutation({
     };
   },
 });
+
+// ─── Ticket-focus demo events ─────────────────────────────────────────────────
+
+// The public listing/detail pages read the event's displayed date range from
+// votingStartsAt/votingEndsAt (used as the general "event window" for display,
+// not just for voting) — a ticket-focus event still needs these set, even
+// though it never opens voting, or getDaysLeft() has nothing to compute from.
+const TICKET_FOCUS_EVENTS_DATA = [
+  {
+    // Far in the future relative to "today" — shows the normal, active state.
+    slug: "rooftop-social-night-2026",
+    eventCode: "RSN",
+    title: "Rooftop Social Night",
+    description:
+      "A ticketed rooftop evening — good music, good views, no voting or categories. Just a great night out.",
+    bannerUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&fit=crop",
+    location: "Koforidua, Ghana",
+    eventDate: new Date("2027-06-01").getTime(),
+    status: "live" as const,
+    ticketTypes: [
+      { name: "Free RSVP", description: "Standing room, first come first served.", pricePesewas: 0, quantityTotal: 50 },
+      { name: "General Admission", description: "Entry + one welcome drink.", pricePesewas: 2000, quantityTotal: 200 },
+      { name: "VIP Table", description: "Reserved table for 4, bottle service included.", pricePesewas: 15000, quantityTotal: 20 },
+    ],
+    agenda: [
+      { time: "18:00", title: "Doors Open", description: "Check-in and welcome drinks." },
+      { time: "19:30", title: "DJ Set Begins" },
+      { time: "22:00", title: "Live Performance" },
+      { time: "00:00", title: "After-party continues" },
+    ],
+    lineup: [
+      { name: "DJ Kwame", role: "Resident DJ" },
+      { name: "The Rooftop Collective", role: "Live Band" },
+    ],
+    dressCode: "Smart casual — no shorts or sandals.",
+    ageRestriction: "18+",
+    venueNotes: "Rooftop access via the east elevator. Limited on-site parking — ride-share recommended.",
+    refundPolicy: "Tickets are non-refundable but transferable up to 24 hours before the event.",
+    termsNote: "Management reserves the right of admission.",
+    contactEmail: "events@aims.internal",
+    contactPhone: "+233241234567",
+    socialLinks: [{ platform: "Instagram", url: "https://instagram.com/aimsachievers" }],
+    faqs: [
+      { question: "Is there parking?", answer: "Limited on-site parking is available; ride-share is recommended." },
+      { question: "Can I bring a plus-one?", answer: "Yes — additional General Admission tickets can be purchased for guests." },
+    ],
+    sponsors: [{ name: "Kofi Beverages" }],
+  },
+  {
+    // Already in the past relative to "today" — shows the ended state
+    // (0 days left, ticket purchase buttons disabled).
+    slug: "sunset-beach-party-2025",
+    eventCode: "SBP",
+    title: "Sunset Beach Party",
+    description:
+      "A ticketed beach party — already wrapped. Kept public to show how a past ticket-only event looks.",
+    bannerUrl: "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1200&fit=crop",
+    location: "Ada, Ghana",
+    eventDate: new Date("2025-12-01").getTime(),
+    status: "closed" as const,
+    ticketTypes: [
+      { name: "General Admission", description: "Entry to the beach party.", pricePesewas: 3000, quantityTotal: 300 },
+      { name: "VIP Cabana", description: "Private cabana for up to 6.", pricePesewas: 25000, quantityTotal: 10 },
+    ],
+    agenda: [
+      { time: "15:00", title: "Gates Open", description: "Beach access and welcome drinks." },
+      { time: "17:00", title: "Beach Games" },
+      { time: "18:30", title: "Sunset Live Set" },
+      { time: "21:00", title: "Bonfire & Closing" },
+    ],
+    lineup: [
+      { name: "DJ Ama", role: "Resident DJ" },
+      { name: "Ada Drum Circle", role: "Live Percussion" },
+    ],
+    dressCode: "Beachwear encouraged.",
+    ageRestriction: "All ages welcome",
+    venueNotes: "Beach entrance off the main coastal road. Bring cash for on-site vendors.",
+    refundPolicy: "This event has ended — no further sales or refunds.",
+    termsNote: "Management reserved the right of admission.",
+    contactEmail: "events@aims.internal",
+    contactPhone: "+233241234567",
+    socialLinks: [{ platform: "Instagram", url: "https://instagram.com/aimsachievers" }],
+    faqs: [
+      { question: "Is this event still running?", answer: "No, Sunset Beach Party 2025 has already taken place." },
+    ],
+    sponsors: [{ name: "Ada Coconut Co." }],
+  },
+];
+
+/**
+ * Seeds "ticket-focus" events — ticketingEnabled with zero categories, so the
+ * public event-card/detail-page ticket-only rendering has real data to show,
+ * across both the active and already-ended states. Run `seed:run` first
+ * (this reuses that seed's demo organizer).
+ *
+ * Safe to re-run: patches the date/status fields on events that already
+ * exist (so fixes here take effect) without duplicating their ticket types.
+ * Run via: npx convex run seed:seedTicketFocusEvent
+ */
+export const seedTicketFocusEvent = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    // Reuses whichever organizer profile already exists (e.g. from seed:run)
+    // rather than assuming a specific email — which one owns a demo event
+    // doesn't matter here.
+    const organizer = await ctx.db.query("organizerProfiles").first();
+    if (!organizer) {
+      return {
+        status: "missing_organizer",
+        message: "No organizer profile exists yet — run seed:run first, or create one via the dashboard.",
+      };
+    }
+
+    const now = Date.now();
+    const results: { slug: string; action: "created" | "updated" }[] = [];
+
+    for (const def of TICKET_FOCUS_EVENTS_DATA) {
+      const existing = await ctx.db
+        .query("events")
+        .withIndex("by_slug", (q) => q.eq("slug", def.slug))
+        .unique();
+
+      if (existing) {
+        await ctx.db.patch(existing._id, {
+          votingStartsAt: def.eventDate,
+          votingEndsAt: def.eventDate,
+          eventDate: def.eventDate,
+          status: def.status,
+          agenda: def.agenda,
+          lineup: def.lineup,
+          dressCode: def.dressCode,
+          ageRestriction: def.ageRestriction,
+          venueNotes: def.venueNotes,
+          refundPolicy: def.refundPolicy,
+          termsNote: def.termsNote,
+          contactEmail: def.contactEmail,
+          contactPhone: def.contactPhone,
+          socialLinks: def.socialLinks,
+          faqs: def.faqs,
+          sponsors: def.sponsors,
+        });
+        results.push({ slug: def.slug, action: "updated" });
+        continue;
+      }
+
+      const eventId = await ctx.db.insert("events", {
+        organizerId: organizer._id,
+        title: def.title,
+        slug: def.slug,
+        eventCode: def.eventCode,
+        description: def.description,
+        bannerUrl: def.bannerUrl,
+        location: def.location,
+        votingStartsAt: def.eventDate,
+        votingEndsAt: def.eventDate,
+        eventDate: def.eventDate,
+        status: def.status,
+
+        // Voting fields are still required by the schema, but this event
+        // never opens voting and creates no categories — see the
+        // "ticket-focus" convention: an event with zero categories renders
+        // as ticket-only on the public pages regardless of these values.
+        votingMode: "standard",
+        pricePerVotePesewas: 100,
+        platformCutPercent: 10,
+        showVotes: false,
+        votingOpen: false,
+        publicPageVisible: true,
+        nominationsOpen: false,
+        nominationRequiresAuth: false,
+
+        ticketingEnabled: true,
+
+        agenda: def.agenda,
+        lineup: def.lineup,
+        dressCode: def.dressCode,
+        ageRestriction: def.ageRestriction,
+        venueNotes: def.venueNotes,
+        refundPolicy: def.refundPolicy,
+        termsNote: def.termsNote,
+        contactEmail: def.contactEmail,
+        contactPhone: def.contactPhone,
+        socialLinks: def.socialLinks,
+        faqs: def.faqs,
+        sponsors: def.sponsors,
+
+        createdAt: now,
+      });
+
+      for (const tt of def.ticketTypes) {
+        await ctx.db.insert("ticketTypes", {
+          eventId,
+          name: tt.name,
+          description: tt.description,
+          pricePesewas: tt.pricePesewas,
+          quantityTotal: tt.quantityTotal,
+          quantitySold: 0,
+          isActive: true,
+          createdAt: now,
+        });
+      }
+
+      results.push({ slug: def.slug, action: "created" });
+    }
+
+    return { status: "ok", events: results };
+  },
+});
+
+// ─── Ticket sales demo data ────────────────────────────────────────────────────
+
+const DEMO_BUYER_NAMES = [
+  "Ama Boateng", "Kwame Owusu", "Efua Mensah", "Kojo Asante", "Abena Darko",
+  "Yaw Appiah", "Akosua Sarpong", "Kwabena Frimpong", "Adjoa Nyarko", "Kwesi Anane",
+  "Nana Yeboah", "Esi Kufuor", "Kwaku Osei", "Afia Amankwah", "Kobby Danso",
+  "Akua Antwi", "Fiifi Baffour", "Abrafi Quansah", "Kweku Gyasi", "Serwaa Adjei",
+];
+
+// Sold counts per ticket-focus event (see TICKET_FOCUS_EVENTS_DATA above),
+// keyed by slug → ticket type name → quantity to mark as sold.
+const TICKET_SALES_DATA: Record<string, Record<string, number>> = {
+  "rooftop-social-night-2026": {
+    "Free RSVP": 12,
+    "General Admission": 28,
+    "VIP Table": 4,
+  },
+  "sunset-beach-party-2025": {
+    "General Admission": 45,
+    "VIP Cabana": 6,
+  },
+};
+
+/**
+ * Seeds confirmed ticket orders + issued tickets for the ticket-focus demo
+ * events, so their quantitySold (and the admin dashboard's ticket stats) show
+ * real, non-zero numbers instead of the 0s seedTicketFocusEvent leaves behind.
+ *
+ * Safe to re-run: skips any ticket type that already has tickets issued.
+ * Run via: npx convex run seed:seedTicketSales (after seed:seedTicketFocusEvent)
+ */
+export const seedTicketSales = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    let buyerIndex = 0;
+    const results: { event: string; ticketType: string; issued: number; action: "seeded" | "skipped" }[] = [];
+
+    for (const [slug, salesByType] of Object.entries(TICKET_SALES_DATA)) {
+      const event = await ctx.db
+        .query("events")
+        .withIndex("by_slug", (q) => q.eq("slug", slug))
+        .unique();
+      if (!event) {
+        results.push({ event: slug, ticketType: "-", issued: 0, action: "skipped" });
+        continue;
+      }
+
+      const ticketTypes = await ctx.db
+        .query("ticketTypes")
+        .withIndex("by_event", (q) => q.eq("eventId", event._id))
+        .take(50);
+
+      // Runs across all ticket types for this event so generated ticket
+      // codes never collide within the same event.
+      let eventSeq = 0;
+
+      for (const [typeName, quantitySold] of Object.entries(salesByType)) {
+        const ticketType = ticketTypes.find((tt) => tt.name === typeName);
+        if (!ticketType) {
+          results.push({ event: slug, ticketType: typeName, issued: 0, action: "skipped" });
+          continue;
+        }
+
+        const existingTicket = await ctx.db
+          .query("tickets")
+          .withIndex("by_event", (q) => q.eq("eventId", event._id))
+          .filter((q) => q.eq(q.field("ticketTypeId"), ticketType._id))
+          .first();
+        if (existingTicket) {
+          results.push({ event: slug, ticketType: typeName, issued: 0, action: "skipped" });
+          continue;
+        }
+
+        const now = Date.now();
+        let issued = 0;
+        while (issued < quantitySold) {
+          const buyer = DEMO_BUYER_NAMES[buyerIndex % DEMO_BUYER_NAMES.length];
+          buyerIndex++;
+          const email = `${buyer.toLowerCase().replace(/\s+/g, ".")}${buyerIndex}@example.com`;
+
+          // Most orders are for 1 ticket, occasionally 2 — capped so we
+          // never issue more than the target quantitySold for this type.
+          const orderQuantity = Math.min(buyerIndex % 3 === 0 ? 2 : 1, quantitySold - issued);
+          const totalPesewas = ticketType.pricePesewas * orderQuantity;
+
+          const orderId = await ctx.db.insert("ticketOrders", {
+            eventId: event._id,
+            ticketTypeId: ticketType._id,
+            quantity: orderQuantity,
+            totalPesewas,
+            buyerName: buyer,
+            buyerEmail: email,
+            providerReference: totalPesewas > 0 ? `TKT-${event.eventCode}-DEMO${eventSeq + 1}` : undefined,
+            status: "confirmed",
+            createdAt: now,
+          });
+
+          for (let i = 0; i < orderQuantity; i++) {
+            eventSeq++;
+            const ticketCode = `${event.eventCode}-DEMO${String(eventSeq).padStart(3, "0")}`;
+            await ctx.db.insert("tickets", {
+              eventId: event._id,
+              ticketTypeId: ticketType._id,
+              orderId,
+              ticketCode,
+              holderName: buyer,
+              holderEmail: email,
+              status: "valid",
+              themeId: event.themeId,
+              createdAt: now,
+            });
+          }
+
+          issued += orderQuantity;
+        }
+
+        await ctx.db.patch(ticketType._id, { quantitySold: ticketType.quantitySold + issued });
+        results.push({ event: slug, ticketType: typeName, issued, action: "seeded" });
+      }
+    }
+
+    return { status: "ok", results };
+  },
+});

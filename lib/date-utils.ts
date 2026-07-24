@@ -6,41 +6,58 @@ function toDate(raw: DateInput): Date {
   return new Date(raw);
 }
 
+/** Guards every formatter below against empty strings / invalid dates —
+ *  e.g. a ticket-only event has no votingEndsAt, so "closes date" fields
+ *  are legitimately absent rather than always populated. */
+function isValidDate(d: Date): boolean {
+  return !Number.isNaN(d.getTime());
+}
+
 export function formatDate(raw: DateInput): string {
+  const d = toDate(raw);
+  if (!isValidDate(d)) return "—";
   return new Intl.DateTimeFormat("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
-  }).format(toDate(raw));
+  }).format(d);
 }
 
 export function formatDateShort(raw: DateInput): string {
+  const d = toDate(raw);
+  if (!isValidDate(d)) return "—";
   return new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
-  }).format(toDate(raw));
+  }).format(d);
 }
 
 export function formatDateMedium(raw: DateInput): string {
+  const d = toDate(raw);
+  if (!isValidDate(d)) return "—";
   return new Intl.DateTimeFormat("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
-  }).format(toDate(raw));
+  }).format(d);
 }
 
 export function formatDateTime(raw: DateInput): string {
+  const d = toDate(raw);
+  if (!isValidDate(d)) return "—";
   return new Intl.DateTimeFormat("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
-  }).format(toDate(raw));
+  }).format(d);
 }
 
 export function formatRelative(raw: DateInput): string {
-  const diff = Date.now() - toDate(raw).getTime();
+  const parsed = toDate(raw);
+  if (!isValidDate(parsed)) return "—";
+  const diff = Date.now() - parsed.getTime();
   const seconds = Math.floor(diff / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);

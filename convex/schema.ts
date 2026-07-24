@@ -128,6 +128,57 @@ export default defineSchema({
     ticketingEnabled: v.optional(v.boolean()),
     themeId: v.optional(v.string()),               // e.g. "royal-night"
 
+    // ── Event details (organizer-provided context for ticket buyers) ──
+    agenda: v.optional(
+      v.array(
+        v.object({
+          time: v.string(),
+          title: v.string(),
+          description: v.optional(v.string()),
+        }),
+      ),
+    ),
+    lineup: v.optional(
+      v.array(
+        v.object({
+          name: v.string(),
+          role: v.string(),
+          imageUrl: v.optional(v.string()),
+        }),
+      ),
+    ),
+    dressCode: v.optional(v.string()),
+    ageRestriction: v.optional(v.string()),
+    venueNotes: v.optional(v.string()),
+    refundPolicy: v.optional(v.string()),
+    termsNote: v.optional(v.string()),
+    contactEmail: v.optional(v.string()),
+    contactPhone: v.optional(v.string()),
+    socialLinks: v.optional(
+      v.array(
+        v.object({
+          platform: v.string(),
+          url: v.string(),
+        }),
+      ),
+    ),
+    faqs: v.optional(
+      v.array(
+        v.object({
+          question: v.string(),
+          answer: v.string(),
+        }),
+      ),
+    ),
+    sponsors: v.optional(
+      v.array(
+        v.object({
+          name: v.string(),
+          logoUrl: v.optional(v.string()),
+        }),
+      ),
+    ),
+
     createdAt: v.number(),
   })
     .index("by_organizer", ["organizerId"])
@@ -180,7 +231,8 @@ export default defineSchema({
     .index("by_shortcode_global", ["shortcode"])           // USSD global lookup
     .index("by_event_votes", ["eventId", "totalVotes"])  // leaderboard sort (cross-category)
     .index("by_event_category_votes", ["eventId", "categoryId", "totalVotes"])  // per-category leaderboard
-    .index("by_category_status_votes", ["categoryId", "status", "totalVotes"]),
+    .index("by_category_status_votes", ["categoryId", "status", "totalVotes"])
+    .index("by_category_status", ["categoryId", "status"]),  // voting page order (by creation time)
 
 
   // ─────────────────────────────────────────────
@@ -402,7 +454,8 @@ export default defineSchema({
   })
     .index("by_event", ["eventId"])
     .index("by_providerReference", ["providerReference"])
-    .index("by_buyerEmail", ["buyerEmail"]),
+    .index("by_buyerEmail", ["buyerEmail"])
+    .index("by_ticketType_status", ["ticketTypeId", "status"]),
 
   tickets: defineTable({
     eventId: v.id("events"),
@@ -479,4 +532,26 @@ export default defineSchema({
     .index("by_eventName", ["eventName"])
     .index("by_category", ["category"])
     .index("by_featured", ["isFeatured"]),
+
+
+  // ─────────────────────────────────────────────
+  // EVENT REQUESTS
+  // "Start an Event" lead capture from the public site.
+  // Organizer accounts are provisioned by admins, not self-served —
+  // this is just the intake queue the team follows up on manually.
+  // ─────────────────────────────────────────────
+  eventRequests: defineTable({
+    name: v.string(),
+    email: v.string(),
+    phone: v.optional(v.string()),
+    message: v.optional(v.string()),
+    status: v.union(
+      v.literal("new"),
+      v.literal("contacted"),
+      v.literal("closed"),
+    ),
+    createdAt: v.number(),
+  })
+    .index("by_status", ["status"])
+    .index("by_email", ["email"]),
 });

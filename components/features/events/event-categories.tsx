@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, Layers, Search, Ticket } from "lucide-react";
+import { Clock, Info, Layers, Search, Ticket } from "lucide-react";
 import CategoryCard from "@/components/features/events/category-card";
 import { getDaysLeft } from "@/lib/utils";
 import { useMemo, useState } from "react";
@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button";
 import EmptyState from "@/components/shared/empty-state";
 import FeatureNavigationWrapper from "@/components/shared/feature-navigation-wrapper";
 import { useEvent } from "@/hooks/use-event";
-import { CategoryCardSkeleton } from "@/components/ui/skeleton";
+import { CategoryCardSkeleton, EventDetailsSkeleton } from "@/components/ui/skeleton";
 import TicketPurchaseSection from "@/components/features/tickets/ticket-purchase-section";
 import TicketPurchaseModal from "@/components/features/tickets/ticket-purchase-modal";
+import EventDetailsSection from "@/components/features/events/event-details-section";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { TicketType } from "@/components/features/tickets";
@@ -21,6 +22,7 @@ const EventCategories = ({ eventId }: { eventId: string }) => {
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const [selectedTicketType, setSelectedTicketType] = useState<TicketType | null>(null);
   const [ticketModalOpen, setTicketModalOpen] = useState(false);
+  const [ticketView, setTicketView] = useState<"tickets" | "details">("tickets");
   const { event, loading, error } = useEvent(eventId);
 
   const ticketInfo = useQuery(api.tickets.getEventTicketInfoBySlug, { slug: eventId });
@@ -58,6 +60,14 @@ const EventCategories = ({ eventId }: { eventId: string }) => {
 
   const daysLeft = getDaysLeft(event.endDate);
 
+  // Ticket-focus events publish with zero categories — lead with the
+  // ticket purchase section instead of an empty/misleading categories UI.
+  const isTicketOnly = event.categories.length === 0 && !!ticketInfo;
+  // ticketInfo resolves to null when there's genuinely no ticketing, and
+  // stays undefined only while the query is in flight — used to avoid
+  // flashing the "no categories" empty state before it settles.
+  const ticketInfoLoading = ticketInfo === undefined;
+
   return (
     <FeatureNavigationWrapper key="event-categories">
       <div className="space-y-2 md:space-y-3">
@@ -67,20 +77,24 @@ const EventCategories = ({ eventId }: { eventId: string }) => {
 
       {/* Meta */}
       <div className="flex flex-wrap gap-2">
-        <Button
-          variant="ghost"
-          className="rounded-full bg-muted"
-          onClick={() => setShowSearchBar(!showSearchBar)}
-        >
-          <Search className="text-primary" />
-        </Button>
-        <Button
-          variant="ghost"
-          className="flex items-center gap-2 rounded-full border border-primary/10 bg-muted"
-        >
-          <Layers className="h-4 w-4 text-primary" />
-          {event.categories.length} Categories
-        </Button>
+        {event.categories.length > 0 && (
+          <Button
+            variant="ghost"
+            className="rounded-full bg-muted"
+            onClick={() => setShowSearchBar(!showSearchBar)}
+          >
+            <Search className="text-primary" />
+          </Button>
+        )}
+        {event.categories.length > 0 && (
+          <Button
+            variant="ghost"
+            className="flex items-center gap-2 rounded-full border border-primary/10 bg-muted"
+          >
+            <Layers className="h-4 w-4 text-primary" />
+            {event.categories.length} Categories
+          </Button>
+        )}
         <Button
           variant="ghost"
           className="flex items-center gap-2 rounded-full bg-muted border border-primary/10"
@@ -88,7 +102,7 @@ const EventCategories = ({ eventId }: { eventId: string }) => {
           <Clock className="h-4 w-4 text-primary" />
           {daysLeft === 0 ? "Event ended" : `${daysLeft} days left`}
         </Button>
-        {ticketInfo && (
+        {ticketInfo && !isTicketOnly && (
           <Button
             variant="ghost"
             className="flex items-center gap-2 rounded-full bg-secondary/70 border border-secondary/40 text-secondary-foreground hover:bg-secondary/90"
@@ -100,11 +114,32 @@ const EventCategories = ({ eventId }: { eventId: string }) => {
             Get Tickets
           </Button>
         )}
-        {showSearchBar && <SearchBar query={query} setQuery={setQuery} />}
+        {ticketInfo && isTicketOnly && (
+          <Button
+            variant="secondary"
+            className="flex items-center gap-2 rounded-full"
+            onClick={() => setTicketView((v) => (v === "tickets" ? "details" : "tickets"))}
+          >
+            {ticketView === "tickets" ? (
+              <>
+                <Info className="h-4 w-4" />
+                Event Details
+              </>
+            ) : (
+              <>
+                <Ticket className="h-4 w-4" />
+                Get Tickets
+              </>
+            )}
+          </Button>
+        )}
+        {event.categories.length > 0 && showSearchBar && (
+          <SearchBar query={query} setQuery={setQuery} />
+        )}
       </div>
 
-      {eventCategories.length > 0 && (
-        <div className="grid gap-4 md:gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      {!isTicketOnly && eventCategories.length > 0 && (
+        <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {eventCategories.map((category) => (
             <CategoryCard
               key={category.id}
@@ -116,13 +151,22 @@ const EventCategories = ({ eventId }: { eventId: string }) => {
         </div>
       )}
 
-      {eventCategories.length === 0 && (
+      {event.categories.length === 0 && ticketInfoLoading && (
+        <EventDetailsSkeleton />
+      )}
+
+      {!isTicketOnly && !ticketInfoLoading && eventCategories.length === 0 && (
         <EmptyState onReset={() => setQuery("")} />
       )}
 
-      {ticketInfo && (
+      {ticketInfo && isTicketOnly && ticketView === "details" && (
+        <EventDetailsSection details={event.details} />
+      )}
+
+      {ticketInfo && (!isTicketOnly || ticketView === "tickets") && (
         <TicketPurchaseSection
           ticketInfo={ticketInfo}
+          daysLeft={daysLeft}
           onSelectType={(type) => {
             setSelectedTicketType(type);
             setTicketModalOpen(true);
