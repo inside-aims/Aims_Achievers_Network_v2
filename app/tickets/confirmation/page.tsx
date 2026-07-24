@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, Loader2, Home, Ticket } from "lucide-react";
 
 // Mirrors app/vote/callback/page.tsx — same reactive pattern, no polling.
-// Paystack appends ?reference=xxx&trxref=xxx to the callback URL.
+// ?reference= is appended to the redirect URL by our own /api/moolre/initiate route.
 
 function ConfirmationContent() {
   const params = useSearchParams();
@@ -113,7 +113,7 @@ function ConfirmationContent() {
     <StatusCard
       icon={<Loader2 className="h-16 w-16 animate-spin text-primary" />}
       title="Confirming your payment…"
-      description="We're verifying your transaction with Paystack. This usually takes a few seconds."
+      description="We're verifying your transaction with Moolre. This usually takes a few seconds."
       meta="Please keep this page open."
     />
   );
