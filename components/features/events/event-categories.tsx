@@ -11,7 +11,9 @@ import FeatureNavigationWrapper from "@/components/shared/feature-navigation-wra
 import { useEvent } from "@/hooks/use-event";
 import { CategoryCardSkeleton, EventDetailsSkeleton } from "@/components/ui/skeleton";
 import TicketPurchaseSection from "@/components/features/tickets/ticket-purchase-section";
-import TicketPurchaseModal from "@/components/features/tickets/ticket-purchase-modal";
+import TicketPurchaseModal, {
+  PAYMENT_OUTAGE_ACTIVE,
+} from "@/components/features/tickets/ticket-purchase-modal";
 import EventDetailsSection from "@/components/features/events/event-details-section";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -106,9 +108,18 @@ const EventCategories = ({ eventId }: { eventId: string }) => {
           <Button
             variant="ghost"
             className="flex items-center gap-2 rounded-full bg-secondary/70 border border-secondary/40 text-secondary-foreground hover:bg-secondary/90"
-            onClick={() =>
-              document.getElementById("tickets-section")?.scrollIntoView({ behavior: "smooth" })
-            }
+            onClick={() => {
+              // Temporary: while PAYMENT_OUTAGE_ACTIVE is on, jump straight to
+              // the modal (it shows the outage notice) instead of scrolling to
+              // the ticket cards below. Revert to scrollIntoView once the
+              // outage flag is switched off.
+              if (PAYMENT_OUTAGE_ACTIVE) {
+                setSelectedTicketType(ticketInfo.ticketTypes[0] ?? null);
+                setTicketModalOpen(true);
+                return;
+              }
+              document.getElementById("tickets-section")?.scrollIntoView({ behavior: "smooth" });
+            }}
           >
             <Ticket className="h-4 w-4" />
             Get Tickets

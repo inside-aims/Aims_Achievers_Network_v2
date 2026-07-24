@@ -43,7 +43,7 @@ import { cn } from "@/lib/utils";
 
 // Temporary: our payment provider is experiencing an outage. Flip to false
 // once card/mobile money checkout is confirmed working again.
-const PAYMENT_OUTAGE_ACTIVE = true;
+export const PAYMENT_OUTAGE_ACTIVE = true;
 
 interface TicketPurchaseModalProps {
   open: boolean;
