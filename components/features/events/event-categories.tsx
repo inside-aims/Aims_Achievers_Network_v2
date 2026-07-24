@@ -177,7 +177,6 @@ const EventCategories = ({ eventId }: { eventId: string }) => {
       {ticketInfo && (!isTicketOnly || ticketView === "tickets") && (
         <TicketPurchaseSection
           ticketInfo={ticketInfo}
-          daysLeft={daysLeft}
           onSelectType={(type) => {
             setSelectedTicketType(type);
             setTicketModalOpen(true);

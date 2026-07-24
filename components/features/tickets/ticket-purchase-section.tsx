@@ -6,15 +6,17 @@ import { Button } from "@/components/ui/button";
 import { EventTicketInfo, TicketType } from "./index";
 import TicketTypeCard from "./ticket-type-card";
 import Link from "next/link";
+import { getDaysLeft } from "@/lib/utils";
 
 interface TicketPurchaseSectionProps {
   ticketInfo: EventTicketInfo;
   onSelectType: (ticketType: TicketType) => void;
-  daysLeft: number;
 }
 
-const TicketPurchaseSection = ({ ticketInfo, onSelectType, daysLeft }: TicketPurchaseSectionProps) => {
-  const isEventEnded = daysLeft === 0;
+const TicketPurchaseSection = ({ ticketInfo, onSelectType }: TicketPurchaseSectionProps) => {
+  // Gate on the event's actual date, not votingEndsAt — voting can close
+  // while ticket sales for the event itself are still open.
+  const isEventEnded = getDaysLeft(ticketInfo.eventDate) === 0;
 
   const totalAvailable = ticketInfo.ticketTypes.reduce((sum, t) => {
     if (t.quantityTotal === -1) return sum + 999;
