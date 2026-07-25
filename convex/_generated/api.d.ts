@@ -20,6 +20,7 @@ import type * as fileStorage from "../fileStorage.js";
 import type * as gallery from "../gallery.js";
 import type * as helpers from "../helpers.js";
 import type * as http from "../http.js";
+import type * as internal__tempCleanup from "../internal/_tempCleanup.js";
 import type * as internal_aggregates from "../internal/aggregates.js";
 import type * as internal_tickets from "../internal/tickets.js";
 import type * as internal_votes from "../internal/votes.js";
@@ -56,6 +57,7 @@ declare const fullApi: ApiFromModules<{
   gallery: typeof gallery;
   helpers: typeof helpers;
   http: typeof http;
+  "internal/_tempCleanup": typeof internal__tempCleanup;
   "internal/aggregates": typeof internal_aggregates;
   "internal/tickets": typeof internal_tickets;
   "internal/votes": typeof internal_votes;
