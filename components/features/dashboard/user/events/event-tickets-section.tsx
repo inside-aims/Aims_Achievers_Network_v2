@@ -21,6 +21,7 @@ import {
   Ticket,
   Trash2,
   Loader2,
+  Link2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,6 +47,12 @@ import {
 import type { ScanResultType } from "@/components/features/tickets/index";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://aimsachieversnetwork.com").replace(/\/$/, "");
+
+function scanLinkForSlug(slug: string): string {
+  return `${SITE_URL}/scan/${slug}`;
+}
 
 function formatScanTime(ts: number): string {
   return new Date(ts).toLocaleString("en-GH", {
@@ -86,13 +93,14 @@ const RESULT_CONFIG: Record<
 
 interface Props {
   eventId: Id<"events">;
+  eventSlug: string;
   ticketingEnabled: boolean;
   readonly?: boolean;
 }
 
-export function EventTicketsSection({ eventId, ticketingEnabled, readonly = false }: Props) {
+export function EventTicketsSection({ eventId, eventSlug, ticketingEnabled, readonly = false }: Props) {
   if (!ticketingEnabled) return <SetupPanel eventId={eventId} />;
-  return <TicketingDashboard eventId={eventId} readonly={readonly} />;
+  return <TicketingDashboard eventId={eventId} eventSlug={eventSlug} readonly={readonly} />;
 }
 
 // ─── Setup panel ──────────────────────────────────────────────────────────────
@@ -158,9 +166,11 @@ function SetupPanel({ eventId }: { eventId: Id<"events"> }) {
 
 function TicketingDashboard({
   eventId,
+  eventSlug,
   readonly,
 }: {
   eventId: Id<"events">;
+  eventSlug: string;
   readonly: boolean;
 }) {
   const ticketInfo  = useQuery(api.tickets.getEventTicketInfo, { eventId });
@@ -405,19 +415,39 @@ function TicketingDashboard({
                 Each code is tied to a specific staff member at the gate.
               </p>
             </div>
-            {!readonly && (
+            <div className="flex items-center gap-2 shrink-0">
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-1.5 shrink-0"
-                onClick={() => setCodeDialogOpen(true)}
+                className="gap-1.5"
+                onClick={() => handleCopy(scanLinkForSlug(eventSlug))}
               >
-                <Plus className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Generate Code</span>
-                <span className="sm:hidden">Generate</span>
+                {copied === scanLinkForSlug(eventSlug) ? (
+                  <Check className="h-3.5 w-3.5 text-green-600" />
+                ) : (
+                  <Link2 className="h-3.5 w-3.5" />
+                )}
+                <span className="hidden sm:inline">Copy Scan Link</span>
+                <span className="sm:hidden">Link</span>
               </Button>
-            )}
+              {!readonly && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5"
+                  onClick={() => setCodeDialogOpen(true)}
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Generate Code</span>
+                  <span className="sm:hidden">Generate</span>
+                </Button>
+              )}
+            </div>
           </div>
+
+          <p className="text-xs text-muted-foreground -mt-1">
+            Share this link with gate staff along with their personal code — it opens the ticket scanner for this event.
+          </p>
 
           {accessCodes === undefined ? (
             <div className="h-24 rounded-xl bg-muted/40 animate-pulse" />
@@ -641,8 +671,16 @@ function TicketingDashboard({
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground text-center">
-                  Share this code with <strong>{staffName}</strong> ({staffRole}) to allow them
-                  to access the scanner for this event.
+                  Share this code, along with the scan link (
+                  <button
+                    type="button"
+                    className="underline underline-offset-2 hover:text-foreground"
+                    onClick={() => handleCopy(scanLinkForSlug(eventSlug))}
+                  >
+                    copy link
+                  </button>
+                  ), with <strong>{staffName}</strong> ({staffRole}) so they can access the
+                  scanner for this event.
                 </p>
                 <Button className="w-full" onClick={handleCodeDialogClose}>
                   Done

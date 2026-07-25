@@ -1,5 +1,7 @@
 import { v } from "convex/values";
 import { internalMutation, MutationCtx } from "../_generated/server";
+import { internal } from "../_generated/api";
+import { Id } from "../_generated/dataModel";
 import { resend } from "../resend";
 import { isProd } from "../env";
 
@@ -311,5 +313,92 @@ export const confirmTicketOrderByReference = internalMutation({
       }),
     });
     console.log(`[confirmTicketOrderByReference] Confirmation email queued to ${order.buyerEmail}`);
+  },
+});
+
+/**
+ * Batch-issues comped tickets to a fixed recipient list (e.g. nominees above a
+ * vote threshold). Run manually from the Convex dashboard — never exposed to
+ * the frontend. Reuses confirmTicketOrder for issuance/email so comped
+ * tickets look identical to purchased ones, except totalPesewas is 0.
+ *
+ * Idempotent per (ticketTypeId, buyerEmail): re-running the same recipient
+ * list skips anyone who already has a confirmed order for that ticket type.
+ */
+export const issueComplimentaryTickets = internalMutation({
+  args: {
+    eventId: v.id("events"),
+    ticketTypeId: v.id("ticketTypes"),
+    recipients: v.array(
+      v.object({
+        name: v.string(),
+        email: v.optional(v.string()),
+        phone: v.optional(v.string()),
+      }),
+    ),
+  },
+  returns: v.object({
+    issued: v.array(v.object({ name: v.string(), email: v.string(), orderId: v.id("ticketOrders") })),
+    skipped: v.array(v.object({ name: v.string(), reason: v.string() })),
+  }),
+  handler: async (ctx, args) => {
+    const event = await ctx.db.get(args.eventId);
+    if (!event) throw new Error("Event not found");
+
+    const ticketType = await ctx.db.get(args.ticketTypeId);
+    if (!ticketType) throw new Error("Ticket type not found");
+    if (ticketType.eventId !== args.eventId)
+      throw new Error("Ticket type does not belong to this event");
+
+    const issued: { name: string; email: string; orderId: Id<"ticketOrders"> }[] = [];
+    const skipped: { name: string; reason: string }[] = [];
+
+    let remaining =
+      ticketType.quantityTotal === -1
+        ? Infinity
+        : ticketType.quantityTotal - ticketType.quantitySold;
+
+    for (const recipient of args.recipients) {
+      if (!recipient.email) {
+        skipped.push({ name: recipient.name, reason: "no contact info on file" });
+        continue;
+      }
+      const email = recipient.email.toLowerCase().trim();
+
+      const ordersForEmail = await ctx.db
+        .query("ticketOrders")
+        .withIndex("by_buyerEmail", (q) => q.eq("buyerEmail", email))
+        .collect();
+      const existingOrder = ordersForEmail.find(
+        (o) => o.ticketTypeId === args.ticketTypeId && o.status === "confirmed",
+      );
+      if (existingOrder) {
+        skipped.push({ name: recipient.name, reason: "already has a confirmed ticket for this tier" });
+        continue;
+      }
+
+      if (remaining <= 0) {
+        skipped.push({ name: recipient.name, reason: "ticket type sold out" });
+        continue;
+      }
+
+      const orderId = await ctx.db.insert("ticketOrders", {
+        eventId: args.eventId,
+        ticketTypeId: args.ticketTypeId,
+        quantity: 1,
+        totalPesewas: 0,
+        buyerName: recipient.name,
+        buyerEmail: email,
+        buyerPhone: recipient.phone,
+        status: "confirmed",
+        createdAt: Date.now(),
+      });
+
+      await ctx.runMutation(internal.internal.tickets.confirmTicketOrder, { orderId });
+      remaining -= 1;
+      issued.push({ name: recipient.name, email, orderId });
+    }
+
+    return { issued, skipped };
   },
 });

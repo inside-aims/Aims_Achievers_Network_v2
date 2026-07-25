@@ -192,6 +192,7 @@ export function EventDetail({ base, eventId }: Props) {
 
       <EventTicketsSection
         eventId={convexId}
+        eventSlug={event.slug}
         ticketingEnabled={event.ticketingEnabled ?? false}
       />
     </div>

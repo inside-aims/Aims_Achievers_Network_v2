@@ -26,7 +26,7 @@ type ScanLogEntry = {
 };
 
 const EventScanView = ({ eventId, eventTitle, scanAccessCodeId }: EventScanViewProps) => {
-  const [activeTab, setActiveTab] = useState<Tab>("camera");
+  const [activeTab, setActiveTab] = useState<Tab>("manual");
   const [facingMode, setFacingMode] = useState<"environment" | "user">("environment");
   const [manualCode, setManualCode] = useState("");
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
@@ -290,7 +290,7 @@ const EventScanView = ({ eventId, eventTitle, scanAccessCodeId }: EventScanViewP
 
               <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
                 <Info className="h-3 w-3 shrink-0" />
-                Live QR decoding requires a QR scanning library. Use Manual Entry tab for now.
+                Camera check-in is coming soon. Use the Manual Entry tab to check attendees in.
               </p>
             </div>
           )}
